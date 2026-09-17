@@ -1,0 +1,86 @@
+{
+  "appName": "WAYVEE",
+  "login": "Đăng nhập",
+  "register": "Đăng ký",
+  "logout": "Đăng xuất",
+  "support": "Hỗ trợ",
+  "settings": "Cài đặt",
+
+  "allPlaces": "Tất cả địa điểm",
+  "restaurants": "Quán ăn",
+  "cafes": "Quán cà phê",
+  "entertainment": "Khu vui chơi",
+  "attractions": "Điểm tham quan",
+  "shopping": "Mua sắm",
+  "other": "Khác",
+
+  "hero": {
+    "title": "Tạo lịch trình cho riêng mình ngay bây giờ!",
+    "destination": "Địa điểm",
+    "destinationPlaceholder": "Bạn đi đâu thế?",
+    "departDate": "Ngày đi",
+    "departPlaceholder": "DD/MM/YYYY",
+    "returnDate": "Ngày về",
+    "returnPlaceholder": "DD/MM/YYYY",
+    "tripType": "Kiểu chuyến đi",
+    "tripTypePlaceholder": "Chuyến đi bạn mong muốn",
+    "createButton": "Tạo lịch trình ngay"
+  },
+
+  "why": {
+    "sectionTitle": "Vì sao nên sử dụng Wayvee?",
+    "timeSaveTitle": "Tiết kiệm thời gian",
+    "timeSaveDesc": "Tạo lịch trình hoàn chỉnh chỉ trong vài giây, không cần mất hàng giờ tìm kiếm và sắp xếp.",
+    "personalizedTitle": "Cá nhân hóa thông minh",
+    "personalizedDesc": "Gợi ý hành trình dựa trên sở thích, ngân sách và phong cách du lịch của bạn.",
+    "diverseTitle": "Gợi ý đa dạng",
+    "diverseDesc": "Tích hợp ăn uống, check-in, trải nghiệm và địa điểm hot trong cùng một hành trình."
+  },
+
+  "travelYourWay": {
+    "sectionTitle": "Du lịch theo cách của bạn",
+    "costOptimizationTitle": "Tối ưu chi phí",
+    "costOptimizationDesc": "Gợi ý hành trình phù hợp ngân sách, tránh chi tiêu không cần thiết.",
+    "bestPlacesTitle": "Địa điểm tốt nhất",
+    "bestPlacesDesc": "Tổng hợp các địa điểm chất lượng với mức giá hợp lý trong cùng một hành trình.",
+    "weekendPlanTitle": "Lên kế hoạch nhanh cho cuối tuần",
+    "weekendPlanDesc": "Tạo lịch trình nhanh phù hợp cho các chuyến đi ngắn ngày.",
+    "customSuggestionsTitle": "Gợi ý theo bạn",
+    "customSuggestionsDesc": "Mỗi hành trình được điều chỉnh dựa trên phong cách du lịch cá nhân"
+  },
+
+  "destinations": {
+    "sectionTitle": "Điểm đến đang hot",
+    "subtitle": "Gợi ý địa điểm theo từng mùa du lịch",
+    "spring": "Mùa Xuân",
+    "summer": "Mùa Hè",
+    "autumn": "Mùa Thu",
+    "winter": "Mùa Đông"
+  },
+
+  "blog": {
+    "sectionTitle": "Blog du lịch & Địa điểm",
+    "explore": "Khám phá",
+    "featured": "Nổi bật",
+    "travel": "Du lịch",
+    "entertainment": "Giải trí",
+    "food": "Món ăn"
+  },
+
+  "recommendation": {
+    "sectionTitle": "Gợi ý địa điểm dành cho bạn",
+    "badge": "Recommended",
+    "natureTitle": "Trải nghiệm nét đẹp thiên nhiên",
+    "natureDesc": "Gợi ý các địa điểm ăn uống, vui chơi và check-in đẹp nhất xung quanh bạn.",
+    "exploreNow": "Khám phá ngay →"
+  },
+
+  "footer": {
+    "description": "Tạo hành trình cá nhân hóa nhanh chóng, dễ dàng và hiệu quả.",
+    "navigation": "Điều hướng",
+    "explore": "Khám phá",
+    "support": "Hỗ trợ",
+    "contact": "Liên hệ",
+    "rights": "All rights reserved."
+  }
+}

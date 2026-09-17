@@ -1,0 +1,86 @@
+{
+  "appName": "WAYVEE",
+  "login": "Log in",
+  "register": "Sign up",
+  "logout": "Log out",
+  "support": "Support",
+  "settings": "Settings",
+
+  "allPlaces": "All Places",
+  "restaurants": "Restaurants",
+  "cafes": "Cafes",
+  "entertainment": "Entertainment",
+  "attractions": "Attractions",
+  "shopping": "Shopping",
+  "other": "Other",
+
+  "hero": {
+    "title": "Create your personalized itinerary now!",
+    "destination": "Destination",
+    "destinationPlaceholder": "Where are you going?",
+    "departDate": "Departure date",
+    "departPlaceholder": "DD/MM/YYYY",
+    "returnDate": "Return date",
+    "returnPlaceholder": "DD/MM/YYYY",
+    "tripType": "Trip style",
+    "tripTypePlaceholder": "Your desired trip style",
+    "createButton": "Create itinerary now"
+  },
+
+  "why": {
+    "sectionTitle": "Why use Wayvee?",
+    "timeSaveTitle": "Time saving",
+    "timeSaveDesc": "Create a full itinerary in seconds without spending hours searching and planning.",
+    "personalizedTitle": "Smart personalization",
+    "personalizedDesc": "Trip suggestions tailored to your preferences, budget, and travel style.",
+    "diverseTitle": "Diverse suggestions",
+    "diverseDesc": "Combines dining, check-ins, experiences, and trending spots in one trip."
+  },
+
+  "travelYourWay": {
+    "sectionTitle": "Travel your way",
+    "costOptimizationTitle": "Cost optimization",
+    "costOptimizationDesc": "Budget-friendly trip suggestions to avoid unnecessary expenses.",
+    "bestPlacesTitle": "Best locations",
+    "bestPlacesDesc": "Curated high-quality places with reasonable pricing in one itinerary.",
+    "weekendPlanTitle": "Quick weekend planning",
+    "weekendPlanDesc": "Quick itinerary generation suited for short weekend getaways.",
+    "customSuggestionsTitle": "Tailored for you",
+    "customSuggestionsDesc": "Every trip is customized based on your personal travel style."
+  },
+
+  "destinations": {
+    "sectionTitle": "Hot Destinations",
+    "subtitle": "Recommended spots by travel season",
+    "spring": "Spring",
+    "summer": "Summer",
+    "autumn": "Autumn",
+    "winter": "Winter"
+  },
+
+  "blog": {
+    "sectionTitle": "Travel Blog & Places",
+    "explore": "Explore",
+    "featured": "Featured",
+    "travel": "Travel",
+    "entertainment": "Entertainment",
+    "food": "Food"
+  },
+
+  "recommendation": {
+    "sectionTitle": "Recommended places for you",
+    "badge": "Recommended",
+    "natureTitle": "Experience natural beauty",
+    "natureDesc": "Best dining, entertainment, and photo spots recommended around you.",
+    "exploreNow": "Explore now →"
+  },
+
+  "footer": {
+    "description": "Build personalized trip itineraries quickly, easily, and efficiently.",
+    "navigation": "Navigation",
+    "explore": "Explore",
+    "support": "Support",
+    "contact": "Contact",
+    "rights": "All rights reserved."
+  }
+}

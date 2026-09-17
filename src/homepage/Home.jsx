@@ -170,7 +170,7 @@ function Hero() {
 
 function Field({ label, placeholder }) {
   return (
-    <div className="px-4 py-3">
+    <div className="home-field px-4 py-3">
       <p className="text-[11px] font-semibold text-gray-500 mb-1">{label}</p>
       <input
         placeholder={placeholder}
