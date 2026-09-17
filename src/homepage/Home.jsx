@@ -1,7 +1,7 @@
 import { useState } from "react";
 import './Home.css';
-import logoImage from "./assets/Icon.jpg";
-import connectorImage from "./assets/connect.jpg";
+import logoImage from "../assets/Icon.jpg";
+import connectorImage from "../assets/connect.jpg";
 
 /* ------------------------------------------------------------------ */
 /* Placeholder image helper — swap these seeds for real photo URLs    */

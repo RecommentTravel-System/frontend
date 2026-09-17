@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import Login from './Login.jsx';
-import Register from './Register.jsx';
-import Home from './Home.jsx';
+import Login from './login/Login.jsx';
+import Register from './register/Register.jsx';
+import Home from './homepage/Home.jsx';
 
 export default function App() {
   const [screen, setScreen] = useState('home');
