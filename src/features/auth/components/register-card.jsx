@@ -1,22 +1,92 @@
 import { useState } from "react";
+import { useAuth } from "~/providers/auth-provider";
+import { resendOtpApi } from "~/features/auth/services/auth-api";
 
-export function RegisterCard({ onClose, onSubmit, onGoogle, onApple, onFacebook, onLogin }) {
+export function RegisterCard({ onClose, onSubmit, onLogin }) {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     email: "",
     password: "",
-    confirmPassword: ""
+    confirmPassword: "",
+    phone: ""
   });
+  const [step, setStep] = useState("register"); // "register" | "otp"
+  const [otp, setOtp] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [infoMessage, setInfoMessage] = useState(null);
+
+  const { signup, verifyEmail } = useAuth();
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleRegisterSubmit = async (e) => {
     e.preventDefault();
-    if (onSubmit) {
-      onSubmit(formData);
+    setError(null);
+
+    if (formData.password !== formData.confirmPassword) {
+      setError("Mật khẩu xác nhận không khớp.");
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setError("Mật khẩu phải có ít nhất 6 ký tự.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const fullName = `${formData.firstName} ${formData.lastName}`.trim();
+      await signup({
+        email: formData.email,
+        password: formData.password,
+        fullName,
+        phone: formData.phone
+      });
+
+      setLoading(false);
+      setStep("otp");
+      setInfoMessage(`Mã OTP kích hoạt đã được gửi tới email ${formData.email}`);
+    } catch (err) {
+      setLoading(false);
+      setError(err.message || "Đăng ký thất bại. Vui lòng kiểm tra lại thông tin.");
+    }
+  };
+
+  const handleOtpSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    try {
+      await verifyEmail({
+        email: formData.email,
+        otp
+      });
+
+      setLoading(false);
+      if (onSubmit) {
+        onSubmit({ email: formData.email, verified: true });
+      }
+      if (onLogin) {
+        onLogin();
+      }
+    } catch (err) {
+      setLoading(false);
+      setError(err.message || "Mã OTP không chính xác hoặc đã hết hạn.");
+    }
+  };
+
+  const handleResendOtp = async () => {
+    setError(null);
+    try {
+      await resendOtpApi(formData.email);
+      setInfoMessage("Đã gửi lại mã OTP tới email của bạn.");
+    } catch (err) {
+      setError(err.message || "Không thể gửi lại mã OTP.");
     }
   };
 
@@ -24,7 +94,9 @@ export function RegisterCard({ onClose, onSubmit, onGoogle, onApple, onFacebook,
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 overflow-y-auto">
       <div className="bg-white dark:bg-[#111a2e] text-slate-900 dark:text-slate-100 rounded-3xl shadow-2xl max-w-md w-full p-6 sm:p-8 border border-gray-200 dark:border-slate-800 my-8 animate-in fade-in zoom-in duration-200">
         <div className="flex items-center justify-between pb-3">
-          <h2 className="text-base font-bold text-slate-800 dark:text-slate-200">Sign up account</h2>
+          <h2 className="text-base font-bold text-slate-800 dark:text-slate-200">
+            {step === "register" ? "Đăng ký tài khoản" : "Xác thực Email"}
+          </h2>
           <button
             type="button"
             className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-800 text-xl"
@@ -35,84 +107,158 @@ export function RegisterCard({ onClose, onSubmit, onGoogle, onApple, onFacebook,
           </button>
         </div>
 
-        <div className="h-0.5 w-full bg-gradient-to-r from-[#00a8e8] via-[#f43f5e] to-[#0b2545] rounded-full mb-6" />
+        <div className="h-0.5 w-full bg-gradient-to-r from-[#002d54] via-[#f43f5e] to-[#00a8e8] rounded-full mb-6" />
 
-        <h1 className="text-xl font-extrabold text-[#0b2545] dark:text-white mb-6">Create Wayvee Account</h1>
+        <h1 className="text-xl font-extrabold text-[#002d54] dark:text-white mb-6">
+          {step === "register" ? "Tạo tài khoản Wayvee" : "Nhập mã xác thực OTP"}
+        </h1>
 
-        <form onSubmit={handleSubmit} className="space-y-3.5">
-          <div className="grid grid-cols-2 gap-3">
+        {error && (
+          <div className="mb-4 p-3 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 text-xs font-medium">
+            {error}
+          </div>
+        )}
+
+        {infoMessage && (
+          <div className="mb-4 p-3 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900 text-blue-700 dark:text-blue-300 text-xs font-medium">
+            {infoMessage}
+          </div>
+        )}
+
+        {step === "register" ? (
+          <form onSubmit={handleRegisterSubmit} className="space-y-3.5">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-gray-600 dark:text-gray-300">Tên (First Name)</label>
+                <input
+                  type="text"
+                  value={formData.firstName}
+                  onChange={(e) => handleChange("firstName", e.target.value)}
+                  placeholder="Văn A"
+                  className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-xs outline-none focus:border-[#002d54]"
+                  required
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-gray-600 dark:text-gray-300">Họ (Last Name)</label>
+                <input
+                  type="text"
+                  value={formData.lastName}
+                  onChange={(e) => handleChange("lastName", e.target.value)}
+                  placeholder="Nguyễn"
+                  className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-xs outline-none focus:border-[#002d54]"
+                  required
+                />
+              </div>
+            </div>
+
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-gray-600 dark:text-gray-300">First Name</label>
+              <label className="text-xs font-semibold text-gray-600 dark:text-gray-300">Địa chỉ Email</label>
               <input
-                type="text"
-                value={formData.firstName}
-                onChange={(e) => handleChange("firstName", e.target.value)}
-                placeholder="John"
-                className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-xs outline-none focus:border-[#00a8e8]"
+                type="email"
+                value={formData.email}
+                onChange={(e) => handleChange("email", e.target.value)}
+                placeholder="nguyenvana@example.com"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-xs outline-none focus:border-[#002d54]"
                 required
               />
             </div>
+
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-gray-600 dark:text-gray-300">Last Name</label>
+              <label className="text-xs font-semibold text-gray-600 dark:text-gray-300">Số điện thoại (tùy chọn)</label>
               <input
-                type="text"
-                value={formData.lastName}
-                onChange={(e) => handleChange("lastName", e.target.value)}
-                placeholder="Doe"
-                className="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-xs outline-none focus:border-[#00a8e8]"
+                type="tel"
+                value={formData.phone}
+                onChange={(e) => handleChange("phone", e.target.value)}
+                placeholder="0912345678"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-xs outline-none focus:border-[#002d54]"
+              />
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-gray-600 dark:text-gray-300">Mật khẩu</label>
+              <input
+                type="password"
+                value={formData.password}
+                onChange={(e) => handleChange("password", e.target.value)}
+                placeholder="Tối thiểu 6 ký tự"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-xs outline-none focus:border-[#002d54]"
                 required
               />
             </div>
-          </div>
 
-          <div className="space-y-1">
-            <label className="text-xs font-semibold text-gray-600 dark:text-gray-300">Email Address</label>
-            <input
-              type="email"
-              value={formData.email}
-              onChange={(e) => handleChange("email", e.target.value)}
-              placeholder="john.doe@example.com"
-              className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-xs outline-none focus:border-[#00a8e8]"
-              required
-            />
-          </div>
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-gray-600 dark:text-gray-300">Xác nhận mật khẩu</label>
+              <input
+                type="password"
+                value={formData.confirmPassword}
+                onChange={(e) => handleChange("confirmPassword", e.target.value)}
+                placeholder="Nhập lại mật khẩu"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-xs outline-none focus:border-[#002d54]"
+                required
+              />
+            </div>
 
-          <div className="space-y-1">
-            <label className="text-xs font-semibold text-gray-600 dark:text-gray-300">Password</label>
-            <input
-              type="password"
-              value={formData.password}
-              onChange={(e) => handleChange("password", e.target.value)}
-              placeholder="At least 8 characters"
-              className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-xs outline-none focus:border-[#00a8e8]"
-              required
-            />
-          </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 mt-2 rounded-xl bg-[#002d54] text-white font-semibold text-sm hover:bg-[#001f3b] transition-colors shadow-sm disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+            >
+              {loading ? (
+                <>
+                  <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  <span>Đang xử lý...</span>
+                </>
+              ) : (
+                "Tạo tài khoản"
+              )}
+            </button>
+          </form>
+        ) : (
+          <form onSubmit={handleOtpSubmit} className="space-y-4">
+            <p className="text-xs text-slate-600 dark:text-slate-300">
+              Mã xác thực OTP đã được gửi đến email <strong>{formData.email}</strong>. Vui lòng nhập mã để kích hoạt tài khoản.
+            </p>
 
-          <div className="space-y-1">
-            <label className="text-xs font-semibold text-gray-600 dark:text-gray-300">Confirm Password</label>
-            <input
-              type="password"
-              value={formData.confirmPassword}
-              onChange={(e) => handleChange("confirmPassword", e.target.value)}
-              placeholder="Repeat your password"
-              className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-xs outline-none focus:border-[#00a8e8]"
-              required
-            />
-          </div>
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-gray-600 dark:text-gray-300">Mã OTP</label>
+              <input
+                type="text"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                placeholder="Nhập 6 chữ số OTP"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-center tracking-widest text-lg font-bold outline-none focus:border-[#002d54]"
+                required
+              />
+            </div>
 
-          <button
-            type="submit"
-            className="w-full py-3 mt-2 rounded-xl bg-[#00a8e8] text-white font-semibold text-sm hover:bg-sky-600 transition-colors shadow-sm"
-          >
-            Create Account
-          </button>
-        </form>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 rounded-xl bg-[#002d54] text-white font-semibold text-sm hover:bg-[#001f3b] transition-colors shadow-sm disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+            >
+              {loading ? "Đang xác thực..." : "Kích hoạt tài khoản"}
+            </button>
+
+            <div className="text-center pt-2">
+              <button
+                type="button"
+                className="text-xs text-[#002d54] dark:text-sky-400 font-semibold underline"
+                onClick={handleResendOtp}
+              >
+                Gửi lại mã OTP
+              </button>
+            </div>
+          </form>
+        )}
 
         <div className="mt-5 text-center text-xs text-gray-500 dark:text-gray-400">
-          <span>Already have an account? </span>
-          <button type="button" className="font-bold text-[#00a8e8] hover:underline" onClick={onLogin}>
-            Log in
+          <span>Đã có tài khoản? </span>
+          <button type="button" className="font-bold text-[#002d54] dark:text-sky-400 hover:underline" onClick={onLogin}>
+            Đăng nhập
           </button>
         </div>
       </div>

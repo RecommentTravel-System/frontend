@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { AppHeader, AppFooter } from "~/shared/components";
 import { HeroPlanner, WhyUseWayvee, TravelYourWay } from "~/features/trip";
 import { HotDestinations } from "~/features/destination";
@@ -8,9 +9,10 @@ import { LoginCard, RegisterCard } from "~/features/auth";
 
 export default function HomeRoute() {
   const [authModal, setAuthModal] = useState(null); // null | "login" | "register"
+  const navigate = useNavigate();
 
   const handlePlannerSubmit = () => {
-    alert("Đã nhận thông tin tạo chuyến đi! Hệ thống Wayvee đang xử lý gợi ý cho bạn.");
+    navigate("/trip/info");
   };
 
   return (

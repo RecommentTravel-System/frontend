@@ -5,6 +5,14 @@
   "logout": "Đăng xuất",
   "support": "Hỗ trợ",
   "settings": "Cài đặt",
+  "userMenu": {
+    "personalData": "Dữ liệu cá nhân",
+    "payment": "Thanh toán",
+    "trips": "Chuyến đi",
+    "wishLists": "Danh sách yêu thích",
+    "reviews": "Đánh giá",
+    "logout": "Đăng xuất"
+  },
 
   "allPlaces": "Tất cả địa điểm",
   "restaurants": "Quán ăn",
@@ -69,7 +77,7 @@
 
   "recommendation": {
     "sectionTitle": "Gợi ý địa điểm dành cho bạn",
-    "badge": "Recommended",
+    "badge": "Được đề xuất",
     "natureTitle": "Trải nghiệm nét đẹp thiên nhiên",
     "natureDesc": "Gợi ý các địa điểm ăn uống, vui chơi và check-in đẹp nhất xung quanh bạn.",
     "exploreNow": "Khám phá ngay →"
@@ -81,6 +89,126 @@
     "explore": "Khám phá",
     "support": "Hỗ trợ",
     "contact": "Liên hệ",
-    "rights": "All rights reserved."
+    "rights": "Bảo lưu mọi quyền."
+  },
+
+  "tripInfo": {
+    "pageTitle": "WAYVEE - Nhập thông tin lịch trình",
+    "stepper": {
+      "step1": "Nhập thông tin",
+      "step2": "Tạo lịch trình",
+      "step3": "Hoàn tất"
+    },
+    "tripSummary": {
+      "title": "Thông tin lịch trình",
+      "yourTrip": "Chuyến đi của bạn",
+      "nameLabel": "Tên chuyến đi",
+      "defaultName": "Chuyến đi A",
+      "datesLabel": "Ngày đi - về",
+      "defaultDates": "14 - 19 Thg 8",
+      "edit": "Chỉnh sửa"
+    },
+    "destinationDetails": {
+      "title": "Thông tin địa điểm",
+      "destinationLabel": "Đi đâu?",
+      "destinationPlaceholder": "Nhập địa điểm....",
+      "companionsLabel": "Đi cùng ai?",
+      "companionsPlaceholder": "......",
+      "passengerCountLabel": "Số lượng",
+      "passengerCountPlaceholder": "Số người....",
+      "travelStyleLabel": "Phong cách chuyến đi?",
+      "travelStylePlaceholder": "Style...."
+    },
+    "actions": {
+      "nextStep": "Bước tiếp theo",
+      "supportTooltip": "Hỗ trợ khách hàng"
+    }
+  },
+
+  "tripCreate": {
+    "pageTitle": "WAYVEE - Tạo lịch trình",
+    "stepper": {
+      "step1": "Nhập thông tin",
+      "step2": "Tạo lịch trình",
+      "step3": "Hoàn tất"
+    },
+    "tripSummary": {
+      "title": "Thông tin lịch trình",
+      "yourTrip": "Chuyến đi của bạn",
+      "nameLabel": "Tên chuyến đi",
+      "defaultName": "Chuyến đi A",
+      "datesLabel": "Ngày đi - về",
+      "defaultDates": "14 - 19 Thg 8",
+      "edit": "Chỉnh sửa"
+    },
+    "locationDetails": {
+      "title": "Thông tin địa điểm",
+      "destinationLabel": "Đi đâu?",
+      "destinationPlaceholder": "Nhập địa điểm....",
+      "companionsLabel": "Đi cùng ai?",
+      "companionsPlaceholder": "......",
+      "passengerCountLabel": "Số lượng",
+      "passengerCountPlaceholder": "Số người....",
+      "travelStyleLabel": "Phong cách chuyến đi?",
+      "travelStylePlaceholder": "Style...."
+    },
+    "selectedPlaces": {
+      "title": "Danh sách địa điểm đã chọn",
+      "addPlaceButton": "Thêm địa điểm",
+      "excellent": "Xuất sắc",
+      "reviews": "đánh giá"
+    },
+    "actions": {
+      "nextStep": "Bước tiếp theo"
+    }
+  },
+
+  "tripConfirm": {
+    "pageTitle": "WAYVEE - Hoàn tất lịch trình",
+    "stepper": {
+      "step1": "Nhập thông tin",
+      "step2": "Tạo lịch trình",
+      "step3": "Hoàn tất"
+    },
+    "tripSummary": {
+      "title": "Thông tin lịch trình",
+      "yourTrip": "Chuyến đi của bạn",
+      "nameLabel": "Tên chuyến đi",
+      "defaultName": "Chuyến đi A",
+      "datesLabel": "Ngày đi - về",
+      "defaultDates": "14 - 19 Thg 8",
+      "locationTitle": "Địa điểm",
+      "locationLabel": "Nơi",
+      "defaultLocation": "Hà Nội",
+      "passengerLabel": "Số lượng",
+      "defaultPassengers": "3 người",
+      "edit": "Chỉnh sửa"
+    },
+    "placeItem": {
+      "discountBadge": "Ưu đãi",
+      "excellent": "Xuất sắc",
+      "reviews": "đánh giá",
+      "coffee": "Cà phê",
+      "checkIn": "Check-in",
+      "work": "Làm việc"
+    },
+    "actions": {
+      "confirm": "Xác nhận"
+    },
+    "modals": {
+      "processingTitle": "Đang xử lý",
+      "processingSubtitle": "Kiểm tra thông tin",
+      "confirmingTitle": "Đang xác nhận",
+      "confirmingSubtitle": "Sắp xếp dữ liệu"
+    }
+  },
+
+  "tripSuccess": {
+    "pageTitle": "WAYVEE - Lịch trình đã tạo thành công",
+    "title": "Lịch trình của bạn đã được tạo! Sẵn sàng cho chuyến đi của mình nào!",
+    "share": "Chia sẻ",
+    "goBack": "Quay lại",
+    "needHelp": "Bạn cần hỗ trợ?",
+    "contactService": "Liên hệ Trung tâm hỗ trợ khách hàng"
   }
 }

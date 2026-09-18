@@ -1,13 +1,30 @@
 import { useState } from "react";
+import { useAuth } from "~/providers/auth-provider";
 
 export function LoginCard({ onClose, onSubmit, onGoogle, onApple, onFacebook, onSignUp }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const { login } = useAuth();
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    if (onSubmit) {
-      onSubmit({ email, password });
+    setError(null);
+    setLoading(true);
+
+    try {
+      const res = await login({ email, password });
+      setLoading(false);
+      if (onSubmit) {
+        onSubmit(res);
+      }
+      if (onClose) {
+        onClose();
+      }
+    } catch (err) {
+      setLoading(false);
+      setError(err.message || "Đăng nhập thất bại. Vui lòng thử lại.");
     }
   };
 
@@ -15,7 +32,7 @@ export function LoginCard({ onClose, onSubmit, onGoogle, onApple, onFacebook, on
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
       <div className="bg-white dark:bg-[#111a2e] text-slate-900 dark:text-slate-100 rounded-3xl shadow-2xl max-w-md w-full p-6 sm:p-8 border border-gray-200 dark:border-slate-800 animate-in fade-in zoom-in duration-200">
         <div className="flex items-center justify-between pb-3">
-          <h2 className="text-base font-bold text-slate-800 dark:text-slate-200">Log in or sign up</h2>
+          <h2 className="text-base font-bold text-slate-800 dark:text-slate-200">Đăng nhập tài khoản</h2>
           <button
             type="button"
             className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-800 text-xl"
@@ -27,65 +44,82 @@ export function LoginCard({ onClose, onSubmit, onGoogle, onApple, onFacebook, on
         </div>
 
         {/* Accent rose line specified in DESIGN.md */}
-        <div className="h-0.5 w-full bg-gradient-to-r from-[#f43f5e] via-[#00a8e8] to-[#0b2545] rounded-full mb-6" />
+        <div className="h-0.5 w-full bg-gradient-to-r from-[#f43f5e] via-[#00a8e8] to-[#002d54] rounded-full mb-6" />
 
-        <h1 className="text-xl font-extrabold text-[#0b2545] dark:text-white mb-6">Welcome to Wayvee</h1>
+        <h1 className="text-xl font-extrabold text-[#002d54] dark:text-white mb-6">Chào mừng đến với Wayvee</h1>
+
+        {error && (
+          <div className="mb-4 p-3 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 text-xs font-medium">
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1">
             <label htmlFor="email" className="text-xs font-semibold text-gray-600 dark:text-gray-300">
-              Email address
+              Địa chỉ Email
             </label>
             <input
               id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email address"
-              className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder-gray-400 text-sm outline-none focus:border-[#00a8e8]"
+              placeholder="Nhập địa chỉ email của bạn"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder-gray-400 text-sm outline-none focus:border-[#002d54]"
               required
             />
           </div>
 
           <div className="space-y-1">
             <label htmlFor="password" className="text-xs font-semibold text-gray-600 dark:text-gray-300">
-              Password
+              Mật khẩu
             </label>
             <input
               id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
-              className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder-gray-400 text-sm outline-none focus:border-[#00a8e8]"
+              placeholder="Nhập mật khẩu"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder-gray-400 text-sm outline-none focus:border-[#002d54]"
               required
             />
           </div>
 
           <button
             type="submit"
-            className="w-full py-3 rounded-xl bg-[#0b2545] dark:bg-sky-500 text-white dark:text-slate-950 font-semibold text-sm hover:bg-[#102f58] transition-colors shadow-sm"
+            disabled={loading}
+            className="w-full py-3 rounded-xl bg-[#002d54] hover:bg-[#001f3b] text-white font-semibold text-sm transition-colors shadow-sm disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
           >
-            Continue
+            {loading ? (
+              <>
+                <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                <span>Đang xử lý...</span>
+              </>
+            ) : (
+              "Tiếp tục"
+            )}
           </button>
         </form>
 
         <div className="flex items-center gap-3 my-6">
           <div className="h-px bg-gray-200 dark:bg-slate-800 flex-1" />
-          <span className="text-xs text-gray-400 font-medium">or</span>
+          <span className="text-xs text-gray-400 font-medium">hoặc</span>
           <div className="h-px bg-gray-200 dark:bg-slate-800 flex-1" />
         </div>
 
         <div className="space-y-2.5">
-          <SocialButton onClick={onGoogle} icon={<GoogleIcon />} label="Continue with Google" />
-          <SocialButton onClick={onApple} icon={<AppleIcon />} label="Continue with Apple" />
-          <SocialButton onClick={onFacebook} icon={<FacebookIcon />} label="Continue with Facebook" />
+          <SocialButton onClick={onGoogle} icon={<GoogleIcon />} label="Tiếp tục với Google" />
+          <SocialButton onClick={onApple} icon={<AppleIcon />} label="Tiếp tục với Apple" />
+          <SocialButton onClick={onFacebook} icon={<FacebookIcon />} label="Tiếp tục với Facebook" />
         </div>
 
         <div className="mt-6 text-center text-xs text-gray-500 dark:text-gray-400">
-          <span>Don't have account yet? </span>
-          <button type="button" className="font-bold text-[#00a8e8] hover:underline" onClick={onSignUp}>
-            Sign up
+          <span>Chưa có tài khoản? </span>
+          <button type="button" className="font-bold text-[#002d54] dark:text-sky-400 hover:underline" onClick={onSignUp}>
+            Đăng ký ngay
           </button>
         </div>
       </div>

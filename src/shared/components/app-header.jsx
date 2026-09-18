@@ -1,5 +1,9 @@
+import { useState, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { ThemeToggle } from "./theme-toggle";
 import { LanguageSwitcher } from "./language-switcher";
+import { useTranslation } from "~/providers/i18n-provider";
+import { useAuth } from "~/providers/auth-provider";
 
 export function WayveeLogo({ className = "h-7 sm:h-8 w-auto text-[#0b2545] dark:text-white" }) {
   return (
@@ -34,12 +38,129 @@ export function WayveeLogo({ className = "h-7 sm:h-8 w-auto text-[#0b2545] dark:
 }
 
 export function AppHeader({ onLogin }) {
+  const { t } = useTranslation();
+  const { user, isAuthenticated, logout } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+  const timeoutRef = useRef(null);
+
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    if (isAuthenticated) {
+      setMenuOpen(true);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setMenuOpen(false);
+    }, 150);
+  };
+
+  const handleAvatarClick = () => {
+    if (!isAuthenticated) {
+      if (onLogin) onLogin();
+    } else {
+      setMenuOpen((prev) => !prev);
+    }
+  };
+
+  const handleLogout = () => {
+    setMenuOpen(false);
+    logout();
+  };
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
+
+  const menuItems = [
+    {
+      id: "personalData",
+      label: t("userMenu.personalData"),
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 flex-shrink-0">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+      ),
+      onClick: () => setMenuOpen(false)
+    },
+    {
+      id: "payment",
+      label: t("userMenu.payment"),
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 flex-shrink-0">
+          <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+          <line x1="1" y1="10" x2="23" y2="10" />
+        </svg>
+      ),
+      onClick: () => setMenuOpen(false)
+    },
+    {
+      id: "trips",
+      label: t("userMenu.trips"),
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 flex-shrink-0">
+          <path d="M6 20h12a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2z" />
+          <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
+        </svg>
+      ),
+      onClick: () => setMenuOpen(false)
+    },
+    {
+      id: "wishLists",
+      label: t("userMenu.wishLists"),
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 flex-shrink-0">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+        </svg>
+      ),
+      onClick: () => setMenuOpen(false)
+    },
+    {
+      id: "reviews",
+      label: t("userMenu.reviews"),
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 flex-shrink-0">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+          <line x1="8" y1="9" x2="16" y2="9" />
+          <line x1="8" y1="13" x2="14" y2="13" />
+        </svg>
+      ),
+      onClick: () => setMenuOpen(false)
+    },
+    {
+      id: "logout",
+      label: t("userMenu.logout"),
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 flex-shrink-0">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+          <polyline points="16 17 21 12 16 7" />
+          <line x1="21" y1="12" x2="9" y2="12" />
+        </svg>
+      ),
+      onClick: handleLogout
+    }
+  ];
+
   return (
-    <header className="wayvee-container py-4 flex items-center justify-between border-b border-gray-100 dark:border-slate-800/80 bg-white/50 dark:bg-slate-900/50 backdrop-blur-xs">
-      {/* Brand Logo matching exact screenshot */}
-      <div className="flex items-center cursor-pointer">
+    <header className="wayvee-container py-4 flex items-center justify-between border-b border-gray-100 dark:border-slate-800/80 bg-white/50 dark:bg-slate-900/50 backdrop-blur-xs relative z-40">
+      {/* Brand Logo matching exact homepage */}
+      <Link to="/" className="flex items-center cursor-pointer">
         <WayveeLogo />
-      </div>
+      </Link>
 
       {/* Right controls matching Image 2 */}
       <div className="flex items-center gap-3">
@@ -69,19 +190,51 @@ export function AppHeader({ onLogin }) {
           </svg>
         </button>
 
-        {/* User avatar button matching Image 2 */}
-        <button
-          type="button"
-          onClick={onLogin}
-          title="Đăng nhập / Tài khoản"
-          className="w-9 h-9 rounded-full overflow-hidden border-2 border-[#00a8e8] shadow-xs cursor-pointer hover:scale-105 transition-transform"
+        {/* User avatar with Dropdown menu on hover/click */}
+        <div
+          ref={menuRef}
+          className="relative"
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
         >
-          <img
-            src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80"
-            alt="User avatar"
-            className="w-full h-full object-cover"
-          />
-        </button>
+          <button
+            type="button"
+            onClick={handleAvatarClick}
+            title={isAuthenticated ? (user?.fullName || "Tài khoản của bạn") : "Đăng nhập / Tài khoản"}
+            className="w-9 h-9 rounded-full overflow-hidden border-2 border-[#00a8e8] shadow-xs cursor-pointer hover:scale-105 transition-transform flex items-center justify-center"
+          >
+            <img
+              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80"
+              alt="User avatar"
+              className="w-full h-full object-cover"
+            />
+          </button>
+
+          {/* User Menu Dropdown Popover matching Image */}
+          {menuOpen && (
+            <div
+              className="absolute right-0 top-full mt-2 w-64 bg-white dark:bg-[#111a2e] rounded-3xl p-3 shadow-2xl border border-slate-100 dark:border-slate-800 animate-in fade-in slide-in-from-top-2 duration-200 z-50"
+              role="menu"
+            >
+              <div className="space-y-1">
+                {menuItems.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={item.onClick}
+                    className="w-full flex items-center gap-4 px-4 py-3 rounded-2xl text-slate-800 dark:text-slate-100 font-semibold text-sm hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors text-left cursor-pointer"
+                    role="menuitem"
+                  >
+                    <span className="text-slate-700 dark:text-slate-300">
+                      {item.icon}
+                    </span>
+                    <span className="truncate">{item.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );

@@ -5,6 +5,14 @@
   "logout": "Log out",
   "support": "Support",
   "settings": "Settings",
+  "userMenu": {
+    "personalData": "Personal Data",
+    "payment": "Payment",
+    "trips": "Trips",
+    "wishLists": "Wish Lists",
+    "reviews": "Reviews",
+    "logout": "Log out"
+  },
 
   "allPlaces": "All Places",
   "restaurants": "Restaurants",
@@ -82,5 +90,125 @@
     "support": "Support",
     "contact": "Contact",
     "rights": "All rights reserved."
+  },
+
+  "tripInfo": {
+    "pageTitle": "WAYVEE - Trip Details",
+    "stepper": {
+      "step1": "Input details",
+      "step2": "Create itinerary",
+      "step3": "Complete"
+    },
+    "tripSummary": {
+      "title": "Trip Summary",
+      "yourTrip": "Your trip",
+      "nameLabel": "Name",
+      "defaultName": "Trip A",
+      "datesLabel": "Dates",
+      "defaultDates": "14 - 19 Aug",
+      "edit": "Edit"
+    },
+    "destinationDetails": {
+      "title": "Destination Details",
+      "destinationLabel": "Where to?",
+      "destinationPlaceholder": "Enter destination....",
+      "companionsLabel": "Who with?",
+      "companionsPlaceholder": "......",
+      "passengerCountLabel": "Group size",
+      "passengerCountPlaceholder": "Number of people....",
+      "travelStyleLabel": "Travel style?",
+      "travelStylePlaceholder": "Style...."
+    },
+    "actions": {
+      "nextStep": "Next step",
+      "supportTooltip": "Customer Support"
+    }
+  },
+
+  "tripCreate": {
+    "pageTitle": "WAYVEE - Create Itinerary",
+    "stepper": {
+      "step1": "Input details",
+      "step2": "Create itinerary",
+      "step3": "Complete"
+    },
+    "tripSummary": {
+      "title": "Trip Summary",
+      "yourTrip": "Your trip",
+      "nameLabel": "Name",
+      "defaultName": "Trip A",
+      "datesLabel": "Dates",
+      "defaultDates": "14 - 19 Aug",
+      "edit": "Edit"
+    },
+    "locationDetails": {
+      "title": "Destination Details",
+      "destinationLabel": "Where to?",
+      "destinationPlaceholder": "Enter destination....",
+      "companionsLabel": "Who with?",
+      "companionsPlaceholder": "......",
+      "passengerCountLabel": "Group size",
+      "passengerCountPlaceholder": "Number of people....",
+      "travelStyleLabel": "Travel style?",
+      "travelStylePlaceholder": "Style...."
+    },
+    "selectedPlaces": {
+      "title": "Selected Places",
+      "addPlaceButton": "Add Place",
+      "excellent": "Excellent",
+      "reviews": "reviews"
+    },
+    "actions": {
+      "nextStep": "Next step"
+    }
+  },
+
+  "tripConfirm": {
+    "pageTitle": "WAYVEE - Complete Itinerary",
+    "stepper": {
+      "step1": "Input details",
+      "step2": "Create itinerary",
+      "step3": "Complete"
+    },
+    "tripSummary": {
+      "title": "Trip Summary",
+      "yourTrip": "Your trip",
+      "nameLabel": "Name",
+      "defaultName": "Trip A",
+      "datesLabel": "Dates",
+      "defaultDates": "14 - 19 Aug",
+      "locationTitle": "Location",
+      "locationLabel": "Place",
+      "defaultLocation": "Hanoi",
+      "passengerLabel": "Group size",
+      "defaultPassengers": "3 people",
+      "edit": "Edit"
+    },
+    "placeItem": {
+      "discountBadge": "Deal",
+      "excellent": "Excellent",
+      "reviews": "reviews",
+      "coffee": "Coffee",
+      "checkIn": "Check-in",
+      "work": "Work"
+    },
+    "actions": {
+      "confirm": "Confirm"
+    },
+    "modals": {
+      "processingTitle": "Processing",
+      "processingSubtitle": "Checking information",
+      "confirmingTitle": "Confirming",
+      "confirmingSubtitle": "Organizing data"
+    }
+  },
+
+  "tripSuccess": {
+    "pageTitle": "WAYVEE - Itinerary Created Successfully",
+    "title": "Your itinerary has been created! Get ready for your trip!",
+    "share": "Share",
+    "goBack": "Go Back",
+    "needHelp": "Need help?",
+    "contactService": "Contact Customer Service"
   }
 }
