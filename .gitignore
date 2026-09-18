@@ -23,7 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 
-### Secrets & Config ###
+# Environment
 .env
 .env.*
 !.env.example
