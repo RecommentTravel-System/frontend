@@ -1,0 +1,179 @@
+.payment-page {
+  min-height: 100vh;
+  background: #f4f7fa;
+  padding: 60px 40px;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+.payment-page h1 {
+  text-align: center;
+  color: #073b5c;
+  font-size: 36px;
+  margin: 0 0 10px;
+}
+
+.payment-page > p {
+  text-align: center;
+  color: #667085;
+  font-size: 17px;
+  margin-bottom: 45px;
+}
+
+.plans {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+}
+
+.plan {
+  background: white;
+  border: 2px solid #e3e8ee;
+  border-radius: 18px;
+  padding: 35px 25px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.plan:hover {
+  transform: translateY(-5px);
+  border-color: #0b4265;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+.plan.selected {
+  border-color: #0b4265;
+  box-shadow: 0 0 0 3px rgba(11, 66, 101, 0.12);
+}
+
+.plan h2 {
+  color: #073b5c;
+  font-size: 24px;
+  margin: 0 0 25px;
+}
+
+.price {
+  color: #073b5c;
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.plan p {
+  color: #667085;
+  margin: 0 0 28px;
+  font-size: 15px;
+}
+
+.plan button {
+  width: 100%;
+  padding: 13px;
+  border: 1px solid #0b4265;
+  border-radius: 9px;
+  background: white;
+  color: #0b4265;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.plan.selected button {
+  background: #0b4265;
+  color: white;
+}
+
+.pay-button {
+  display: block;
+  width: 300px;
+  margin: 40px auto 0;
+  padding: 15px 25px;
+  border: none;
+  border-radius: 10px;
+  background: #073b5c;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pay-button:hover {
+  background: #052d46;
+}
+
+/* QR PAYMENT */
+
+.qr-page {
+  width: 500px;
+  max-width: 100%;
+  margin: 0 auto;
+  background: white;
+  padding: 35px;
+  border-radius: 20px;
+  box-sizing: border-box;
+  text-align: center;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
+}
+
+.back-button {
+  display: block;
+  border: none;
+  background: none;
+  color: #073b5c;
+  font-size: 15px;
+  cursor: pointer;
+  margin-bottom: 25px;
+}
+
+.qr-page h1 {
+  margin-bottom: 25px;
+}
+
+.qr-page h2 {
+  color: #073b5c;
+  margin: 8px 0;
+}
+
+.qr-page > p {
+  color: #667085;
+}
+
+.qr {
+  margin: 25px auto;
+  width: 300px;
+  height: 300px;
+  max-width: 100%;
+}
+
+.qr img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.bank-info {
+  margin-top: 25px;
+  padding: 20px;
+  background: #f5f7f9;
+  border-radius: 12px;
+  text-align: left;
+}
+
+.bank-info p {
+  margin: 10px 0;
+  color: #344054;
+}
+
+@media (max-width: 800px) {
+  .plans {
+    grid-template-columns: 1fr;
+    max-width: 450px;
+  }
+
+  .payment-page {
+    padding: 40px 20px;
+  }
+}
