@@ -1,0 +1,298 @@
+{
+  "appName": "WAYVEE",
+  "login": "Log in",
+  "register": "Sign up",
+  "logout": "Log out",
+  "support": "Support",
+  "settings": "Settings",
+  "userMenu": {
+    "personalData": "Personal Data",
+    "payment": "Payment",
+    "trips": "Trips",
+    "wishLists": "Wish Lists",
+    "reviews": "Reviews",
+    "logout": "Log out"
+  },
+  "allPlaces": "All Places",
+  "restaurants": "Restaurants",
+  "cafes": "Cafes",
+  "entertainment": "Entertainment",
+  "attractions": "Attractions",
+  "shopping": "Shopping",
+  "other": "Other",
+  "hero": {
+    "title": "Create your personalized itinerary now!",
+    "destination": "Destination",
+    "destinationPlaceholder": "Where are you going?",
+    "departDate": "Departure date",
+    "departPlaceholder": "DD/MM/YYYY",
+    "returnDate": "Return date",
+    "returnPlaceholder": "DD/MM/YYYY",
+    "tripType": "Trip style",
+    "tripTypePlaceholder": "Your desired trip style",
+    "createButton": "Create itinerary now"
+  },
+  "why": {
+    "sectionTitle": "Why use Wayvee?",
+    "timeSaveTitle": "Time saving",
+    "timeSaveDesc": "Create a full itinerary in seconds without spending hours searching and planning.",
+    "personalizedTitle": "Smart personalization",
+    "personalizedDesc": "Trip suggestions tailored to your preferences, budget, and travel style.",
+    "diverseTitle": "Diverse suggestions",
+    "diverseDesc": "Combines dining, check-ins, experiences, and trending spots in one trip."
+  },
+  "travelYourWay": {
+    "sectionTitle": "Travel your way",
+    "costOptimizationTitle": "Cost optimization",
+    "costOptimizationDesc": "Budget-friendly trip suggestions to avoid unnecessary expenses.",
+    "bestPlacesTitle": "Best locations",
+    "bestPlacesDesc": "Curated high-quality places with reasonable pricing in one itinerary.",
+    "weekendPlanTitle": "Quick weekend planning",
+    "weekendPlanDesc": "Quick itinerary generation suited for short weekend getaways.",
+    "customSuggestionsTitle": "Tailored for you",
+    "customSuggestionsDesc": "Every trip is customized based on your personal travel style."
+  },
+  "destinations": {
+    "sectionTitle": "Hot Destinations",
+    "subtitle": "Recommended spots by travel season",
+    "spring": "Spring",
+    "summer": "Summer",
+    "autumn": "Autumn",
+    "winter": "Winter"
+  },
+  "blog": {
+    "sectionTitle": "Travel Blog & Places",
+    "explore": "Explore",
+    "featured": "Featured",
+    "travel": "Travel",
+    "entertainment": "Entertainment",
+    "food": "Food"
+  },
+  "recommendation": {
+    "sectionTitle": "Recommended places for you",
+    "badge": "Recommended",
+    "natureTitle": "Experience natural beauty",
+    "natureDesc": "Best dining, entertainment, and photo spots recommended around you.",
+    "exploreNow": "Explore now →"
+  },
+  "footer": {
+    "description": "Build personalized trip itineraries quickly, easily, and efficiently.",
+    "navigation": "Navigation",
+    "explore": "Explore",
+    "support": "Support",
+    "contact": "Contact",
+    "rights": "All rights reserved."
+  },
+  "tripInfo": {
+    "pageTitle": "WAYVEE - Trip Details",
+    "stepper": {
+      "step1": "Input details",
+      "step2": "Create itinerary",
+      "step3": "Complete"
+    },
+    "tripSummary": {
+      "title": "Trip Summary",
+      "yourTrip": "Your trip",
+      "nameLabel": "Name",
+      "defaultName": "Trip A",
+      "datesLabel": "Dates",
+      "defaultDates": "14 - 19 Aug",
+      "edit": "Edit"
+    },
+    "destinationDetails": {
+      "title": "Destination Details",
+      "destinationLabel": "Where to?",
+      "destinationPlaceholder": "Enter destination....",
+      "companionsLabel": "Who with?",
+      "passengerCountLabel": "Group size",
+      "passengerCountPlaceholder": "Number of people....",
+      "travelStyleLabel": "Travel style?",
+      "travelStylePlaceholder": "Style...."
+    },
+    "actions": {
+      "nextStep": "Next step",
+      "supportTooltip": "Customer Support"
+    },
+    "validation": {
+      "tripNameRequired": "Please enter trip name",
+      "tripDatesRequired": "Please enter trip dates",
+      "destinationRequired": "Please enter your destination",
+      "companionsRequired": "Please enter who you are traveling with",
+      "passengerCountRequired": "Please enter the number of passengers",
+      "travelStyleRequired": "Please enter your travel style"
+    }
+  },
+  "tripCreate": {
+    "pageTitle": "WAYVEE - Create Itinerary",
+    "stepper": {
+      "step1": "Input details",
+      "step2": "Create itinerary",
+      "step3": "Complete"
+    },
+    "tripSummary": {
+      "title": "Trip Summary",
+      "yourTrip": "Your trip",
+      "nameLabel": "Name",
+      "defaultName": "Trip A",
+      "datesLabel": "Dates",
+      "defaultDates": "14 - 19 Aug",
+      "edit": "Edit"
+    },
+    "locationDetails": {
+      "title": "Destination Details",
+      "destinationLabel": "Where to?",
+      "destinationPlaceholder": "Enter destination....",
+      "companionsLabel": "Who with?",
+      "passengerCountLabel": "Group size",
+      "passengerCountPlaceholder": "Number of people....",
+      "travelStyleLabel": "Travel style?",
+      "travelStylePlaceholder": "Style...."
+    },
+    "selectedPlaces": {
+      "title": "Selected Places",
+      "emptyTitle": "No places selected yet",
+      "emptyDesc": "Click \"Add Place\" below to select nearby places!",
+      "addPlaceButton": "Add Place",
+      "excellent": "Excellent",
+      "reviews": "reviews"
+    },
+    "actions": {
+      "nextStep": "Next step"
+    }
+  },
+  "tripConfirm": {
+    "pageTitle": "WAYVEE - Complete Itinerary",
+    "stepper": {
+      "step1": "Input details",
+      "step2": "Create itinerary",
+      "step3": "Complete"
+    },
+    "tripSummary": {
+      "title": "Trip Summary",
+      "yourTrip": "Your trip",
+      "nameLabel": "Name",
+      "defaultName": "Trip A",
+      "datesLabel": "Dates",
+      "defaultDates": "14 - 19 Aug",
+      "locationTitle": "Location",
+      "locationLabel": "Place",
+      "defaultLocation": "Hanoi",
+      "passengerLabel": "Group size",
+      "defaultPassengers": "3 people",
+      "edit": "Edit"
+    },
+    "placeItem": {
+      "discountBadge": "Deal",
+      "excellent": "Excellent",
+      "reviews": "reviews",
+      "coffee": "Coffee",
+      "checkIn": "Check-in",
+      "work": "Work"
+    },
+    "actions": {
+      "confirm": "Confirm"
+    },
+    "modals": {
+      "processingTitle": "Processing",
+      "processingSubtitle": "Checking information",
+      "confirmingTitle": "Confirming",
+      "confirmingSubtitle": "Organizing data"
+    }
+  },
+  "tripSuccess": {
+    "pageTitle": "WAYVEE - Itinerary Created Successfully",
+    "title": "Your itinerary has been created! Get ready for your trip!",
+    "share": "Share",
+    "goBack": "Go Back",
+    "needHelp": "Need help?",
+    "contactService": "Contact Customer Service"
+  },
+  "places": {
+    "header": {
+      "backToTrip": "Back to trip",
+      "title": "Explore places in \"{{destination}}\"",
+      "countFound": "places found matching your search",
+      "searchPlaceholder": "Search by name, cuisine, vibe..."
+    },
+    "filter": {
+      "title": "Search Filters",
+      "clearAll": "Clear all",
+      "category": "Category",
+      "distance": "Distance",
+      "rating": "Review Rating",
+      "price": "Price Range",
+      "preferences": "Preferences & Tags",
+      "noPreferences": "No specific filters for this category",
+      "beta": "Beta"
+    },
+    "categories": {
+      "all": "All",
+      "restaurant": "Restaurants",
+      "cafe": "Cafes",
+      "entertainment": "Entertainment",
+      "attraction": "Attractions",
+      "shopping": "Shopping",
+      "fastFood": "Fast Food",
+      "bar": "Bar / Pub",
+      "other": "Other"
+    },
+    "preferences": {
+      "popular": "Popular & Trending",
+      "outdoor": "Outdoor Seating",
+      "indoor": "Indoor",
+      "familyFriendly": "Family Friendly",
+      "vietnamese": "Vietnamese Cuisine",
+      "korean": "Korean Cuisine",
+      "japanese": "Japanese Cuisine",
+      "fastFood": "Fast Food",
+      "vegetarian": "Vegetarian / Vegan",
+      "romantic": "Romantic / Date Night",
+      "quiet": "Quiet & Peaceful",
+      "studyWork": "Study & Work Friendly",
+      "petFriendly": "Pet Friendly",
+      "checkIn": "Photo Check-in",
+      "groupActivity": "Group Activity",
+      "nightLife": "Night Life",
+      "historical": "Historical Sites",
+      "cultural": "Culture & Art",
+      "nature": "Nature & Parks",
+      "familySightseeing": "Family Sightseeing",
+      "mall": "Shopping Mall",
+      "supermarket": "Supermarket & Groceries",
+      "souvenirs": "Specialties & Souvenirs"
+    },
+    "price": {
+      "budget": "Budget ($)",
+      "moderate": "Moderate ($$)",
+      "expensive": "Expensive ($$$)",
+      "luxury": "Luxury ($$$$)"
+    },
+    "sort": {
+      "popular": "Most Popular",
+      "rating": "Highest Rating",
+      "distance": "Nearest to Center"
+    },
+    "view": {
+      "list": "List view",
+      "grid": "Grid view"
+    },
+    "card": {
+      "reviews": "reviews",
+      "addToTrip": "Add to trip",
+      "added": "Added"
+    },
+    "empty": {
+      "title": "No matching places found",
+      "desc": "Try expanding your distance radius or clearing some filter criteria to discover more exciting spots."
+    },
+    "footer": {
+      "placesSelected": "places selected for your trip",
+      "finishButton": "Complete & Return"
+    },
+    "map": {
+      "viewOnMap": "View on Map",
+      "modalTitle": "Map of places in {{destination}}",
+      "close": "Close map"
+    }
+  }
+}
