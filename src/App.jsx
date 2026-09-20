@@ -8,6 +8,10 @@ import TripSuccessRoute from "~/routes/trip-success";
 import PlacesRoute from "~/routes/places";
 import PlaceDetailRoute from "~/routes/place-detail";
 import PaymentRoute from "~/routes/payment";
+import ProfileRoute from "~/routes/profile";
+import ItinerariesRoute from "~/routes/itineraries";
+import FavoritesRoute from "~/routes/favorites";
+import ReviewsRoute from "~/routes/reviews";
 
 export default function App() {
   return (
@@ -22,9 +26,14 @@ export default function App() {
           <Route path="/trip/confirm" element={<TripConfirmRoute />} />
           <Route path="/trip/success" element={<TripSuccessRoute />} />
           <Route path="/payment" element={<PaymentRoute />} />
+          <Route path="/profile" element={<ProfileRoute />} />
+          <Route path="/itineraries" element={<ItinerariesRoute />} />
+          <Route path="/itineraries/:tripId" element={<ItinerariesRoute />} />
+          <Route path="/favorites" element={<FavoritesRoute />} />
+          <Route path="/favorites/:collectionId" element={<FavoritesRoute />} />
+          <Route path="/reviews" element={<ReviewsRoute />} />
         </Routes>
       </BrowserRouter>
     </AppProviders>
   );
 }
-

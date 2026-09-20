@@ -94,7 +94,10 @@ export function AppHeader({ onLogin, onRegister }) {
           <circle cx="12" cy="7" r="4" />
         </svg>
       ),
-      onClick: () => setMenuOpen(false)
+      onClick: () => {
+        setMenuOpen(false);
+        navigate("/profile");
+      }
     },
     {
       id: "payment",
@@ -119,7 +122,10 @@ export function AppHeader({ onLogin, onRegister }) {
           <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
         </svg>
       ),
-      onClick: () => setMenuOpen(false)
+      onClick: () => {
+        setMenuOpen(false);
+        navigate("/itineraries");
+      }
     },
     {
       id: "wishLists",
@@ -129,7 +135,10 @@ export function AppHeader({ onLogin, onRegister }) {
           <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
         </svg>
       ),
-      onClick: () => setMenuOpen(false)
+      onClick: () => {
+        setMenuOpen(false);
+        navigate("/favorites");
+      }
     },
     {
       id: "reviews",
@@ -141,7 +150,10 @@ export function AppHeader({ onLogin, onRegister }) {
           <line x1="8" y1="13" x2="14" y2="13" />
         </svg>
       ),
-      onClick: () => setMenuOpen(false)
+      onClick: () => {
+        setMenuOpen(false);
+        navigate("/reviews");
+      }
     },
     {
       id: "logout",
