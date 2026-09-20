@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './Login.css';
+import BrandLogo from '../components/BrandLogo.jsx';
 
 export default function Login({
   onClose,
@@ -8,18 +9,24 @@ export default function Login({
   onApple,
   onFacebook,
   onSignUp,
+  message,
 }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [pending, setPending] = useState(false);
 
+  const runAction = async (action) => {
+    if (pending) return;
+    setError('');
+    setPending(true);
+    try { await action(); }
+    catch (failure) { setError(failure.message || 'Không thể đăng nhập. Vui lòng thử lại.'); }
+    finally { setPending(false); }
+  };
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (onSubmit) {
-      onSubmit({ email, password });
-      return;
-    }
-
-    console.log('Login submitted', { email, password });
+    runAction(() => onSubmit({ email, password }));
   };
 
   return (
@@ -34,14 +41,19 @@ export default function Login({
 
         <div className="login-divider-accent" />
 
+        <div className="auth-brand"><BrandLogo /></div>
         <h1>Welcome to Wayvee</h1>
+        <p className="auth-demo-note">Chế độ test: bấm Continue để vào Profile, không cần email hoặc mật khẩu.</p>
+        {message && <p role="status" className="auth-demo-note">{message}</p>}
+        <p role="alert" className="auth-feedback">{error}</p>
 
-        <form onSubmit={handleSubmit} className="login-form">
+        <form onSubmit={handleSubmit} className="login-form" noValidate>
           <div className="field-group">
             <label htmlFor="email">Email address</label>
             <input
               id="email"
               type="email"
+              autoComplete="username"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email address"
@@ -53,14 +65,15 @@ export default function Login({
             <input
               id="password"
               type="password"
+              autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
             />
           </div>
 
-          <button type="submit" className="primary-btn">
-            Continue
+          <button type="submit" className="primary-btn" disabled={pending}>
+            {pending ? 'Đang đăng nhập…' : 'Continue'}
           </button>
         </form>
 
@@ -71,9 +84,9 @@ export default function Login({
         </div>
 
         <div className="social-list">
-          <SocialButton onClick={onGoogle} icon={<GoogleIcon />} label="Continue with Google" />
-          <SocialButton onClick={onApple} icon={<AppleIcon />} label="Continue with Apple" />
-          <SocialButton onClick={onFacebook} icon={<FacebookIcon />} label="Continue with Facebook" />
+          <SocialButton onClick={() => runAction(onGoogle)} icon={<GoogleIcon />} label="Continue with Google" />
+          <SocialButton onClick={() => runAction(onApple)} icon={<AppleIcon />} label="Continue with Apple" />
+          <SocialButton onClick={() => runAction(onFacebook)} icon={<FacebookIcon />} label="Continue with Facebook" />
         </div>
 
         <p className="signup-text">Don't have account yet</p>

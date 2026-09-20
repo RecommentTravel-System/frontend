@@ -1,7 +1,7 @@
 import { useState } from "react";
 import './Home.css';
-import logoImage from "../assets/Icon.jpg";
-import connectorImage from "../assets/connect.jpg";
+import SiteHeader from '../components/SiteHeader.jsx';
+import SiteFooter from '../components/SiteFooter.jsx';
 
 /* ------------------------------------------------------------------ */
 /* Placeholder image helper — swap these seeds for real photo URLs    */
@@ -70,11 +70,7 @@ const exploreSidebar = [
   { name: "Phú Quốc", rating: 5, seed: "phuquoc" },
 ];
 
-const footerColumns = [
-  { title: "Điều hướng", links: ["Trang chủ", "Điểm đến hot", "Blog du lịch", "Đánh giá chuyến đi", "Khám phá ngay"] },
-  { title: "Khám phá", links: ["Địa điểm nổi bật", "Quản lý chuyến đi thích", "Xu hướng du lịch", "Gợi ý theo mùa"] },
-  { title: "Hỗ trợ", links: ["Trung tâm hỗ trợ", "Trò chuyện ngay", "Góp ý phản hồi", "Liên hệ chúng tôi"] },
-];
+
 
 /* ------------------------------------------------------------------ */
 /* Small building blocks                                               */
@@ -105,41 +101,6 @@ function Star() {
 /* ------------------------------------------------------------------ */
 /* Sections                                                             */
 /* ------------------------------------------------------------------ */
-function Header({ onLogin }) {
-  return (
-    <header className="home-header max-w-6xl mx-auto flex items-center justify-between px-6 py-5">
-      <img className="home-logo" src={logoImage} alt="Wayvee" />
-      <div className="flex items-center gap-4">
-        <button aria-label="Hỗ trợ" className="home-support w-9 h-9 rounded-full border border-gray-200 flex items-center justify-center text-gray-500">
-          <svg
-            aria-hidden="true"
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M4 14a8 8 0 0 1 16 0" />
-            <path d="M4 14v3a2 2 0 0 0 2 2h1v-6H6a2 2 0 0 0-2 2Z" />
-            <path d="M20 14v3a2 2 0 0 1-2 2h-1v-6h1a2 2 0 0 1 2 2Z" />
-            <path d="M15 19a3 3 0 0 1-3 3h-1" />
-          </svg>
-        </button>
-        <button
-          type="button"
-          onClick={onLogin}
-          className="home-login-btn px-5 py-2 rounded-full bg-slate-900 text-white text-sm font-semibold"
-        >
-          Login
-        </button>
-      </div>
-    </header>
-  );
-}
-
 function Hero() {
   return (
     <section className="home-hero-wrap max-w-6xl mx-auto px-6">
@@ -199,7 +160,11 @@ function WhyUseWayvee() {
               <p className="text-sm text-gray-500 max-w-xs">{item.desc}</p>
             </div>
             {index < whyUseWayvee.length - 1 && (
-              <img className="home-why-connector" src={connectorImage} alt="" aria-hidden="true" />
+              <svg className="home-why-connector" viewBox="0 0 200 82" fill="none" aria-hidden="true" focusable="false">
+                <path d="M3 72C85 92 92-12 197 8" stroke="currentColor" strokeWidth="1.2" strokeDasharray="0.1 3" strokeLinecap="round" />
+                <circle cx="3" cy="72" r="2" fill="currentColor" />
+                <circle cx="197" cy="8" r="2" fill="currentColor" />
+              </svg>
             )}
           </div>
         ))}
@@ -355,63 +320,21 @@ function ExploreNow() {
   );
 }
 
-function Footer() {
-  return (
-    <footer className="bg-[#0B2545] text-white mt-10">
-      <div className="max-w-6xl mx-auto px-6 py-12 grid md:grid-cols-[1.4fr_1fr_1fr_1fr] gap-8">
-        <div>
-          <p className="font-extrabold text-lg mb-2">WAYVEE</p>
-          <p className="text-sm text-slate-300 max-w-xs">
-            Tạo hành trình cá nhân hóa nhanh chóng, dễ dàng và hiệu quả.
-          </p>
-        </div>
-        {footerColumns.map((col) => (
-          <div key={col.title}>
-            <p className="text-sm font-semibold mb-3">{col.title}</p>
-            <ul className="space-y-2">
-              {col.links.map((l) => (
-                <li key={l} className="text-sm text-slate-300 hover:text-white cursor-pointer">
-                  {l}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-        <div>
-          <p className="text-sm font-semibold mb-3">Liên hệ</p>
-          <p className="text-sm text-slate-300 mb-1">(+84)817293860</p>
-          <p className="text-sm text-slate-300 mb-4">wayvee@gmail.com</p>
-          <div className="flex gap-3 text-slate-300">
-            <span>◎</span>
-            <span>▣</span>
-            <span>✉</span>
-          </div>
-        </div>
-      </div>
-      <div className="border-t border-white/10">
-        <p className="max-w-6xl mx-auto px-6 py-4 text-xs text-slate-400">
-          © {new Date().getFullYear()} Wayvee. All rights reserved.
-        </p>
-      </div>
-    </footer>
-  );
-}
-
 /* ------------------------------------------------------------------ */
 /* Page                                                                 */
 /* ------------------------------------------------------------------ */
-export default function Home({ onLogin }) {
+export default function Home() {
   return (
     <div className="home-page bg-white min-h-screen font-sans">
-      <Header onLogin={onLogin} />
+      <SiteHeader />
       <Hero />
       <WhyUseWayvee />
       <TravelYourWay />
-      <HotDestinations />
-      <TravelBlog />
-      <TripReviews />
-      <ExploreNow />
-      <Footer />
+      <div id="destinations"><HotDestinations /></div>
+      <div id="travel-blog"><TravelBlog /></div>
+      <div id="trip-reviews"><TripReviews /></div>
+      <div id="explore"><ExploreNow /></div>
+      <SiteFooter />
     </div>
   );
 }

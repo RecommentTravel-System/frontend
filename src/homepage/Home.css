@@ -2,33 +2,6 @@
   color: #0b2545;
 }
 
-.home-header {
-  height: 66px;
-  padding-top: 14px;
-  padding-bottom: 14px;
-}
-
-.home-logo {
-  display: block;
-  width: 91px;
-  height: auto;
-  object-fit: contain;
-}
-
-.home-support {
-  border: 0;
-  color: #07365b;
-  font-size: 1.1rem;
-}
-
-.home-login-btn {
-  min-width: 70px;
-  padding: 0.52rem 1rem;
-  border-radius: 7px;
-  background: #062c4b;
-  font-size: 0.72rem;
-}
-
 .home-hero-wrap {
   padding-left: 22px;
   padding-right: 22px;
@@ -102,9 +75,10 @@
 }
 
 .home-why-connector {
+  color: var(--home-connector-color, #6d9fff);
   width: 200px;
   height: 82px;
-  object-fit: fill;
+  pointer-events: none;
   align-self: start;
   justify-self: center;
   margin-top: 3px;
@@ -115,6 +89,7 @@
 }
 
 .home-why-group:nth-child(1) .home-why-connector {
+  color: var(--home-connector-color, #6d9fff);
   grid-column: 2;
 }
 
@@ -123,6 +98,7 @@
 }
 
 .home-why-group:nth-child(2) .home-why-connector {
+  color: var(--home-connector-color, #6d9fff);
   grid-column: 4;
 }
 
@@ -184,6 +160,13 @@
   line-height: 1.5;
 }
 
+@media (min-width: 641px) and (max-width: 1000px) {
+  .home-why-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .home-why-group:nth-child(n) .home-why-item { grid-column: auto; padding: 0 16px; }
+  .home-why-connector { color: var(--home-connector-color, #6d9fff);
+  display: none; }
+}
+
 @media (max-width: 640px) {
   .home-hero-wrap {
     padding-left: 12px;
@@ -215,6 +198,9 @@
   }
 
   .home-why-connector {
-    display: none;
+    color: var(--home-connector-color, #6d9fff);
+  display: none;
   }
 }
+
+html[data-theme='dark'] .home-why { --home-connector-color: #91b9ff; }

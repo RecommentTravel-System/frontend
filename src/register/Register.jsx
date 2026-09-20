@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './Register.css';
+import BrandLogo from '../components/BrandLogo.jsx';
 
 export default function Register({
   onClose,
@@ -13,6 +14,17 @@ export default function Register({
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errors, setErrors] = useState({});
+  const [error, setError] = useState('');
+  const [pending, setPending] = useState(false);
+
+  const runAction = async (action) => {
+    if (pending) return;
+    setError('');
+    setPending(true);
+    try { await action(); }
+    catch (failure) { setError(failure.message || 'Không thể đăng ký. Vui lòng thử lại.'); }
+    finally { setPending(false); }
+  };
 
   const validate = () => {
     const nextErrors = {};
@@ -42,7 +54,7 @@ export default function Register({
   const handleSubmit = (event) => {
     event.preventDefault();
     if (validate()) {
-      onSubmit?.({ email, password, confirmPassword });
+      runAction(() => onSubmit({ email, password, confirmPassword }));
     }
   };
 
@@ -57,13 +69,17 @@ export default function Register({
         </div>
 
         <div className="login-divider-accent" />
+        <div className="auth-brand"><BrandLogo /></div>
         <h1>Create your account</h1>
+        <p className="auth-demo-note">Tạo tài khoản demo để trải nghiệm trên trình duyệt này.</p>
+        <p role="alert" className="auth-feedback">{error}</p>
 
         <form onSubmit={handleSubmit} className="login-form" noValidate>
           <div className="field-group">
             <label htmlFor="register-email">Email address</label>
             <input
               id="register-email"
+              autoComplete="username"
               type="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
@@ -78,6 +94,7 @@ export default function Register({
             <label htmlFor="register-password">Password</label>
             <input
               id="register-password"
+              autoComplete="new-password"
               type="password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
@@ -92,6 +109,7 @@ export default function Register({
             <label htmlFor="register-confirm-password">Confirm password</label>
             <input
               id="register-confirm-password"
+              autoComplete="new-password"
               type="password"
               value={confirmPassword}
               onChange={(event) => setConfirmPassword(event.target.value)}
@@ -104,7 +122,7 @@ export default function Register({
             )}
           </div>
 
-          <button type="submit" className="primary-btn">Create account</button>
+          <button type="submit" className="primary-btn" disabled={pending}>{pending ? 'Đang tạo tài khoản…' : 'Create account'}</button>
         </form>
 
         <div className="social-divider">
@@ -114,9 +132,9 @@ export default function Register({
         </div>
 
         <div className="social-list">
-          <SocialButton onClick={onGoogle} icon={<GoogleIcon />} label="Continue with Google" />
-          <SocialButton onClick={onApple} icon={<AppleIcon />} label="Continue with Apple" />
-          <SocialButton onClick={onFacebook} icon={<FacebookIcon />} label="Continue with Facebook" />
+          <SocialButton onClick={() => runAction(onGoogle)} icon={<GoogleIcon />} label="Continue with Google" />
+          <SocialButton onClick={() => runAction(onApple)} icon={<AppleIcon />} label="Continue with Apple" />
+          <SocialButton onClick={() => runAction(onFacebook)} icon={<FacebookIcon />} label="Continue with Facebook" />
         </div>
 
         <p className="signup-text">Already have an account?</p>

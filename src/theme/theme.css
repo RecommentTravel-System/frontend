@@ -1,0 +1,38 @@
+:root { color-scheme: light; --theme-page: #f8f9fb; --theme-panel: #fff; --theme-text: #536175; --theme-muted: #8392a5; --theme-border: #d9e1ea; }
+:root[data-theme='dark'] { color-scheme: dark; --theme-page: #101722; --theme-panel: #1b2533; --theme-text: #dce5f0; --theme-muted: #a9b8ca; --theme-border: #394a60; background: var(--theme-page); color: var(--theme-text); }
+.theme-toggle { display: inline-grid; place-items: center; width: 36px; height: 36px; padding: 7px; border: 1px solid var(--theme-border); border-radius: 50%; background: var(--theme-panel); color: var(--theme-text); cursor: pointer; }
+.theme-toggle:focus-visible { outline: 2px solid #4aa6d6; outline-offset: 3px; }
+.theme-toggle-floating { position: fixed; top: 20px; right: 20px; z-index: 10; }
+html[data-theme='dark'] body { background: var(--theme-page); color: var(--theme-text); }
+html[data-theme='dark'] :is(.home-page, .profile-page, .payment-page, .itineraries-page, .favorites-page, .reviews-page, .login-page) { background: var(--theme-page); color: var(--theme-text); }
+html[data-theme='dark'] :is(.site-header, .account-sidebar, .profile-summary, .profile-form, .avatar-editor, .payment-content, .trips-panel, .trip-summary, .trip-details-panel, .favorites-panel, .favorite-place, .review-card, .reviews-empty, .login-card, .checkout-dialog, .payment-checkout, .favorites-editor, .review-editor, .review-menu > div) { background: var(--theme-panel); color: var(--theme-text); border-color: var(--theme-border); }
+html[data-theme='dark'] :is(.home-page, .profile-page, .payment-page, .itineraries-page, .favorites-page, .reviews-page, .login-page) :is(h1, h2, h3, label, dt, dd) { color: var(--theme-text); }
+html[data-theme='dark'] :is(.profile-page, .payment-page, .itineraries-page, .favorites-page, .reviews-page, .login-page) :is(input:not([type='checkbox']), select, textarea) { background: #121c29; color: var(--theme-text); border-color: var(--theme-border); }
+html[data-theme='dark'] input::placeholder, html[data-theme='dark'] textarea::placeholder { color: #96a7bc; }
+html[data-theme='dark'] :is(.profile-summary p, .avatar-editor p, .account-identity small, .payment-intro p, .payment-welcome p, .payment-plans-heading p, .payment-plan-details > span, .payment-plan-caption, .trips-heading p, .trips-empty p, .trip-summary-title p, .trip-overview p, .favorites-heading p, .favorites-empty p, .favorite-place-note, .reviews-empty p, .auth-demo-note, .review-editor-note, .checkout-status p, .checkout-product-name p, .checkout-package-row dt span, .trip-metadata dd, .trip-date > span, .trip-duration > span:not(.trip-badge)) { color: var(--theme-muted); }
+html[data-theme='dark'] :is(.account-identity strong, .trip-date strong, .trip-duration strong, .checkout-card p, .checkout-card div > span, .payment-plan-price, .signup-text) { color: var(--theme-text); }
+html[data-theme='dark'] :is(.site-profile-link, .site-support, .profile-edit, .link-btn, .favorites-text-button, .trip-detail-link, .review-body h2 a, .favorite-place-info > a, .avatar-editor-actions button, .payment-discount-action button) { color: #9ccced; }
+html[data-theme='dark'] :is(.account-sidebar .account-nav-item.is-active, .account-sidebar .account-nav-item:hover, .account-subnav a.is-active) { background: #273e59; color: #baddf7; }
+html[data-theme='dark'] .account-subnav a { color: #a9bbd0; }
+html[data-theme='dark'] .account-subnav a.is-active { border-left-color: #9acced; }
+html[data-theme='dark'] :is(.account-identity, .account-subnav, .account-sidebar .account-settings, .payment-intro, .trip-row, .trip-overview, .trip-destinations, .checkout-pricing > div, .checkout-method, .review-helpful, .favorite-place, .favorites-place-option) { border-color: var(--theme-border); }
+html[data-theme='dark'] :is(.profile-form-actions button, .favorites-outline-button, .trip-export, .trips-explore, .social-btn, .favorites-editor-actions button, .review-editor-actions button, .review-menu button) { background: #253448; border-color: #546c85; color: var(--theme-text); }
+html[data-theme='dark'] :is(.profile-form-actions button:hover, .favorites-outline-button:hover, .trip-export:hover, .social-btn:hover, .review-menu button:hover) { background: #344862; }
+html[data-theme='dark'] :is(.payment-plan, .review-response) { background: #243449; color: var(--theme-text); border-color: #3c536c; }
+html[data-theme='dark'] .payment-plan { box-shadow: inset 3px 3px 7px #0004; }
+html[data-theme='dark'] .payment-plan h3 { border-color: #49627c; }
+html[data-theme='dark'] .payment-section-divider { background: var(--theme-border); }
+html[data-theme='dark'] :is(.favorite-photo-fallback, .trip-image, .review-photo) { background: #283c51; }
+html[data-theme='dark'] :is(.trips-demo-note, .favorites-demo-note, .reviews-demo-note, .review-body time, .review-helpful, .review-rating, .checkout-offer, .checkout-pricing dd, .checkout-method h3) { color: #b2c2d6; }
+html[data-theme='dark'] :is(.profile-notice, .payment-notice, .favorites-notice, .reviews-notice, .trips-notice) { color: #9bceef; }
+html[data-theme='dark'] :is(.payment-feedback, .checkout-status p[role='status']) { color: #e3c398; }
+html[data-theme='dark'] :is(.auth-feedback, .field-error, .favorites-error, .review-editor-error) { color: #ffafb7; }
+html[data-theme='dark'] .home-page :is(.bg-white, .bg-gray-50, .bg-sky-50) { background-color: var(--theme-panel); }
+html[data-theme='dark'] .home-page :is(.text-slate-900, .text-gray-700) { color: var(--theme-text); }
+html[data-theme='dark'] .home-page :is(.text-gray-500, .text-gray-600, .text-xs.text-slate-300) { color: var(--theme-muted); }
+html[data-theme='dark'] .home-page :is(.border-gray-200, .border-gray-100) { border-color: var(--theme-border); }
+html[data-theme='dark'] .home-page input { color: var(--theme-text); }
+html[data-theme='dark'] .home-why-icon { background: #263c58; }
+html[data-theme='dark'] .site-brand, html[data-theme='dark'] .checkout-logo { background: white; }
+html[data-theme='dark'] .site-footer { background: #081120; }
+@media print { html[data-theme='dark'], html[data-theme='dark'] body { color-scheme: light; background: white; color: black; } html[data-theme='dark'] .itineraries-page, html[data-theme='dark'] .itineraries-page :is(.trip-summary, .trip-details-panel, h1, h2, h3, p, span, strong, b) { background: white; color: #222; } .theme-toggle { display: none; } }
