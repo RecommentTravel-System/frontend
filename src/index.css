@@ -22,10 +22,19 @@ html, body, #root {
   min-width: 320px;
 }
 
+html {
+  overflow-x: hidden;
+}
+
 body {
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 button, input {
   font: inherit;
+}
+
+button {
+  cursor: pointer;
 }

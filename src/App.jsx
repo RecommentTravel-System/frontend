@@ -1,80 +1,28 @@
-import { useState } from 'react';
-import Login from './login/Login.jsx';
-import Register from './register/Register.jsx';
-import Home from './homepage/Home.jsx';
-import Payment from './payment/Payment.jsx';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AppProviders } from "~/providers/app-providers";
+import HomeRoute from "~/routes/home";
+import TripInfoRoute from "~/routes/trip-info";
+import TripCreateRoute from "~/routes/trip-create";
+import TripConfirmRoute from "~/routes/trip-confirm";
+import TripSuccessRoute from "~/routes/trip-success";
+import PlacesRoute from "~/routes/places";
+import PaymentRoute from "~/routes/payment";
 
 export default function App() {
-  const [screen, setScreen] = useState('home');
-
-  const handleSubmit = (values) => {
-    console.log(
-      `${screen === 'login' ? 'Login' : 'Register'} form submitted:`,
-      values
-    );
-    setScreen('home');
-  };
-
-  // PAYMENT
-  if (screen === 'payment') {
-    return (
-      <Payment
-        onBack={() => setScreen('home')}
-      />
-    );
-  }
-
-  // HOME
-  if (screen === 'home') {
-    return (
-      <div>
-        <Home onLogin={() => setScreen('login')} />
-
-        <button
-          onClick={() => setScreen('payment')}
-          style={{
-            position: 'fixed',
-            bottom: '30px',
-            right: '30px',
-            padding: '14px 24px',
-            borderRadius: '10px',
-            border: 'none',
-            background: '#111827',
-            color: 'white',
-            cursor: 'pointer',
-            fontWeight: '600',
-            fontSize: '15px',
-          }}
-        >
-          WAYVEE Premium
-        </button>
-      </div>
-    );
-  }
-
-  // REGISTER
-  if (screen === 'register') {
-    return (
-      <Register
-        onClose={() => setScreen('login')}
-        onSubmit={handleSubmit}
-        onGoogle={() => setScreen('home')}
-        onApple={() => setScreen('home')}
-        onFacebook={() => setScreen('home')}
-        onLogin={() => setScreen('login')}
-      />
-    );
-  }
-
-  // LOGIN
   return (
-    <Login
-      onClose={() => console.log('Close login modal')}
-      onSubmit={handleSubmit}
-      onGoogle={() => setScreen('home')}
-      onApple={() => setScreen('home')}
-      onFacebook={() => setScreen('home')}
-      onSignUp={() => setScreen('register')}
-    />
+    <AppProviders>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<HomeRoute />} />
+          <Route path="/places" element={<PlacesRoute />} />
+          <Route path="/trip/info" element={<TripInfoRoute />} />
+          <Route path="/trip/create" element={<TripCreateRoute />} />
+          <Route path="/trip/confirm" element={<TripConfirmRoute />} />
+          <Route path="/trip/success" element={<TripSuccessRoute />} />
+          <Route path="/payment" element={<PaymentRoute />} />
+        </Routes>
+      </BrowserRouter>
+    </AppProviders>
   );
 }
+
