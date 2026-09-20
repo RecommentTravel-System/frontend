@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "~/providers/i18n-provider";
-import { AppHeader } from "~/shared/components";
+import { AppHeader, NumericInput } from "~/shared/components";
 import { LoginCard, RegisterCard } from "~/features/auth";
+import "../styles/itinerary-ui.css";
 
 export function TripConfirmPage() {
   const { t } = useTranslation();
@@ -50,12 +51,15 @@ export function TripConfirmPage() {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-slate-200 relative">
+    <div className="itinerary-step-page trip-confirm-page bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-slate-200 relative">
       {/* AppHeader identical to homepage */}
-      <AppHeader onLogin={() => setAuthModal("login")} />
+      <AppHeader
+        onLogin={() => setAuthModal("login")}
+        onRegister={() => setAuthModal("register")}
+      />
 
       {/* BEGIN: StepperSection */}
-      <section aria-label="Quy trình từng bước" className="w-full pt-6 pb-4">
+      <section aria-label="Quy trình từng bước" className="wizard-stepper w-full pt-6 pb-4">
         <div className="max-w-2xl mx-auto px-4">
           <div className="relative flex items-center justify-between">
             {/* Connecting Line Background */}
@@ -96,7 +100,7 @@ export function TripConfirmPage() {
       {/* END: StepperSection */}
 
       {/* BEGIN: MainContent */}
-      <main className="flex-grow w-full max-w-4xl mx-auto px-6 lg:px-8 py-6 space-y-6" data-purpose="page-main-content">
+      <main className="wizard-main flex-grow w-full max-w-4xl mx-auto px-6 lg:px-8 py-6 space-y-6" data-purpose="page-main-content">
         <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
           {t("tripConfirm.tripSummary.title")}
         </h1>
@@ -205,10 +209,9 @@ export function TripConfirmPage() {
                 {t("tripConfirm.tripSummary.passengerLabel")}
               </span>
               {isEditingPassengers ? (
-                <input
-                  type="text"
+                <NumericInput
                   value={passengerCount}
-                  onChange={(e) => setPassengerCount(e.target.value)}
+                  onChange={(val) => setPassengerCount(val)}
                   onBlur={() => setIsEditingPassengers(false)}
                   autoFocus
                   className="text-xs text-slate-800 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded px-2 py-0.5 mt-0.5 outline-none"

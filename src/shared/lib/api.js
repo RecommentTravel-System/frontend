@@ -4,9 +4,10 @@ export async function request(endpoint, options = {}) {
   const url = `${BASE_URL}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
 
   const token = localStorage.getItem("wayvee_token");
+  const isFormData = typeof FormData !== "undefined" && options.body instanceof FormData;
 
   const headers = {
-    "Content-Type": "application/json",
+    ...(isFormData ? {} : { "Content-Type": "application/json" }),
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...options.headers
   };
@@ -17,7 +18,14 @@ export async function request(endpoint, options = {}) {
   };
 
   try {
-    const response = await fetch(url, config);
+    const response = await fetch(url, {
+      ...config,
+      body: isFormData || typeof options.body === "string"
+        ? options.body
+        : options.body == null
+          ? undefined
+          : JSON.stringify(options.body)
+    });
     const result = await response.json();
 
     if (!response.ok || (result.code && result.code !== 1000 && result.code !== 200)) {
@@ -41,7 +49,7 @@ export async function request(endpoint, options = {}) {
 export const api = {
   get: (endpoint, headers) => request(endpoint, { method: "GET", headers }),
   post: (endpoint, body, headers) =>
-    request(endpoint, { method: "POST", body: JSON.stringify(body), headers }),
+    request(endpoint, { method: "POST", body, headers }),
   put: (endpoint, body, headers) =>
     request(endpoint, { method: "PUT", body: JSON.stringify(body), headers }),
   delete: (endpoint, headers) => request(endpoint, { method: "DELETE", headers })

@@ -150,6 +150,8 @@
     },
     "selectedPlaces": {
       "title": "Selected Places",
+      "emptyTitle": "No places selected yet",
+      "emptyDesc": "Click \"Add Place\" below to select nearby places!",
       "addPlaceButton": "Add Place",
       "excellent": "Excellent",
       "reviews": "reviews"

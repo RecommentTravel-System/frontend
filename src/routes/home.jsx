@@ -11,13 +11,16 @@ export default function HomeRoute() {
   const [authModal, setAuthModal] = useState(null); // null | "login" | "register"
   const navigate = useNavigate();
 
-  const handlePlannerSubmit = () => {
-    navigate("/trip/info");
+  const handlePlannerSubmit = (plannerData) => {
+    navigate("/trip/info", { state: plannerData });
   };
 
   return (
     <div className="bg-background min-h-screen text-foreground transition-colors duration-200">
-      <AppHeader onLogin={() => setAuthModal("login")} />
+      <AppHeader
+        onLogin={() => setAuthModal("login")}
+        onRegister={() => setAuthModal("register")}
+      />
 
       <main className="space-y-6">
         <HeroPlanner onPlannerSubmit={handlePlannerSubmit} />

@@ -82,7 +82,7 @@ export function usePlacesFilter(initialValues = {}) {
   // Count active pending filters for badge display
   const pendingFilterCount = useMemo(() => {
     let count = 0;
-    if (pendingFilters.category && pendingFilters.category !== "ALL") count++;
+    if (pendingFilters.category) count++;
     if (pendingFilters.distanceKm !== COMMON_FILTER_DEFAULTS.distanceKm) count++;
     if (pendingFilters.minRating != null) count++;
     if (pendingFilters.priceLevel != null) count++;
@@ -94,7 +94,7 @@ export function usePlacesFilter(initialValues = {}) {
 
   // Current category config based on pendingFilters
   const currentCategoryConfig = useMemo(() => {
-    return CATEGORY_FILTER_CONFIGS[pendingFilters.category] || CATEGORY_FILTER_CONFIGS.ALL;
+    return CATEGORY_FILTER_CONFIGS[pendingFilters.category] || CATEGORY_FILTER_CONFIGS.RESTAURANT;
   }, [pendingFilters.category]);
 
   /**
@@ -107,14 +107,14 @@ export function usePlacesFilter(initialValues = {}) {
       const radiusMeters = Math.min(10000, Math.max(500, Math.round(appliedFilters.distanceKm * 1000)));
 
       let categories = [];
-      if (appliedFilters.category && appliedFilters.category !== "ALL") {
+      if (appliedFilters.category) {
         const backendCat = CATEGORY_FILTER_CONFIGS[appliedFilters.category]?.backendCategory;
         if (backendCat) {
           categories = [backendCat];
         }
       }
 
-      const categoryConfig = CATEGORY_FILTER_CONFIGS[appliedFilters.category] || CATEGORY_FILTER_CONFIGS.ALL;
+      const categoryConfig = CATEGORY_FILTER_CONFIGS[appliedFilters.category] || CATEGORY_FILTER_CONFIGS.RESTAURANT;
       const availablePrefs = categoryConfig.preferences || [];
       const selectedPrefObjects = availablePrefs.filter((p) =>
         appliedFilters.selectedPreferences.includes(p.id)

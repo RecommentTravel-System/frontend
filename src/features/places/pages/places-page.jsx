@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "~/providers/i18n-provider";
 import { AppHeader } from "~/shared/components";
 import { AppFooter } from "~/shared/components";
+import { LoginCard, RegisterCard } from "~/features/auth";
 import { FilterPanel } from "../components/filters/filter-panel";
 import { PlaceCard } from "../components/listing/place-card";
 import { usePlacesFilter } from "../hooks/use-places-filter";
@@ -46,8 +47,14 @@ export function PlacesPage() {
 
   // Data fetching state
   const [places, setPlaces] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [totalElements, setTotalElements] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const ITEMS_PER_PAGE = 6;
+  const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
   const [showMapModal, setShowMapModal] = useState(false);
+  const [authModal, setAuthModal] = useState(null);
 
   // Selected places to add to trip itinerary
   const [selectedPlaceIds, setSelectedPlaceIds] = useState(() => {
@@ -60,17 +67,39 @@ export function PlacesPage() {
     return map;
   });
 
-  // Fetch real data when appliedFilters changes
+  const handleApplyFilters = () => {
+    applyFilters();
+    setCurrentPage(1);
+    setHasSearched(true);
+  };
+
+  const handleResetFilters = () => {
+    resetFilters();
+    setHasSearched(false);
+    setPlaces([]);
+    setTotalElements(0);
+    setTotalPages(1);
+    setCurrentPage(1);
+  };
+
+  // Fetch real data ONLY when user has confirmed filters by clicking "Áp dụng bộ lọc"
   useEffect(() => {
+    if (!hasSearched) return;
     let isMounted = true;
 
     async function loadPlaces() {
       setLoading(true);
       try {
-        const payload = toBackendPayload(coordinates);
+        const payload = {
+          ...toBackendPayload(coordinates),
+          page: currentPage - 1,
+          size: ITEMS_PER_PAGE
+        };
         const data = await searchNearbyPlaces(payload);
         if (isMounted) {
-          setPlaces(data || []);
+          setPlaces(data?.content || []);
+          setTotalElements(data?.totalElements || 0);
+          setTotalPages(Math.max(1, data?.totalPages || 0));
         }
       } catch (err) {
         console.error("Error fetching places:", err);
@@ -89,19 +118,11 @@ export function PlacesPage() {
     return () => {
       isMounted = false;
     };
-  }, [toBackendPayload, coordinates]);
+  }, [hasSearched, appliedFilters, toBackendPayload, coordinates, currentPage]);
 
-  // Client-side sorting and rating filtering if needed
+  // Keep the current page compact; filtering and pagination are handled by BE.
   const filteredPlaces = useMemo(() => {
     let result = [...places];
-
-    if (appliedFilters.minRating) {
-      result = result.filter((p) => (p.rating || 4.5) >= appliedFilters.minRating);
-    }
-
-    if (appliedFilters.priceLevel) {
-      result = result.filter((p) => (p.priceLevel || "$$") === appliedFilters.priceLevel);
-    }
 
     if (sortBy === "rating") {
       result.sort((a, b) => (b.rating || 4.5) - (a.rating || 4.5));
@@ -112,7 +133,19 @@ export function PlacesPage() {
     }
 
     return result;
-  }, [places, appliedFilters.minRating, appliedFilters.priceLevel, sortBy]);
+  }, [places, sortBy]);
+
+  // --- Server pagination ---
+  const paginatedPlaces = filteredPlaces;
+
+  const visiblePages = Array.from({ length: Math.min(3, totalPages) }, (_, index) => index + 1);
+
+  const handlePageChange = (page) => {
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
+    // Scroll to top of listing section
+    window.scrollTo({ top: 300, behavior: "smooth" });
+  };
 
   // Handle adding place to trip
   const handleToggleAddPlace = (place) => {
@@ -130,10 +163,10 @@ export function PlacesPage() {
         osmId: place.osmId,
         name: place.name,
         location: place.address || `${destination}`,
-        rating: Math.round(place.rating || 5),
-        score: (place.rating || 4.8).toFixed(1),
-        reviewCount: `${place.reviewCount || 350}`,
-        image: place.imageUrl || "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=400&q=80"
+        rating: place.rating,
+        score: place.rating?.toFixed(1),
+        reviewCount: place.reviewCount,
+        image: place.imageUrl || null
       });
     }
 
@@ -155,7 +188,10 @@ export function PlacesPage() {
   return (
     <div className="bg-[#f8fafc] dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans min-h-screen flex flex-col antialiased">
       {/* App Header */}
-      <AppHeader />
+      <AppHeader
+        onLogin={() => setAuthModal("login")}
+        onRegister={() => setAuthModal("register")}
+      />
 
       {/* Main Container */}
       <main className="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
@@ -175,7 +211,7 @@ export function PlacesPage() {
               {t("places.header.title", { destination }) || `Khám phá địa điểm "${destination}"`}
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-              {filteredPlaces.length}+ {t("places.header.countFound") || "địa điểm được tìm thấy phù hợp"}
+              {totalElements} {t("places.header.countFound") || "địa điểm được tìm thấy phù hợp"}
             </p>
           </div>
 
@@ -249,11 +285,7 @@ export function PlacesPage() {
           <aside className="lg:col-span-4 space-y-5">
             {/* Map Preview Widget (Matching Screenshots) */}
             <div className="relative rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-xs h-36 bg-slate-200 dark:bg-slate-800 flex items-center justify-center">
-              <img
-                src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=600&q=80"
-                alt="Bản đồ địa điểm"
-                className="w-full h-full object-cover opacity-70"
-              />
+              <div className="absolute inset-0 bg-slate-100 dark:bg-slate-800" />
               <button
                 type="button"
                 onClick={() => setShowMapModal(true)}
@@ -276,8 +308,8 @@ export function PlacesPage() {
               onSelectRating={setMinRating}
               onSelectPrice={setPriceLevel}
               onTogglePreference={togglePreference}
-              onApplyFilters={applyFilters}
-              onResetFilters={resetFilters}
+              onApplyFilters={handleApplyFilters}
+              onResetFilters={handleResetFilters}
               isLoading={loading}
             />
           </aside>
@@ -300,8 +332,25 @@ export function PlacesPage() {
               </div>
             )}
 
-            {/* Empty State */}
-            {!loading && filteredPlaces.length === 0 && (
+            {/* Initial State Prompt: Before User Clicks "Áp dụng bộ lọc" */}
+            {!hasSearched && !loading && (
+              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-10 text-center space-y-4 shadow-xs">
+                <div className="w-14 h-14 rounded-full bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 mx-auto flex items-center justify-center text-2xl font-bold">
+                  🎯
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-base font-bold text-slate-800 dark:text-white">
+                    Vui lòng chọn tiêu chí lọc & Bấm xác nhận
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
+                    Hãy chọn loại địa điểm (Quán ăn, Quán cà phê, Khu vui chơi...) và tùy chỉnh khoảng cách ở cột bên trái, sau đó nhấn nút <strong className="text-slate-800 dark:text-slate-200">"Áp dụng bộ lọc"</strong> để tìm kiếm dữ liệu thực từ Overpass API!
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Empty State: After Search with 0 Results */}
+            {hasSearched && !loading && totalElements === 0 && (
               <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-10 text-center space-y-3 shadow-xs">
                 <div className="w-12 h-12 rounded-full bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 mx-auto flex items-center justify-center text-xl font-bold">
                   📍
@@ -310,11 +359,11 @@ export function PlacesPage() {
                   {t("places.empty.title") || "Không tìm thấy địa điểm phù hợp"}
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto">
-                  {t("places.empty.desc") || "Hãy thử mở rộng bán kính khoảng cách hoặc xóa bớt tiêu chí lọc để khám phá thêm nhiều địa điểm thú vị nhé."}
+                  {t("places.empty.desc") || "Hãy thử mở rộng bán kính khoảng cách hoặc chọn loại địa điểm khác để khám phá thêm nhiều địa điểm thú vị nhé."}
                 </p>
                 <button
                   type="button"
-                  onClick={resetFilters}
+                  onClick={handleResetFilters}
                   className="px-4 py-2 bg-[#0b2545] text-white text-xs font-semibold rounded-xl hover:bg-[#102f58] transition-colors cursor-pointer mt-2"
                 >
                   {t("places.filter.clearAll") || "Đặt lại bộ lọc"}
@@ -322,12 +371,12 @@ export function PlacesPage() {
               </div>
             )}
 
-            {/* Places Render in List or Grid Mode */}
-            {!loading && filteredPlaces.length > 0 && (
+            {/* Places Render in List or Grid Mode — Paginated */}
+            {!loading && paginatedPlaces.length > 0 && (
               <>
                 {viewMode === "list" ? (
                   <div className="space-y-4">
-                    {filteredPlaces.map((place) => {
+                    {paginatedPlaces.map((place) => {
                       const placeId = place.osmId || place.id;
                       const isAdded = selectedPlaceIds.has(placeId);
                       return (
@@ -343,7 +392,7 @@ export function PlacesPage() {
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                    {filteredPlaces.map((place) => {
+                    {paginatedPlaces.map((place) => {
                       const placeId = place.osmId || place.id;
                       const isAdded = selectedPlaceIds.has(placeId);
                       return (
@@ -359,34 +408,57 @@ export function PlacesPage() {
                   </div>
                 )}
 
-                {/* Pagination Matching Screenshots */}
-                <div className="flex justify-center items-center space-x-1.5 pt-6 pb-2">
-                  <button
-                    type="button"
-                    className="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-800 flex items-center justify-center text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
-                  >
-                    ‹
-                  </button>
-                  {[1, 2, 3, 4, 5].map((page) => (
+                {/* Page Info */}
+                <p className="text-center text-[11px] text-slate-400 dark:text-slate-500">
+                  Trang {currentPage} / {totalPages} — Hiển thị {paginatedPlaces.length} / {totalElements} địa điểm
+                </p>
+
+                {/* Pagination Controls */}
+                {totalPages > 1 && (
+                  <div className="flex justify-center items-center space-x-1.5 pt-2 pb-2">
+                    {/* Previous */}
                     <button
-                      key={page}
                       type="button"
-                      className={`w-8 h-8 rounded-lg text-xs font-semibold transition-colors ${
-                        page === 1
-                          ? "bg-[#0b2545] dark:bg-sky-500 text-white dark:text-slate-950 font-bold"
-                          : "border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
-                      }`}
+                      disabled={currentPage === 1}
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      className="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-800 flex items-center justify-center text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                     >
-                      {page}
+                      ‹
                     </button>
-                  ))}
-                  <button
-                    type="button"
-                    className="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-800 flex items-center justify-center text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
-                  >
-                    ›
-                  </button>
-                </div>
+
+                    {/* Page Numbers */}
+                    {visiblePages.map((page) => (
+                      <button
+                        key={page}
+                        type="button"
+                        onClick={() => handlePageChange(page)}
+                        className={`w-8 h-8 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                          page === currentPage
+                            ? "bg-[#0b2545] dark:bg-sky-500 text-white dark:text-slate-950 font-bold"
+                            : "border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    ))}
+
+                    {totalPages > 3 && (
+                      <span className="w-8 h-8 flex items-center justify-center text-xs text-slate-500 dark:text-slate-400">
+                        ...
+                      </span>
+                    )}
+
+                    {/* Next */}
+                    <button
+                      type="button"
+                      disabled={currentPage === totalPages}
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      className="w-8 h-8 rounded-lg border border-slate-200 dark:border-slate-800 flex items-center justify-center text-xs text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                    >
+                      ›
+                    </button>
+                  </div>
+                )}
               </>
             )}
           </section>
@@ -464,6 +536,23 @@ export function PlacesPage() {
 
       {/* Footer */}
       <AppFooter />
+
+      {/* Auth Modals */}
+      {authModal === "login" && (
+        <LoginCard
+          onClose={() => setAuthModal(null)}
+          onSubmit={() => setAuthModal(null)}
+          onSignUp={() => setAuthModal("register")}
+        />
+      )}
+
+      {authModal === "register" && (
+        <RegisterCard
+          onClose={() => setAuthModal(null)}
+          onSubmit={() => setAuthModal(null)}
+          onLogin={() => setAuthModal("login")}
+        />
+      )}
     </div>
   );
 }

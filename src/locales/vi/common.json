@@ -150,6 +150,8 @@
     },
     "selectedPlaces": {
       "title": "Danh sách địa điểm đã chọn",
+      "emptyTitle": "Chưa có địa điểm nào",
+      "emptyDesc": "Bấm nút \"Thêm địa điểm\" bên dưới để chọn địa điểm xung quanh!",
       "addPlaceButton": "Thêm địa điểm",
       "excellent": "Xuất sắc",
       "reviews": "đánh giá"

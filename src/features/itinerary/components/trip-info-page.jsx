@@ -1,23 +1,38 @@
 import { useState } from "react";
 import { useTranslation } from "~/providers/i18n-provider";
-import { useNavigate } from "react-router-dom";
-import { AppHeader } from "~/shared/components";
+import { useNavigate, useLocation } from "react-router-dom";
+import { AppHeader, NumericInput } from "~/shared/components";
 import { LoginCard, RegisterCard } from "~/features/auth";
 import { LocationMapModal } from "./location-map-modal";
 import { api } from "~/shared/lib/api";
+import "../styles/itinerary-ui.css";
 
 export function TripInfoPage({ initialData }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
+  const locationState = location.state || {};
 
   const [authModal, setAuthModal] = useState(null);
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
-  const [tripName, setTripName] = useState(initialData?.tripName || t("tripInfo.tripSummary.defaultName") || "Chuyến đi A");
-  const [tripDates, setTripDates] = useState(initialData?.tripDates || t("tripInfo.tripSummary.defaultDates") || "14 - 19 Thg 8");
-  const [destination, setDestination] = useState(initialData?.destination || "");
-  const [companions, setCompanions] = useState(initialData?.companions || "");
-  const [passengerCount, setPassengerCount] = useState(initialData?.passengerCount || "");
-  const [travelStyle, setTravelStyle] = useState(initialData?.travelStyle || "");
+  const [tripName, setTripName] = useState(
+    initialData?.tripName || locationState.tripName || t("tripInfo.tripSummary.defaultName") || "Chuyến đi A"
+  );
+  const [tripDates, setTripDates] = useState(
+    initialData?.tripDates || locationState.tripDates || t("tripInfo.tripSummary.defaultDates") || "16/07/2025 - 24/07/2025"
+  );
+  const [destination, setDestination] = useState(
+    initialData?.destination || locationState.destination || ""
+  );
+  const [companions, setCompanions] = useState(
+    initialData?.companions || locationState.companions || ""
+  );
+  const [passengerCount, setPassengerCount] = useState(
+    initialData?.passengerCount || locationState.passengerCount || ""
+  );
+  const [travelStyle, setTravelStyle] = useState(
+    initialData?.travelStyle || locationState.travelStyle || ""
+  );
 
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingDates, setIsEditingDates] = useState(false);
@@ -94,12 +109,15 @@ export function TripInfoPage({ initialData }) {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-slate-200">
+    <div className="itinerary-step-page trip-info-page bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-slate-200">
       {/* AppHeader matching Homepage */}
-      <AppHeader onLogin={() => setAuthModal("login")} />
+      <AppHeader
+        onLogin={() => setAuthModal("login")}
+        onRegister={() => setAuthModal("register")}
+      />
 
       {/* BEGIN: StepperSection */}
-      <section aria-label="Quy trình từng bước" className="w-full pt-6 pb-4">
+      <section aria-label="Quy trình từng bước" className="wizard-stepper trip-stepper w-full pt-6 pb-4">
         <div className="max-w-2xl mx-auto px-4">
           <div className="relative flex items-center justify-between">
             {/* Connecting Line Background */}
@@ -142,10 +160,10 @@ export function TripInfoPage({ initialData }) {
       {/* END: StepperSection */}
 
       {/* BEGIN: MainContent */}
-      <main className="flex-grow w-full max-w-7xl mx-auto px-6 lg:px-12 py-6" data-purpose="booking-form-wizard">
+      <main className="trip-info-main flex-grow w-full max-w-7xl mx-auto px-6 lg:px-12 py-6" data-purpose="booking-form-wizard">
         <form className="space-y-6 max-w-3xl mx-auto" onSubmit={handleSubmit}>
           {/* BEGIN: TripSummarySection */}
-          <section className="space-y-4" data-purpose="trip-summary-details">
+          <section className="trip-summary space-y-4" data-purpose="trip-summary-details">
             <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
               {t("tripInfo.tripSummary.title")}
             </h1>
@@ -220,7 +238,7 @@ export function TripInfoPage({ initialData }) {
           {/* END: TripSummarySection */}
 
           {/* BEGIN: DestinationDetailsSection */}
-          <section className="space-y-4 pt-1" data-purpose="destination-inputs">
+          <section className="trip-destination-details space-y-4 pt-1" data-purpose="destination-inputs">
             <h2 className="text-lg font-bold text-slate-900 dark:text-white">
               {t("tripInfo.destinationDetails.title")}
             </h2>
@@ -309,19 +327,19 @@ export function TripInfoPage({ initialData }) {
                 <label className="block text-xs font-bold text-slate-800 dark:text-slate-300" htmlFor="passengerCount">
                   {t("tripInfo.destinationDetails.passengerCountLabel")} <span className="text-rose-500">*</span>
                 </label>
-                <input
+                <NumericInput
                   className={`w-full px-3.5 py-2.5 text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 bg-white dark:bg-slate-900 border rounded-xl outline-none transition-colors shadow-[0_1px_2px_rgba(0,0,0,0.02)] ${errors.passengerCount
                       ? "border-rose-500 focus:border-rose-600 dark:border-rose-500"
                       : "border-slate-200 dark:border-slate-800 focus:border-[#002d54] dark:focus:border-sky-500"
                     }`}
                   id="passengerCount"
                   placeholder={t("tripInfo.destinationDetails.passengerCountPlaceholder")}
-                  type="text"
                   value={passengerCount}
-                  onChange={(e) => {
-                    setPassengerCount(e.target.value);
+                  onChange={(val) => {
+                    setPassengerCount(val);
                     clearError("passengerCount");
                   }}
+                  showSteppers={true}
                 />
                 {errors.passengerCount && (
                   <p className="text-[11px] text-rose-500 font-medium">{errors.passengerCount}</p>

@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "~/providers/i18n-provider";
-import { AppHeader } from "~/shared/components";
+import { AppHeader, NumericInput } from "~/shared/components";
 import { LoginCard, RegisterCard } from "~/features/auth";
+import "../styles/itinerary-ui.css";
 
 export function TripCreatePage() {
   const { t } = useTranslation();
@@ -68,12 +69,15 @@ export function TripCreatePage() {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-slate-200">
+    <div className="itinerary-step-page trip-create-page bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-slate-200">
       {/* AppHeader identical to homepage */}
-      <AppHeader onLogin={() => setAuthModal("login")} />
+      <AppHeader
+        onLogin={() => setAuthModal("login")}
+        onRegister={() => setAuthModal("register")}
+      />
 
       {/* BEGIN: StepperSection */}
-      <section aria-label="Quy trình từng bước" className="w-full pt-6 pb-4">
+      <section aria-label="Quy trình từng bước" className="wizard-stepper w-full pt-6 pb-4">
         <div className="max-w-2xl mx-auto px-4">
           <div className="relative flex items-center justify-between">
             {/* Connecting Line Background */}
@@ -116,7 +120,7 @@ export function TripCreatePage() {
       {/* END: StepperSection */}
 
       {/* BEGIN: MainContent */}
-      <main className="flex-grow w-full max-w-7xl mx-auto px-6 lg:px-12 py-6" data-purpose="page-main-content">
+      <main className="wizard-main flex-grow w-full max-w-7xl mx-auto px-6 lg:px-12 py-6" data-purpose="page-main-content">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
           {/* Left Column: Form & Trip Details (7 cols) */}
           <section aria-labelledby="trip-info-heading" className="lg:col-span-7 space-y-6">
@@ -235,14 +239,14 @@ export function TripCreatePage() {
                     <label className="block text-xs font-bold text-slate-800 dark:text-slate-300" htmlFor="guest-count">
                       {t("tripCreate.locationDetails.passengerCountLabel")}
                     </label>
-                    <input
+                    <NumericInput
                       className="w-full px-3.5 py-2.5 text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl outline-none focus:border-[#002d54] dark:focus:border-sky-500 transition-colors shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
                       id="guest-count"
                       name="guest-count"
                       placeholder={t("tripCreate.locationDetails.passengerCountPlaceholder")}
-                      type="text"
                       value={passengerCount}
-                      onChange={(e) => setPassengerCount(e.target.value)}
+                      onChange={(val) => setPassengerCount(val)}
+                      showSteppers={true}
                     />
                   </div>
                 </div>

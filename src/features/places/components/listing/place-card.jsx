@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "~/providers/i18n-provider";
 
 /**
@@ -11,17 +12,19 @@ export function PlaceCard({
   onToggleAdd
 }) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [isFavorite, setIsFavorite] = useState(false);
 
-  // Fallback image if missing or placeholder
-  const defaultImage = "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80";
+  const placeId = place.osmId || place.id;
+  const handleNavigateDetail = () => navigate(`/places/${placeId}`);
+
   const displayImage = place.imageUrl && !place.imageUrl.includes("No_image_available")
     ? place.imageUrl
-    : defaultImage;
+    : null;
 
   // Rating & score
-  const ratingVal = place.rating || 4.5;
-  const reviewCount = place.reviewCount || (place.osmId % 500) + 120;
+  const ratingVal = place.rating;
+  const reviewCount = place.reviewCount;
   const distanceKm = place.distanceMeters ? (place.distanceMeters / 1000).toFixed(1) : "0.5";
   const priceIndicator = place.priceLevel || "$$";
 
@@ -42,13 +45,17 @@ export function PlaceCard({
     return (
       <article className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-all flex flex-col sm:flex-row gap-4 items-start sm:items-center">
         {/* Thumbnail Image */}
-        <div className="w-full sm:w-48 h-36 rounded-xl overflow-hidden relative flex-shrink-0 border border-slate-100 dark:border-slate-800">
-          <img
-            src={displayImage}
-            alt={place.name}
-            className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-            loading="lazy"
-          />
+        <div className="w-full sm:w-48 h-36 rounded-xl overflow-hidden relative flex-shrink-0 border border-slate-100 dark:border-slate-800 cursor-pointer" onClick={handleNavigateDetail}>
+            {displayImage ? (
+              <img
+                src={displayImage}
+                alt={place.name}
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                loading="lazy"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-slate-400 text-3xl">📍</div>
+            )}
           {/* Favorite button */}
           <button
             type="button"
@@ -68,21 +75,19 @@ export function PlaceCard({
         <div className="flex-grow min-w-0 space-y-1.5 w-full">
           <div className="flex items-start justify-between gap-2">
             <div>
-              <h4 className="text-base font-bold text-slate-900 dark:text-white truncate">
+              <h4 className="text-base font-bold text-slate-900 dark:text-white truncate cursor-pointer hover:text-sky-600 dark:hover:text-sky-400 transition-colors" onClick={handleNavigateDetail}>
                 {place.name}
               </h4>
               {/* Rating */}
               <div className="flex items-center space-x-1.5 mt-0.5">
                 <div className="flex text-amber-400 text-xs">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <span key={i}>{i < Math.floor(ratingVal) ? "★" : "☆"}</span>
-                  ))}
+                  {ratingVal ? `${ratingVal} ★` : "Chưa có đánh giá"}
                 </div>
                 <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                  {ratingVal}
+                  {ratingVal ?? "-"}
                 </span>
                 <span className="text-[11px] text-slate-400">
-                  ({reviewCount} {t("places.card.reviews") || "đánh giá"})
+                  {reviewCount ? `(${reviewCount} ${t("places.card.reviews") || "đánh giá"})` : ""}
                 </span>
               </div>
             </div>
@@ -146,13 +151,17 @@ export function PlaceCard({
   return (
     <article className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-all flex flex-col justify-between group">
       {/* Top Image */}
-      <div className="w-full h-44 relative overflow-hidden bg-slate-100 dark:bg-slate-800">
-        <img
-          src={displayImage}
-          alt={place.name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          loading="lazy"
-        />
+      <div className="w-full h-44 relative overflow-hidden bg-slate-100 dark:bg-slate-800 cursor-pointer" onClick={handleNavigateDetail}>
+        {displayImage ? (
+          <img
+            src={displayImage}
+            alt={place.name}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            loading="lazy"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-slate-400 text-3xl">📍</div>
+        )}
         {/* Favorite button */}
         <button
           type="button"
@@ -175,18 +184,18 @@ export function PlaceCard({
       {/* Body Content */}
       <div className="p-4 space-y-2 flex-grow flex flex-col justify-between">
         <div className="space-y-1.5">
-          <h4 className="text-sm font-bold text-slate-900 dark:text-white line-clamp-1">
+          <h4 className="text-sm font-bold text-slate-900 dark:text-white line-clamp-1 cursor-pointer hover:text-sky-600 dark:hover:text-sky-400 transition-colors" onClick={handleNavigateDetail}>
             {place.name}
           </h4>
 
           {/* Rating */}
           <div className="flex items-center space-x-1">
-            <span className="text-amber-500 text-xs">★</span>
+            {ratingVal && <span className="text-amber-500 text-xs">★</span>}
             <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
-              {ratingVal}
+              {ratingVal ?? "-"}
             </span>
             <span className="text-[11px] text-slate-400">
-              ({reviewCount})
+              {reviewCount ? `(${reviewCount})` : ""}
             </span>
           </div>
 

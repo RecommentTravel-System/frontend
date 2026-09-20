@@ -21,7 +21,7 @@ export function AppFooter() {
 
   return (
     <footer className="bg-[#0b2545] text-white mt-16 border-t border-slate-800">
-      <div className="wayvee-container py-12 grid grid-cols-1 md:grid-cols-[1.4fr_1fr_1fr_1fr] gap-8">
+      <div className="wayvee-container py-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
         <div>
           <p className="font-extrabold text-xl mb-2 tracking-tight text-white">{SITE.name}</p>
           <p className="text-sm text-slate-300 leading-relaxed max-w-xs">{t("footer.description")}</p>

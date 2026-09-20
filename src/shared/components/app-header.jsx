@@ -37,7 +37,7 @@ export function WayveeLogo({ className = "h-7 sm:h-8 w-auto text-[#0b2545] dark:
   );
 }
 
-export function AppHeader({ onLogin }) {
+export function AppHeader({ onLogin, onRegister }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { user, isAuthenticated, logout } = useAuth();
@@ -59,9 +59,7 @@ export function AppHeader({ onLogin }) {
   };
 
   const handleAvatarClick = () => {
-    if (!isAuthenticated) {
-      if (onLogin) onLogin();
-    } else {
+    if (isAuthenticated) {
       setMenuOpen((prev) => !prev);
     }
   };
@@ -176,7 +174,7 @@ export function AppHeader({ onLogin }) {
           type="button"
           aria-label="Support"
           title="Hỗ trợ"
-          className="w-9 h-9 rounded-full border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-center text-slate-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors shadow-2xs"
+          className="w-9 h-9 rounded-full border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-center text-slate-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors shadow-2xs cursor-pointer"
         >
           <svg
             aria-hidden="true"
@@ -194,51 +192,68 @@ export function AppHeader({ onLogin }) {
           </svg>
         </button>
 
-        {/* User avatar with Dropdown menu on hover/click */}
-        <div
-          ref={menuRef}
-          className="relative"
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        >
-          <button
-            type="button"
-            onClick={handleAvatarClick}
-            title={isAuthenticated ? (user?.fullName || "Tài khoản của bạn") : "Đăng nhập / Tài khoản"}
-            className="w-9 h-9 rounded-full overflow-hidden border-2 border-[#00a8e8] shadow-xs cursor-pointer hover:scale-105 transition-transform flex items-center justify-center"
+        {/* User Auth Section: Login & Register buttons when not logged in; Avatar when logged in */}
+        {isAuthenticated ? (
+          <div
+            ref={menuRef}
+            className="relative"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
           >
-            <img
-              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80"
-              alt="User avatar"
-              className="w-full h-full object-cover"
-            />
-          </button>
-
-          {/* User Menu Dropdown Popover matching Image */}
-          {menuOpen && (
-            <div
-              className="absolute right-0 top-full mt-2 w-64 bg-white dark:bg-[#111a2e] rounded-3xl p-3 shadow-2xl border border-slate-100 dark:border-slate-800 animate-in fade-in slide-in-from-top-2 duration-200 z-50"
-              role="menu"
+            <button
+              type="button"
+              onClick={handleAvatarClick}
+              title={user?.fullName || "Tài khoản của bạn"}
+              className="w-9 h-9 rounded-full overflow-hidden border-2 border-[#00a8e8] shadow-xs cursor-pointer hover:scale-105 transition-transform flex items-center justify-center"
             >
-              <div className="space-y-1">
-                {menuItems.map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={item.onClick}
-                    className="w-full flex items-center gap-4 px-4 py-3 rounded-2xl text-slate-800 dark:text-slate-100 font-semibold text-sm hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors text-left cursor-pointer"
-                    role="menuitem"
-                  >
-                    <span className="text-slate-700 dark:text-slate-300">
-                      {item.icon}
-                    </span>
-                    <span className="truncate">{item.label}</span>
-                  </button>
-                ))}
+              <span className="w-full h-full flex items-center justify-center bg-[#e0f2fe] text-[#0b2545] text-xs font-extrabold">
+                {(user?.fullName || "U").slice(0, 1).toUpperCase()}
+              </span>
+            </button>
+
+            {/* User Menu Dropdown Popover matching Image */}
+            {menuOpen && (
+              <div
+                className="absolute right-0 top-full mt-2 w-64 bg-white dark:bg-[#111a2e] rounded-3xl p-3 shadow-2xl border border-slate-100 dark:border-slate-800 animate-in fade-in slide-in-from-top-2 duration-200 z-50"
+                role="menu"
+              >
+                <div className="space-y-1">
+                  {menuItems.map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={item.onClick}
+                      className="w-full flex items-center gap-4 px-4 py-3 rounded-2xl text-slate-800 dark:text-slate-100 font-semibold text-sm hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors text-left cursor-pointer"
+                      role="menuitem"
+                    >
+                      <span className="text-slate-700 dark:text-slate-300">
+                        {item.icon}
+                      </span>
+                      <span className="truncate">{item.label}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={onLogin}
+              className="px-3 sm:px-3.5 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-[#002d54] dark:hover:text-sky-400 border border-slate-200 dark:border-slate-700 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+            >
+              {t("login") || "Đăng nhập"}
+            </button>
+            <button
+              type="button"
+              onClick={onRegister || onLogin}
+              className="px-3 sm:px-3.5 py-1.5 text-xs font-bold text-white bg-[#002d54] dark:bg-sky-500 dark:text-slate-950 hover:bg-[#001f3b] dark:hover:bg-sky-600 rounded-full shadow-xs transition-colors cursor-pointer"
+            >
+              {t("register") || "Đăng ký"}
+            </button>
+          </div>
+        )}
       </div>
     </header>
   );

@@ -25,35 +25,6 @@
  * @type {Record<string, CategoryFilterConfig>}
  */
 export const CATEGORY_FILTER_CONFIGS = {
-  ALL: {
-    categoryId: "ALL",
-    backendCategory: null,
-    labelKey: "places.categories.all",
-    defaultLabel: "Tất cả",
-    preferences: [
-      {
-        id: "popular",
-        labelKey: "places.preferences.popular",
-        defaultLabel: "Nổi tiếng & Phổ biến",
-        targetField: "keyword",
-        value: ""
-      },
-      {
-        id: "outdoor",
-        labelKey: "places.preferences.outdoor",
-        defaultLabel: "Không gian ngoài trời",
-        targetField: "keyword",
-        value: "outdoor"
-      },
-      {
-        id: "family",
-        labelKey: "places.preferences.familyFriendly",
-        defaultLabel: "Thân thiện gia đình",
-        targetField: "keyword",
-        value: "family"
-      }
-    ]
-  },
   RESTAURANT: {
     categoryId: "RESTAURANT",
     backendCategory: "RESTAURANT",
@@ -271,7 +242,7 @@ export const CATEGORY_FILTER_CONFIGS = {
  * Common filter constants
  */
 export const COMMON_FILTER_DEFAULTS = {
-  category: "ALL",
+  category: "RESTAURANT",
   distanceKm: 2.0, // 2000 meters default
   minRating: null, // null = any
   priceLevel: null, // null = any

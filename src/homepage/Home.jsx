@@ -1,12 +1,20 @@
 import { useState } from "react";
 import './Home.css';
-import logoImage from "../assets/Icon.jpg";
 import connectorImage from "../assets/connect.jpg";
+import heroImage from "../assets/hero.png";
+import { WayveeLogo } from "~/shared/components";
 
 /* ------------------------------------------------------------------ */
-/* Placeholder image helper — swap these seeds for real photo URLs    */
+/* Stable editorial imagery keeps the home experience consistent. */
 /* ------------------------------------------------------------------ */
-const img = (seed, w = 600, h = 400) => `https://picsum.photos/seed/${seed}/${w}/${h}`;
+const destinationImages = {
+  mocchau: "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=600&q=80",
+  hagiang: "https://images.unsplash.com/photo-1573270689103-d7a4e42b1e9b?auto=format&fit=crop&w=600&q=80",
+  hue: "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?auto=format&fit=crop&w=600&q=80",
+  dalat: "https://images.unsplash.com/photo-1528181304800-259b08848526?auto=format&fit=crop&w=600&q=80"
+};
+
+const img = (seed) => destinationImages[seed] || heroImage;
 
 /* ------------------------------------------------------------------ */
 /* Data                                                                 */
@@ -108,7 +116,7 @@ function Star() {
 function Header({ onLogin }) {
   return (
     <header className="home-header max-w-6xl mx-auto flex items-center justify-between px-6 py-5">
-      <img className="home-logo" src={logoImage} alt="Wayvee" />
+      <WayveeLogo className="home-logo-svg" />
       <div className="flex items-center gap-4">
         <button aria-label="Hỗ trợ" className="home-support w-9 h-9 rounded-full border border-gray-200 flex items-center justify-center text-gray-500">
           <svg
@@ -145,7 +153,7 @@ function Hero() {
     <section className="home-hero-wrap max-w-6xl mx-auto px-6">
       <div
         className="home-hero relative rounded-3xl overflow-hidden bg-cover bg-center h-[380px] flex items-end md:items-center"
-        style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=1400&q=85)' }}
+        style={{ backgroundImage: `url(${heroImage})` }}
       >
         <div className="absolute inset-0 bg-black/30" />
         <div className="relative w-full px-8 pb-10 md:pb-0 text-center">
@@ -324,7 +332,7 @@ function ExploreNow() {
       <div className="grid md:grid-cols-[2fr_1fr] gap-4">
         <div
           className="relative rounded-2xl overflow-hidden h-72 bg-cover bg-center flex items-end p-6"
-          style={{ backgroundImage: `url(${img("sunsetbeach", 900, 500)})` }}
+          style={{ backgroundImage: `url(${heroImage})` }}
         >
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
           <div className="relative text-white">

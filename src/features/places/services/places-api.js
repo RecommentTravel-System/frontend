@@ -41,9 +41,33 @@ export async function searchNearbyPlaces(filterPayload) {
     if (response && response.data) {
       return response.data;
     }
-    return [];
+    return { content: [], page: 0, size: filterPayload.size || 6, totalElements: 0, totalPages: 0 };
   } catch (error) {
     console.error("Backend /api/v1/locations/nearby query failed:", error);
-    return [];
+    return { content: [], page: 0, size: filterPayload.size || 6, totalElements: 0, totalPages: 0 };
   }
 }
+
+export async function uploadLocationImage(file) {
+  const formData = new FormData();
+  formData.append("file", file);
+  const response = await api.post("/api/v1/locations/images", formData);
+  return response.data;
+}
+
+/**
+ * Fetch location details by ID:
+ * GET /api/v1/locations/osm/{id}
+ */
+export async function getPlaceById(id) {
+  try {
+    const response = await api.get(`/api/v1/locations/osm/${id}`);
+    if (response && response.data) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error(`Backend /api/v1/locations/osm/${id} query failed:`, error);
+  }
+  return null;
+}
+
