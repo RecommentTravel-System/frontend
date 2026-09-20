@@ -5,6 +5,7 @@ import TripInfoRoute from "~/routes/trip-info";
 import TripCreateRoute from "~/routes/trip-create";
 import TripConfirmRoute from "~/routes/trip-confirm";
 import TripSuccessRoute from "~/routes/trip-success";
+import PlacesRoute from "~/routes/places";
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
           <Route path="/" element={<HomeRoute />} />
           <Route path="/trip/info" element={<TripInfoRoute />} />
           <Route path="/trip/create" element={<TripCreateRoute />} />
+          <Route path="/places" element={<PlacesRoute />} />
           <Route path="/trip/confirm" element={<TripConfirmRoute />} />
           <Route path="/trip/success" element={<TripSuccessRoute />} />
         </Routes>

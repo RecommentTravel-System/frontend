@@ -30,7 +30,24 @@ export function I18nProvider({ children }) {
     }
   };
 
-  const t = (keyPath, ns = "common") => {
+  const t = (keyPath, paramsOrNs = "common", maybeNs = "common") => {
+    let ns = "common";
+    let params = null;
+    let fallbackText = null;
+
+    if (typeof paramsOrNs === "string") {
+      if (dictionaries[language]?.[paramsOrNs] || dictionaries.vi?.[paramsOrNs]) {
+        ns = paramsOrNs;
+      } else {
+        fallbackText = paramsOrNs;
+      }
+    } else if (paramsOrNs && typeof paramsOrNs === "object") {
+      params = paramsOrNs;
+      if (typeof maybeNs === "string") {
+        ns = maybeNs;
+      }
+    }
+
     const dict = dictionaries[language]?.[ns] || dictionaries.vi[ns] || {};
     const parts = keyPath.split(".");
     let curr = dict;
@@ -38,10 +55,17 @@ export function I18nProvider({ children }) {
       if (curr && typeof curr === "object" && p in curr) {
         curr = curr[p];
       } else {
-        return keyPath;
+        return fallbackText || keyPath;
       }
     }
-    return typeof curr === "string" ? curr : keyPath;
+
+    let text = typeof curr === "string" ? curr : (fallbackText || keyPath);
+    if (params && typeof text === "string") {
+      for (const [k, v] of Object.entries(params)) {
+        text = text.replaceAll(`{{${k}}}`, String(v));
+      }
+    }
+    return text;
   };
 
   return (

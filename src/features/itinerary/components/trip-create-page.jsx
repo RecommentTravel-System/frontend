@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "~/providers/i18n-provider";
 import { AppHeader } from "~/shared/components";
@@ -9,53 +9,48 @@ export function TripCreatePage() {
   const navigate = useNavigate();
   const locationState = useLocation().state || {};
 
+  // Guard: redirect to Step 1 if required info is missing
+  useEffect(() => {
+    const hasRequiredData = locationState.tripName && locationState.destination;
+    if (!hasRequiredData) {
+      navigate("/trip/info", { replace: true });
+    }
+  }, [locationState, navigate]);
+
   const [authModal, setAuthModal] = useState(null);
 
-  // Form State
-  const [tripName, setTripName] = useState(locationState.tripName || t("tripCreate.tripSummary.defaultName"));
-  const [tripDates, setTripDates] = useState(locationState.tripDates || t("tripCreate.tripSummary.defaultDates"));
-  const [destination, setDestination] = useState(locationState.destination || "Barcelona, Spain");
-  const [companions, setCompanions] = useState(locationState.companions || "Bạn bè");
-  const [passengerCount, setPassengerCount] = useState(locationState.passengerCount || "4 người");
-  const [travelStyle, setTravelStyle] = useState(locationState.travelStyle || "Nghỉ dưỡng & Check-in");
+  // Form State — No hardcoded fallbacks; Step 1 validation guarantees values
+  const [tripName, setTripName] = useState(locationState.tripName || "");
+  const [tripDates, setTripDates] = useState(locationState.tripDates || "");
+  const [destination, setDestination] = useState(locationState.destination || "");
+  const [companions, setCompanions] = useState(locationState.companions || "");
+  const [passengerCount, setPassengerCount] = useState(locationState.passengerCount || "");
+  const [travelStyle, setTravelStyle] = useState(locationState.travelStyle || "");
 
   const [isEditingName, setIsEditingName] = useState(false);
   const [isEditingDates, setIsEditingDates] = useState(false);
 
-  // Hotel/Place list state
-  const [placesList, setPlacesList] = useState([
-    {
-      id: 1,
-      name: "Hotel Arts Barcelona",
-      location: "Barcelona, Spain",
-      rating: 4,
-      score: "5.0",
-      reviewCount: "1,260",
-      image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=400&q=80"
-    },
-    {
-      id: 2,
-      name: "W Barcelona Ocean Resort",
-      location: "Barcelona, Spain",
-      rating: 5,
-      score: "4.9",
-      reviewCount: "2,140",
-      image: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=400&q=80"
-    }
-  ]);
+  // Hotel/Place list state - initialized strictly from locationState (NO mock data)
+  const [placesList, setPlacesList] = useState(() => {
+    return locationState.placesList || [];
+  });
 
   const handleAddPlace = () => {
-    const newId = placesList.length + 1;
-    const newPlace = {
-      id: newId,
-      name: `Địa điểm resort #${newId} - ${destination || "Barcelona"}`,
-      location: destination || "Barcelona, Spain",
-      rating: 5,
-      score: "4.8",
-      reviewCount: "850",
-      image: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=400&q=80"
-    };
-    setPlacesList([...placesList, newPlace]);
+    navigate("/places", {
+      state: {
+        tripName,
+        tripDates,
+        destination,
+        companions,
+        passengerCount,
+        travelStyle,
+        placesList
+      }
+    });
+  };
+
+  const handleRemovePlace = (placeId) => {
+    setPlacesList((prev) => prev.filter((p) => p.id !== placeId && p.osmId !== placeId));
   };
 
   const handleNextStep = () => {
@@ -280,45 +275,68 @@ export function TripCreatePage() {
                 {t("tripCreate.selectedPlaces.title")}
               </h3>
 
-              {placesList.map((place) => (
-                <article key={place.id} className="flex items-center space-x-3.5 pb-2 border-b border-slate-100 dark:border-slate-800 last:border-0" data-purpose="hotel-item">
-                  {/* Hotel Thumbnail */}
-                  <div className="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 relative border border-slate-100 dark:border-slate-800">
-                    <img alt={place.name} className="w-full h-full object-cover" src={place.image} />
+              {placesList.length === 0 ? (
+                <div className="text-center py-8 px-4 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl space-y-2">
+                  <div className="w-10 h-10 rounded-full bg-sky-50 dark:bg-sky-950 text-sky-600 dark:text-sky-400 mx-auto flex items-center justify-center text-lg">
+                    📍
                   </div>
+                  <p className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                    {t("tripCreate.selectedPlaces.emptyTitle") || "Chưa có địa điểm nào"}
+                  </p>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                    {t("tripCreate.selectedPlaces.emptyDesc") || "Bấm nút \"Thêm địa điểm\" bên dưới để chọn địa điểm xung quanh!"}
+                  </p>
+                </div>
+              ) : (
+                placesList.map((place) => (
+                  <article key={place.id} className="flex items-center space-x-3.5 pb-2 border-b border-slate-100 dark:border-slate-800 last:border-0" data-purpose="hotel-item">
+                    {/* Hotel Thumbnail */}
+                    <div className="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 relative border border-slate-100 dark:border-slate-800">
+                      <img alt={place.name} className="w-full h-full object-cover" src={place.image} />
+                    </div>
 
-                  {/* Hotel Details */}
-                  <div className="flex-grow min-w-0">
-                    <div className="flex items-center justify-between">
-                      <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">
-                        {place.name}
-                      </h4>
-                      {/* Star Rating */}
-                      <div aria-label={`${place.rating} sao`} className="flex items-center text-amber-400 text-xs ml-1 flex-shrink-0">
-                        {Array.from({ length: place.rating }).map((_, i) => (
-                          <span key={i}>★</span>
-                        ))}
+                    {/* Hotel Details */}
+                    <div className="flex-grow min-w-0">
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">
+                          {place.name}
+                        </h4>
+                        {/* Star Rating */}
+                        <div aria-label={`${place.rating} sao`} className="flex items-center text-amber-400 text-xs ml-1 flex-shrink-0">
+                          {Array.from({ length: place.rating }).map((_, i) => (
+                            <span key={i}>★</span>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Location */}
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{place.location}</p>
+
+                      {/* Reviews & Score Badge + Remove */}
+                      <div className="flex items-center justify-between mt-2">
+                        <div className="flex items-center space-x-1.5">
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-sky-100 text-sky-700 border border-sky-200 dark:bg-sky-950 dark:text-sky-300 dark:border-sky-800">
+                            {place.score}
+                          </span>
+                          <span className="text-[11px] font-bold text-sky-600 dark:text-sky-400">
+                            {t("tripCreate.selectedPlaces.excellent")}
+                          </span>
+                          <span className="text-[10px] text-slate-400">
+                            {place.reviewCount} {t("tripCreate.selectedPlaces.reviews")}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleRemovePlace(place.id)}
+                          className="text-slate-400 hover:text-rose-500 text-xs p-1 transition-colors cursor-pointer"
+                          title="Xóa khỏi danh sách"
+                        >
+                          ✕
+                        </button>
                       </div>
                     </div>
-
-                    {/* Location */}
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{place.location}</p>
-
-                    {/* Reviews & Score Badge */}
-                    <div className="flex items-center space-x-1.5 mt-2">
-                      <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-sky-100 text-sky-700 border border-sky-200 dark:bg-sky-950 dark:text-sky-300 dark:border-sky-800">
-                        {place.score}
-                      </span>
-                      <span className="text-[11px] font-bold text-sky-600 dark:text-sky-400">
-                        {t("tripCreate.selectedPlaces.excellent")}
-                      </span>
-                      <span className="text-[10px] text-slate-400">
-                        {place.reviewCount} {t("tripCreate.selectedPlaces.reviews")}
-                      </span>
-                    </div>
-                  </div>
-                </article>
-              ))}
+                  </article>
+                )))}
 
               {/* Button: Thêm địa điểm */}
               <button

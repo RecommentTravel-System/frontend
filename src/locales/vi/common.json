@@ -13,7 +13,6 @@
     "reviews": "Đánh giá",
     "logout": "Đăng xuất"
   },
-
   "allPlaces": "Tất cả địa điểm",
   "restaurants": "Quán ăn",
   "cafes": "Quán cà phê",
@@ -21,7 +20,6 @@
   "attractions": "Điểm tham quan",
   "shopping": "Mua sắm",
   "other": "Khác",
-
   "hero": {
     "title": "Tạo lịch trình cho riêng mình ngay bây giờ!",
     "destination": "Địa điểm",
@@ -34,7 +32,6 @@
     "tripTypePlaceholder": "Chuyến đi bạn mong muốn",
     "createButton": "Tạo lịch trình ngay"
   },
-
   "why": {
     "sectionTitle": "Vì sao nên sử dụng Wayvee?",
     "timeSaveTitle": "Tiết kiệm thời gian",
@@ -44,7 +41,6 @@
     "diverseTitle": "Gợi ý đa dạng",
     "diverseDesc": "Tích hợp ăn uống, check-in, trải nghiệm và địa điểm hot trong cùng một hành trình."
   },
-
   "travelYourWay": {
     "sectionTitle": "Du lịch theo cách của bạn",
     "costOptimizationTitle": "Tối ưu chi phí",
@@ -56,7 +52,6 @@
     "customSuggestionsTitle": "Gợi ý theo bạn",
     "customSuggestionsDesc": "Mỗi hành trình được điều chỉnh dựa trên phong cách du lịch cá nhân"
   },
-
   "destinations": {
     "sectionTitle": "Điểm đến đang hot",
     "subtitle": "Gợi ý địa điểm theo từng mùa du lịch",
@@ -65,7 +60,6 @@
     "autumn": "Mùa Thu",
     "winter": "Mùa Đông"
   },
-
   "blog": {
     "sectionTitle": "Blog du lịch & Địa điểm",
     "explore": "Khám phá",
@@ -74,7 +68,6 @@
     "entertainment": "Giải trí",
     "food": "Món ăn"
   },
-
   "recommendation": {
     "sectionTitle": "Gợi ý địa điểm dành cho bạn",
     "badge": "Được đề xuất",
@@ -82,7 +75,6 @@
     "natureDesc": "Gợi ý các địa điểm ăn uống, vui chơi và check-in đẹp nhất xung quanh bạn.",
     "exploreNow": "Khám phá ngay →"
   },
-
   "footer": {
     "description": "Tạo hành trình cá nhân hóa nhanh chóng, dễ dàng và hiệu quả.",
     "navigation": "Điều hướng",
@@ -91,7 +83,6 @@
     "contact": "Liên hệ",
     "rights": "Bảo lưu mọi quyền."
   },
-
   "tripInfo": {
     "pageTitle": "WAYVEE - Nhập thông tin lịch trình",
     "stepper": {
@@ -113,7 +104,6 @@
       "destinationLabel": "Đi đâu?",
       "destinationPlaceholder": "Nhập địa điểm....",
       "companionsLabel": "Đi cùng ai?",
-      "companionsPlaceholder": "......",
       "passengerCountLabel": "Số lượng",
       "passengerCountPlaceholder": "Số người....",
       "travelStyleLabel": "Phong cách chuyến đi?",
@@ -122,9 +112,16 @@
     "actions": {
       "nextStep": "Bước tiếp theo",
       "supportTooltip": "Hỗ trợ khách hàng"
+    },
+    "validation": {
+      "tripNameRequired": "Vui lòng nhập tên chuyến đi",
+      "tripDatesRequired": "Vui lòng nhập ngày đi - về",
+      "destinationRequired": "Vui lòng nhập điểm đến của bạn",
+      "companionsRequired": "Vui lòng nhập thông tin bạn đi cùng ai",
+      "passengerCountRequired": "Vui lòng nhập số lượng người",
+      "travelStyleRequired": "Vui lòng nhập phong cách chuyến đi"
     }
   },
-
   "tripCreate": {
     "pageTitle": "WAYVEE - Tạo lịch trình",
     "stepper": {
@@ -146,7 +143,6 @@
       "destinationLabel": "Đi đâu?",
       "destinationPlaceholder": "Nhập địa điểm....",
       "companionsLabel": "Đi cùng ai?",
-      "companionsPlaceholder": "......",
       "passengerCountLabel": "Số lượng",
       "passengerCountPlaceholder": "Số người....",
       "travelStyleLabel": "Phong cách chuyến đi?",
@@ -162,7 +158,6 @@
       "nextStep": "Bước tiếp theo"
     }
   },
-
   "tripConfirm": {
     "pageTitle": "WAYVEE - Hoàn tất lịch trình",
     "stepper": {
@@ -202,7 +197,6 @@
       "confirmingSubtitle": "Sắp xếp dữ liệu"
     }
   },
-
   "tripSuccess": {
     "pageTitle": "WAYVEE - Lịch trình đã tạo thành công",
     "title": "Lịch trình của bạn đã được tạo! Sẵn sàng cho chuyến đi của mình nào!",
@@ -210,5 +204,93 @@
     "goBack": "Quay lại",
     "needHelp": "Bạn cần hỗ trợ?",
     "contactService": "Liên hệ Trung tâm hỗ trợ khách hàng"
+  },
+  "places": {
+    "header": {
+      "backToTrip": "Quay lại chuyến đi",
+      "title": "Khám phá địa điểm \"{{destination}}\"",
+      "countFound": "địa điểm được tìm thấy phù hợp",
+      "searchPlaceholder": "Tìm theo tên, món ăn, không gian..."
+    },
+    "filter": {
+      "title": "Bộ lọc tìm kiếm",
+      "clearAll": "Xóa tất cả",
+      "category": "Loại địa điểm",
+      "distance": "Khoảng cách",
+      "rating": "Điểm đánh giá",
+      "price": "Mức giá",
+      "preferences": "Sở thích & Đặc thù",
+      "noPreferences": "Không có bộ lọc đặc thù",
+      "beta": "Gợi ý"
+    },
+    "categories": {
+      "all": "Tất cả",
+      "restaurant": "Quán ăn",
+      "cafe": "Quán cà phê",
+      "entertainment": "Khu vui chơi",
+      "attraction": "Điểm tham quan",
+      "shopping": "Mua sắm",
+      "fastFood": "Thức ăn nhanh",
+      "bar": "Quán bar / Pub",
+      "other": "Khác"
+    },
+    "preferences": {
+      "popular": "Nổi tiếng & Phổ biến",
+      "outdoor": "Không gian ngoài trời",
+      "indoor": "Trong nhà",
+      "familyFriendly": "Thân thiện gia đình",
+      "vietnamese": "Món Việt",
+      "korean": "Món Hàn",
+      "japanese": "Món Nhật",
+      "fastFood": "Thức ăn nhanh",
+      "vegetarian": "Món chay",
+      "romantic": "Hẹn hò / Lãng mạn",
+      "quiet": "Yên tĩnh",
+      "studyWork": "Học tập & Làm việc",
+      "petFriendly": "Thú cưng thân thiện",
+      "checkIn": "Check-in sống ảo",
+      "groupActivity": "Hoạt động nhóm",
+      "nightLife": "Hoạt động về đêm",
+      "historical": "Di tích lịch sử",
+      "cultural": "Văn hóa & Nghệ thuật",
+      "nature": "Thiên nhiên & Công viên",
+      "familySightseeing": "Phù hợp gia đình",
+      "mall": "Trung tâm thương mại",
+      "supermarket": "Siêu thị & Cửa hàng",
+      "souvenirs": "Đặc sản & Quà lưu niệm"
+    },
+    "price": {
+      "budget": "Bình dân ($)",
+      "moderate": "Vừa phải ($$)",
+      "expensive": "Cao cấp ($$$)",
+      "luxury": "Sang trọng ($$$$)"
+    },
+    "sort": {
+      "popular": "Phổ biến nhất",
+      "rating": "Đánh giá cao nhất",
+      "distance": "Gần trung tâm nhất"
+    },
+    "view": {
+      "list": "Chế độ danh sách",
+      "grid": "Chế độ lưới"
+    },
+    "card": {
+      "reviews": "đánh giá",
+      "addToTrip": "Thêm vào lịch trình",
+      "added": "Đã thêm"
+    },
+    "empty": {
+      "title": "Không tìm thấy địa điểm phù hợp",
+      "desc": "Hãy thử mở rộng khoảng cách tìm kiếm hoặc xóa bớt tiêu chí lọc để khám phá thêm nhiều địa điểm nhé."
+    },
+    "footer": {
+      "placesSelected": "địa điểm đã được chọn vào lịch trình",
+      "finishButton": "Hoàn tất & Quay lại"
+    },
+    "map": {
+      "viewOnMap": "Xem trên bản đồ",
+      "modalTitle": "Bản đồ các địa điểm tại {{destination}}",
+      "close": "Đóng bản đồ"
+    }
   }
 }

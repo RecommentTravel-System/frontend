@@ -23,31 +23,8 @@ export function TripConfirmPage() {
   const [isEditingLocation, setIsEditingLocation] = useState(false);
   const [isEditingPassengers, setIsEditingPassengers] = useState(false);
 
-  // List of confirmed places matching Image 1
-  const placesList = locationState.placesList || [
-    {
-      id: 1,
-      name: "Cộng Cà Phê Nhà Thờ",
-      address: "27 Nhà Thờ, Hoàn Kiếm, Hà Nội · 300 m",
-      rating: 5,
-      score: "5.0",
-      reviewCount: "1,260",
-      image: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=600&q=80",
-      specs: "Specialty Coffee | Wi-Fi | Máy lạnh · 40 m²",
-      tags: [t("tripConfirm.placeItem.coffee"), t("tripConfirm.placeItem.checkIn"), t("tripConfirm.placeItem.work")]
-    },
-    {
-      id: 2,
-      name: "Cộng Cà Phê Nhà Thờ",
-      address: "27 Nhà Thờ, Hoàn Kiếm, Hà Nội · 300 m",
-      rating: 5,
-      score: "5.0",
-      reviewCount: "1,260",
-      image: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=600&q=80",
-      specs: "Specialty Coffee | Wi-Fi | Máy lạnh · 40 m²",
-      tags: [t("tripConfirm.placeItem.coffee"), t("tripConfirm.placeItem.checkIn"), t("tripConfirm.placeItem.work")]
-    }
-  ];
+  // List of confirmed places from user itinerary (NO mock data)
+  const placesList = locationState.placesList || [];
 
   const handleConfirmClick = () => {
     // Stage 1: Processing
