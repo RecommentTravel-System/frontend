@@ -81,34 +81,69 @@
     "explore": "Explore",
     "support": "Support",
     "contact": "Contact",
-    "rights": "All rights reserved."
+    "rights": "All rights reserved.",
+    "links": {
+      "home": "Home",
+      "hotDestinations": "Hot Destinations",
+      "blog": "Travel Blog",
+      "tripReviews": "Trip Reviews",
+      "exploreNow": "Explore Now",
+      "featuredPlaces": "Featured Places",
+      "favoriteRestaurants": "Favorite Restaurants",
+      "travelTrends": "Travel Trends",
+      "seasonalSuggestions": "Seasonal Ideas",
+      "supportCenter": "Support Center",
+      "chatNow": "Chat Now",
+      "sendFeedback": "Send Feedback",
+      "contactUs": "Contact Us"
+    }
   },
   "tripInfo": {
-    "pageTitle": "WAYVEE - Trip Details",
+    "pageTitle": "WAYVEE - Trip & Location Initialization",
     "stepper": {
-      "step1": "Input details",
-      "step2": "Create itinerary",
-      "step3": "Complete"
+      "step1": "1. Input details",
+      "step2": "2. Select places",
+      "step3": "3. Complete"
     },
-    "tripSummary": {
-      "title": "Trip Summary",
-      "yourTrip": "Your trip",
-      "nameLabel": "Name",
-      "defaultName": "Trip A",
-      "datesLabel": "Dates",
-      "defaultDates": "14 - 19 Aug",
-      "edit": "Edit"
+    "badge": "PLAN WITH INTENTION",
+    "mainTitle": "Initialize Trip Details",
+    "mainSubtitle": "Enter basic trip details so WAYVEE can personalize your optimal travel experience.",
+    "yourTrip": "YOUR TRIP",
+    "defaultDuration": "9 days 8 nights",
+    "summaryTitle": "Itinerary Details",
+    "summarySubtitle": "Timeframe & trip identity",
+    "nameLabel": "Trip name",
+    "defaultName": "Trip Hanoi - Saigon",
+    "datesLabel": "Trip dates",
+    "defaultDates": "16/07/2025 - 24/07/2025",
+    "edit": "Edit",
+    "locationTitle": "Location Details",
+    "locationSubtitle": "Customize starting point, members, and experience style",
+    "destinationLabel": "Where to?",
+    "destinationPlaceholder": "Enter starting location or search city...",
+    "leafletMapBtn": "Select on Leaflet map",
+    "currentLocation": "Current location",
+    "companionsLabel": "Who with?",
+    "companions": {
+      "friends": "Close friends",
+      "family": "Family",
+      "couple": "Couple / Partner",
+      "solo": "Solo trip",
+      "colleagues": "Colleagues"
     },
-    "destinationDetails": {
-      "title": "Destination Details",
-      "destinationLabel": "Where to?",
-      "destinationPlaceholder": "Enter destination....",
-      "companionsLabel": "Who with?",
-      "passengerCountLabel": "Group size",
-      "passengerCountPlaceholder": "Number of people....",
-      "travelStyleLabel": "Travel style?",
-      "travelStylePlaceholder": "Style...."
+    "passengerCountLabel": "Member count",
+    "memberCountPrefix": "Members:",
+    "stylesLabel": "Trip style & preferences?",
+    "selectedCount": "Selected:",
+    "styles": {
+      "relax": "Relaxation",
+      "food": "Food exploration",
+      "checkin": "Scenic check-in",
+      "culture": "Culture & heritage",
+      "outdoor": "Outdoor adventures"
     },
+    "customStylePlaceholder": "Enter more preferences (e.g., Scenic cafes, Film photography...)",
+    "autoSaveNote": "Trip data is saved automatically",
     "actions": {
       "nextStep": "Next step",
       "supportTooltip": "Customer Support"
@@ -119,52 +154,115 @@
       "destinationRequired": "Please enter your destination",
       "companionsRequired": "Please enter who you are traveling with",
       "passengerCountRequired": "Please enter the number of passengers",
-      "travelStyleRequired": "Please enter your travel style"
+      "travelStyleRequired": "Please choose or enter your travel style"
     }
   },
   "tripCreate": {
-    "pageTitle": "WAYVEE - Create Itinerary",
+    "pageTitle": "WAYVEE - Customize Itinerary & Stops",
     "stepper": {
-      "step1": "Input details",
-      "step2": "Create itinerary",
-      "step3": "Complete"
+      "step1": "1. Input details",
+      "step2": "2. Select places",
+      "step3": "3. Complete"
+    },
+    "header": {
+      "mainTitle": "Manage & Customize Stops",
+      "mainSubtitle": "View itinerary information, add or adjust destinations for WAYVEE to build your perfect trip.",
+      "syncingBadge": "Auto-syncing"
     },
     "tripSummary": {
-      "title": "Trip Summary",
-      "yourTrip": "Your trip",
-      "nameLabel": "Name",
-      "defaultName": "Trip A",
-      "datesLabel": "Dates",
-      "defaultDates": "14 - 19 Aug",
+      "title": "Your Trip",
+      "yourTrip": "YOUR TRIP",
+      "nameLabel": "Trip name",
+      "defaultName": "Trip Hanoi - Saigon",
+      "datesLabel": "Trip dates",
+      "defaultDates": "16/07/2025 - 24/07/2025",
       "edit": "Edit"
     },
     "locationDetails": {
       "title": "Destination Details",
-      "destinationLabel": "Where to?",
-      "destinationPlaceholder": "Enter destination....",
+      "subtitle": "Search for stops and customize your matching experience",
+      "destinationLabel": "Where to? (Place, cafe, attraction...)",
+      "destinationPlaceholder": "Enter destination...",
+      "currentLocation": "Current location",
+      "selectMap": "Select on map",
       "companionsLabel": "Who with?",
-      "passengerCountLabel": "Group size",
-      "passengerCountPlaceholder": "Number of people....",
-      "travelStyleLabel": "Travel style?",
-      "travelStylePlaceholder": "Style...."
+      "passengerCountLabel": "Member count",
+      "memberPrefix": "Members:",
+      "travelStyleLabel": "Trip style & preferences",
+      "selectedCount": "Selected",
+      "addCurrentLocation": "Add this place to selection"
     },
     "selectedPlaces": {
-      "title": "Selected Places",
+      "title": "SAVED PLACES",
       "emptyTitle": "No places selected yet",
-      "emptyDesc": "Click \"Add Place\" below to select nearby places!",
-      "addPlaceButton": "Add Place",
+      "emptyDesc": "Click \"Quick add places\" above to select nearby places!",
+      "addPlaceButton": "Quick add places",
+      "routeEstimate": "Estimated total route distance:",
+      "points": "stops",
+      "clearAll": "Clear all",
       "excellent": "Excellent",
       "reviews": "reviews"
     },
+    "actionSelector": {
+      "title": "What would you like to do next?",
+      "subtitle": "Choose the planning method that fits your travel habits",
+      "option1Badge": "RECOMMENDED",
+      "option1Title": "Auto AI Itinerary Planner",
+      "option1Desc": "Smart algorithm distributes {{count}} selected places across days, optimizing routes and visiting hours.",
+      "option1Link": "Open AI Itinerary Builder →",
+      "option2Title": "Save places to waitlist only",
+      "option2Desc": "Save places of interest to collection '{{tripName}}' to organize manually whenever you are ready.",
+      "option2Link": "Save to waitlist →"
+    },
+    "itineraryBuilder": {
+      "title": "✨ Detailed Itinerary Builder",
+      "dayTab": "Day {{day}}",
+      "addDay": "+ Add Day",
+      "dayCount": "{{count}} days",
+      "assignedPlaces": "Places scheduled for Day {{day}} ({{count}})",
+      "emptyAssigned": "No places scheduled for Day {{day}} yet.",
+      "emptyAssignedPrompt": "Select from the saved places pool below to assign to this day.",
+      "unassignedPool": "Selected Places Pool (Unscheduled)",
+      "unassignedCount": "{{count}} places ready",
+      "addToDay": "+ Add to Day {{day}}",
+      "removeFromDay": "Remove from day",
+      "moveUp": "Up",
+      "moveDown": "Down",
+      "optimizeButton": "✨ WAYVEE Auto Optimize",
+      "optimizeDesc": "Arrange stops within the day by geographic proximity and optimal timing",
+      "optimizeDay": "Optimize Day {{day}}",
+      "optimizing": "WAYVEE is optimizing itinerary...",
+      "optimizedSuccess": "Place order has been scientifically optimized!",
+      "reorderHint": "Drag / Click arrow buttons to reorder",
+      "allAssigned": "All places have been scheduled into days",
+      "allAssignedHint": "Click the button below to discover more places!",
+      "addToDayBtn": "+ To Day {{day}}",
+      "removeFromTrip": "Remove from trip",
+      "removeDayBtn": "✕ Delete Day {{day}}",
+      "addMorePlaces": "+ Add more places",
+      "finishItinerary": "Complete Itinerary →"
+    },
+    "savedLocations": {
+      "badge": "🎉 Places Saved Successfully!",
+      "message": "You saved {{count}} places for your trip to {{destination}}.",
+      "subtitle": "Your places are safely stored. You can build a detailed itinerary now or come back anytime.",
+      "placesCount": "Saved Places List ({{count}})",
+      "noPlaces": "No places saved yet.",
+      "exploreNow": "+ Explore places now",
+      "createItineraryNow": "✨ Create Itinerary",
+      "exploreMore": "Continue Exploring",
+      "completeTrip": "Complete & Save Trip →"
+    },
     "actions": {
-      "nextStep": "Next step"
+      "backStep1": "Back to Step 1",
+      "nextStep": "Continue to next step"
     }
   },
   "tripConfirm": {
     "pageTitle": "WAYVEE - Complete Itinerary",
     "stepper": {
       "step1": "Input details",
-      "step2": "Create itinerary",
+      "step2": "Select places",
       "step3": "Complete"
     },
     "tripSummary": {
@@ -181,6 +279,9 @@
       "defaultPassengers": "3 people",
       "edit": "Edit"
     },
+    "savedOnlyBadge": "📍 Saved Places List (Unscheduled by day)",
+    "itineraryModeBadge": "✨ Detailed Itinerary arranged by day",
+    "createItineraryCta": "✨ Create Itinerary Now",
     "placeItem": {
       "discountBadge": "Deal",
       "excellent": "Excellent",
@@ -190,7 +291,7 @@
       "work": "Work"
     },
     "actions": {
-      "confirm": "Confirm"
+      "confirm": "Confirm & Save Trip"
     },
     "modals": {
       "processingTitle": "Processing",

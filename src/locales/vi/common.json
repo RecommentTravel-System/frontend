@@ -81,34 +81,64 @@
     "explore": "Khám phá",
     "support": "Hỗ trợ",
     "contact": "Liên hệ",
-    "rights": "Bảo lưu mọi quyền."
+    "rights": "Bảo lưu mọi quyền.",
+    "links": {
+      "home": "Trang chủ",
+      "hotDestinations": "Điểm đến đang hot",
+      "blog": "Blog du lịch",
+      "tripReviews": "Đánh giá chuyến đi",
+      "exploreNow": "Khám phá ngay",
+      "featuredPlaces": "Địa điểm nổi bật",
+      "favoriteRestaurants": "Quán ăn được yêu thích",
+      "travelTrends": "Xu hướng du lịch",
+      "seasonalSuggestions": "Gợi ý theo mùa",
+      "supportCenter": "Trung tâm hỗ trợ",
+      "chatNow": "Trò chuyện ngay",
+      "sendFeedback": "Gửi phản hồi",
+      "contactUs": "Liên hệ chúng tôi"
+    }
   },
   "tripInfo": {
-    "pageTitle": "WAYVEE - Nhập thông tin lịch trình",
+    "pageTitle": "WAYVEE - Khởi tạo thông tin lịch trình & Địa điểm",
     "stepper": {
-      "step1": "Nhập thông tin",
-      "step2": "Tạo lịch trình",
-      "step3": "Hoàn tất"
+      "step1": "1. Nhập thông tin",
+      "step2": "2. Chọn địa điểm",
+      "step3": "3. Hoàn tất"
     },
-    "tripSummary": {
-      "title": "Thông tin lịch trình",
-      "yourTrip": "Chuyến đi của bạn",
-      "nameLabel": "Tên chuyến đi",
-      "defaultName": "Chuyến đi A",
-      "datesLabel": "Ngày đi - về",
-      "defaultDates": "14 - 19 Thg 8",
-      "edit": "Chỉnh sửa"
+    "yourTrip": "CHUYẾN ĐI CỦA BẠN",
+    "defaultDuration": "9 ngày 8 đêm",
+    "summaryTitle": "Thông tin lịch trình",
+    "summarySubtitle": "Khung thời gian & định danh hành trình",
+    "nameLabel": "Tên chuyến đi",
+    "defaultName": "Chuyến đi Hà Nội - Sài Gòn",
+    "datesLabel": "Ngày đi - về",
+    "defaultDates": "16/07/2025 - 24/07/2025",
+    "edit": "Chỉnh sửa",
+    "locationTitle": "Thông tin địa điểm",
+    "locationSubtitle": "Tùy chỉnh mục tiêu điểm xuất phát, thành viên và gu trải nghiệm",
+    "destinationLabel": "Đi đâu?",
+    "destinationPlaceholder": "Nhập địa điểm bắt đầu hoặc tìm kiếm thành phố...",
+    "currentLocation": "Vị trí hiện tại",
+    "companionsLabel": "Đi cùng ai?",
+    "companions": {
+      "friends": "Bạn bè thân thiết",
+      "family": "Gia đình",
+      "couple": "Cặp đôi / Người yêu",
+      "solo": "Đi một mình (Solo)",
+      "colleagues": "Đồng nghiệp"
     },
-    "destinationDetails": {
-      "title": "Thông tin địa điểm",
-      "destinationLabel": "Đi đâu?",
-      "destinationPlaceholder": "Nhập địa điểm....",
-      "companionsLabel": "Đi cùng ai?",
-      "passengerCountLabel": "Số lượng",
-      "passengerCountPlaceholder": "Số người....",
-      "travelStyleLabel": "Phong cách chuyến đi?",
-      "travelStylePlaceholder": "Style...."
+    "passengerCountLabel": "Số lượng thành viên",
+    "memberCountPrefix": "Thành viên:",
+    "stylesLabel": "Phong cách & Sở thích chuyến đi?",
+    "selectedCount": "Đã chọn:",
+    "styles": {
+      "relax": "Thư giãn",
+      "food": "Khám phá ẩm thực",
+      "checkin": "Check-in sống ảo",
+      "culture": "Văn hóa di sản",
+      "outdoor": "Trải nghiệm ngoài trời"
     },
+    "customStylePlaceholder": "Nhập thêm sở thích khác (ví dụ: Cà phê ngắm cảnh, Chụp ảnh film...)",
     "actions": {
       "nextStep": "Bước tiếp theo",
       "supportTooltip": "Hỗ trợ khách hàng"
@@ -119,52 +149,115 @@
       "destinationRequired": "Vui lòng nhập điểm đến của bạn",
       "companionsRequired": "Vui lòng nhập thông tin bạn đi cùng ai",
       "passengerCountRequired": "Vui lòng nhập số lượng người",
-      "travelStyleRequired": "Vui lòng nhập phong cách chuyến đi"
+      "travelStyleRequired": "Vui lòng chọn hoặc nhập phong cách chuyến đi"
     }
   },
   "tripCreate": {
-    "pageTitle": "WAYVEE - Tạo lịch trình",
+    "pageTitle": "WAYVEE - Tùy chỉnh lịch trình & Điểm đến",
     "stepper": {
-      "step1": "Nhập thông tin",
-      "step2": "Tạo lịch trình",
-      "step3": "Hoàn tất"
+      "step1": "1. Nhập thông tin",
+      "step2": "2. Chọn địa điểm",
+      "step3": "3. Hoàn tất"
+    },
+    "header": {
+      "mainTitle": "Quản lý & Tùy chỉnh điểm dừng chân",
+      "mainSubtitle": "Xem thông tin hành trình, thêm hoặc điều chỉnh danh sách điểm đến để WAYVEE lên lịch trình hoàn hảo nhất.",
+      "syncingBadge": "Đang đồng bộ tự động"
     },
     "tripSummary": {
-      "title": "Thông tin lịch trình",
-      "yourTrip": "Chuyến đi của bạn",
+      "title": "Chuyến đi của bạn",
+      "yourTrip": "CHUYẾN ĐI CỦA BẠN",
       "nameLabel": "Tên chuyến đi",
-      "defaultName": "Chuyến đi A",
+      "defaultName": "Chuyến đi Hà Nội - Sài Gòn",
       "datesLabel": "Ngày đi - về",
-      "defaultDates": "14 - 19 Thg 8",
+      "defaultDates": "16/07/2025 - 24/07/2025",
       "edit": "Chỉnh sửa"
     },
     "locationDetails": {
-      "title": "Thông tin địa điểm",
-      "destinationLabel": "Đi đâu?",
-      "destinationPlaceholder": "Nhập địa điểm....",
+      "title": "Thông tin điểm đến",
+      "subtitle": "Tìm kiếm điểm dừng chân và tùy chỉnh trải nghiệm phù hợp",
+      "destinationLabel": "Đi đâu? (Địa điểm, quán cafe, di tích...)",
+      "destinationPlaceholder": "Nhập địa điểm...",
+      "currentLocation": "Vị trí hiện tại",
+      "selectMap": "Chọn bản đồ",
       "companionsLabel": "Đi cùng ai?",
-      "passengerCountLabel": "Số lượng",
-      "passengerCountPlaceholder": "Số người....",
-      "travelStyleLabel": "Phong cách chuyến đi?",
-      "travelStylePlaceholder": "Style...."
+      "passengerCountLabel": "Số lượng thành viên",
+      "memberPrefix": "Thành viên:",
+      "travelStyleLabel": "Phong cách & Sở thích chuyến đi",
+      "selectedCount": "Đã chọn",
+      "addCurrentLocation": "Thêm địa điểm này vào danh sách chọn"
     },
     "selectedPlaces": {
-      "title": "Danh sách địa điểm đã chọn",
+      "title": "DANH SÁCH ĐỊA ĐIỂM",
       "emptyTitle": "Chưa có địa điểm nào",
-      "emptyDesc": "Bấm nút \"Thêm địa điểm\" bên dưới để chọn địa điểm xung quanh!",
-      "addPlaceButton": "Thêm địa điểm",
+      "emptyDesc": "Bấm nút \"Thêm địa điểm nhanh\" bên trên để chọn địa điểm xung quanh!",
+      "addPlaceButton": "Thêm địa điểm nhanh",
+      "routeEstimate": "Ước tính di chuyển liên tuyến:",
+      "points": "điểm",
+      "clearAll": "Xóa tất cả",
       "excellent": "Xuất sắc",
       "reviews": "đánh giá"
     },
+    "actionSelector": {
+      "title": "Bạn muốn làm gì tiếp theo?",
+      "subtitle": "Chọn phương thức lên kế hoạch phù hợp với thói quen du lịch của bạn",
+      "option1Badge": "KHUYÊN DÙNG",
+      "option1Title": "Tạo lịch trình tự động bằng AI",
+      "option1Desc": "Thuật toán thông minh tự động phân bổ {{count}} địa điểm đã chọn theo từng ngày, tối ưu quãng đường đi và gợi ý giờ ghé thăm hợp lý nhất.",
+      "option1Link": "Mở trình sắp xếp lịch trình AI →",
+      "option2Title": "Chỉ lưu địa điểm vào danh sách chờ",
+      "option2Desc": "Lưu các địa điểm bạn quan tâm vào bộ sưu tập '{{tripName}}' để bạn tự sắp xếp thủ công vào thời gian rảnh.",
+      "option2Link": "Lưu vào kho chờ →"
+    },
+    "itineraryBuilder": {
+      "title": "✨ Xây dựng lịch trình chi tiết",
+      "dayTab": "Ngày {{day}}",
+      "addDay": "+ Thêm ngày",
+      "dayCount": "{{count}} ngày",
+      "assignedPlaces": "Địa điểm đã xếp vào Ngày {{day}} ({{count}})",
+      "emptyAssigned": "Chưa có địa điểm nào được xếp vào Ngày {{day}}.",
+      "emptyAssignedPrompt": "Chọn từ danh sách địa điểm đã lưu bên dưới để thêm vào ngày này.",
+      "unassignedPool": "Kho địa điểm đã chọn (Chưa phân chia)",
+      "unassignedCount": "{{count}} địa điểm sẵn sàng",
+      "addToDay": "+ Thêm vào Ngày {{day}}",
+      "removeFromDay": "Bỏ khỏi ngày",
+      "moveUp": "Lên",
+      "moveDown": "Xuống",
+      "optimizeButton": "✨ WAYVEE tối ưu lịch trình",
+      "optimizeDesc": "Sắp xếp thứ tự các địa điểm trong ngày theo khoảng cách địa lý và thời gian tối ưu",
+      "optimizeDay": "Tối ưu Ngày {{day}}",
+      "optimizing": "WAYVEE đang tối ưu lịch trình...",
+      "optimizedSuccess": "Đã tối ưu thứ tự các địa điểm một cách khoa học!",
+      "reorderHint": "Kéo / Bấm nút mũi tên để đổi thứ tự",
+      "allAssigned": "Tất cả địa điểm đã được xếp vào các ngày",
+      "allAssignedHint": "Bấm nút thêm bên dưới nếu muốn khám phá thêm địa điểm mới!",
+      "addToDayBtn": "+ Vào Ngày {{day}}",
+      "removeFromTrip": "Xóa khỏi chuyến đi",
+      "removeDayBtn": "✕ Xóa Ngày {{day}}",
+      "addMorePlaces": "+ Thêm địa điểm khác",
+      "finishItinerary": "Hoàn tất lịch trình →"
+    },
+    "savedLocations": {
+      "badge": "🎉 Đã lưu các địa điểm!",
+      "message": "Bạn đã lưu {{count}} địa điểm cho chuyến đi {{destination}}.",
+      "subtitle": "Các địa điểm đã được lưu an toàn. Bạn có thể tạo lịch trình chi tiết ngay bây giờ hoặc quay lại làm sau bất cứ lúc nào.",
+      "placesCount": "Danh sách địa điểm đã lưu ({{count}})",
+      "noPlaces": "Chưa có địa điểm nào được lưu.",
+      "exploreNow": "+ Khám phá địa điểm ngay",
+      "createItineraryNow": "✨ Tạo lịch trình",
+      "exploreMore": "Tiếp tục khám phá",
+      "completeTrip": "Hoàn tất lưu chuyến đi →"
+    },
     "actions": {
-      "nextStep": "Bước tiếp theo"
+      "backStep1": "Quay lại Bước 1",
+      "nextStep": "Tiếp tục bước tiếp theo"
     }
   },
   "tripConfirm": {
     "pageTitle": "WAYVEE - Hoàn tất lịch trình",
     "stepper": {
       "step1": "Nhập thông tin",
-      "step2": "Tạo lịch trình",
+      "step2": "Chọn địa điểm",
       "step3": "Hoàn tất"
     },
     "tripSummary": {
@@ -181,6 +274,9 @@
       "defaultPassengers": "3 người",
       "edit": "Chỉnh sửa"
     },
+    "savedOnlyBadge": "📍 Danh sách địa điểm đã lưu (Chưa phân chia theo ngày)",
+    "itineraryModeBadge": "✨ Lịch trình chi tiết đã phân chia theo ngày",
+    "createItineraryCta": "✨ Tạo lịch trình ngay",
     "placeItem": {
       "discountBadge": "Ưu đãi",
       "excellent": "Xuất sắc",
@@ -190,7 +286,7 @@
       "work": "Làm việc"
     },
     "actions": {
-      "confirm": "Xác nhận"
+      "confirm": "Xác nhận & Lưu chuyến đi"
     },
     "modals": {
       "processingTitle": "Đang xử lý",

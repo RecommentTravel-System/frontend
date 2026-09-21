@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "~/providers/i18n-provider";
+import { useAuth } from "~/providers/auth-provider";
+import { checkFavorite, addFavorite, removeFavoriteByOsmId } from "~/shared/services/favorite-api";
 
 /**
  * Reusable PlaceCard supporting both 'list' (horizontal) and 'grid' (vertical) modes
@@ -13,7 +15,44 @@ export function PlaceCard({
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [isFavorite, setIsFavorite] = useState(false);
+  const [favLoading, setFavLoading] = useState(false);
+
+  const placeOsmId = place.osmId || place.id;
+
+  useEffect(() => {
+    if (!isAuthenticated || !placeOsmId) return;
+    let cancelled = false;
+    checkFavorite(placeOsmId)
+      .then(res => { if (!cancelled) setIsFavorite(!!res.data); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [isAuthenticated, placeOsmId]);
+
+  const handleToggleFavorite = useCallback(async (e) => {
+    e.stopPropagation();
+    if (!isAuthenticated || favLoading) return;
+    setFavLoading(true);
+    try {
+      if (isFavorite) {
+        await removeFavoriteByOsmId(placeOsmId);
+        setIsFavorite(false);
+      } else {
+        await addFavorite({
+          osmId: placeOsmId,
+          placeName: place.name,
+          latitude: place.latitude,
+          longitude: place.longitude
+        });
+        setIsFavorite(true);
+      }
+    } catch (err) {
+      console.error("Favorite toggle failed:", err);
+    } finally {
+      setFavLoading(false);
+    }
+  }, [isAuthenticated, favLoading, isFavorite, placeOsmId, place]);
 
   const placeId = place.osmId || place.id;
   const handleNavigateDetail = () => navigate(`/places/${placeId}`);
