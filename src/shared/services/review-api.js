@@ -44,3 +44,12 @@ export function updateReview(reviewId, { rating, comment, anonymous }) {
 export function deleteReview(reviewId) {
   return api.delete(`/api/v1/reviews/${reviewId}`);
 }
+
+/**
+ * Get / search all reviews for admin moderation or filtering.
+ * @param {{ osmId?: number, minRating?: number }} [params]
+ */
+export function getAllReviews(params = {}) {
+  return api.get("/api/v1/reviews/search", { params });
+}
+

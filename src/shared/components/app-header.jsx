@@ -59,7 +59,9 @@ export function AppHeader({ onLogin, onRegister }) {
   };
 
   const handleAvatarClick = () => {
-    if (isAuthenticated) {
+    if (!isAuthenticated) {
+      if (onLogin) onLogin();
+    } else {
       setMenuOpen((prev) => !prev);
     }
   };
@@ -94,10 +96,7 @@ export function AppHeader({ onLogin, onRegister }) {
           <circle cx="12" cy="7" r="4" />
         </svg>
       ),
-      onClick: () => {
-        setMenuOpen(false);
-        navigate("/profile");
-      }
+      onClick: () => setMenuOpen(false)
     },
     {
       id: "payment",
@@ -122,10 +121,7 @@ export function AppHeader({ onLogin, onRegister }) {
           <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
         </svg>
       ),
-      onClick: () => {
-        setMenuOpen(false);
-        navigate("/itineraries");
-      }
+      onClick: () => setMenuOpen(false)
     },
     {
       id: "wishLists",
@@ -135,10 +131,7 @@ export function AppHeader({ onLogin, onRegister }) {
           <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
         </svg>
       ),
-      onClick: () => {
-        setMenuOpen(false);
-        navigate("/favorites");
-      }
+      onClick: () => setMenuOpen(false)
     },
     {
       id: "reviews",
@@ -150,10 +143,7 @@ export function AppHeader({ onLogin, onRegister }) {
           <line x1="8" y1="13" x2="14" y2="13" />
         </svg>
       ),
-      onClick: () => {
-        setMenuOpen(false);
-        navigate("/reviews");
-      }
+      onClick: () => setMenuOpen(false)
     },
     {
       id: "logout",
@@ -186,7 +176,7 @@ export function AppHeader({ onLogin, onRegister }) {
           type="button"
           aria-label="Support"
           title="Hỗ trợ"
-          className="w-9 h-9 rounded-full border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-center text-slate-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors shadow-2xs cursor-pointer"
+          className="w-9 h-9 rounded-full border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-center text-slate-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors shadow-2xs"
         >
           <svg
             aria-hidden="true"
@@ -204,8 +194,31 @@ export function AppHeader({ onLogin, onRegister }) {
           </svg>
         </button>
 
-        {/* User Auth Section: Login & Register buttons when not logged in; Avatar when logged in */}
-        {isAuthenticated ? (
+        {/* Auth section: Show Login & Register buttons when NOT authenticated; Show Avatar + Dropdown when authenticated */}
+        {!isAuthenticated ? (
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                if (onLogin) onLogin();
+                else navigate("/login");
+              }}
+              className="px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 hover:text-[#00a3e0] dark:hover:text-[#00a3e0] hover:bg-sky-50 dark:hover:bg-slate-800 transition-all border border-transparent hover:border-sky-200 dark:hover:border-slate-700 cursor-pointer"
+            >
+              {t("login", "Đăng nhập")}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                if (onRegister) onRegister();
+                else navigate("/register");
+              }}
+              className="px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold text-white bg-[#00a3e0] hover:bg-[#008ec4] transition-all shadow-xs active:scale-95 cursor-pointer"
+            >
+              {t("register", "Đăng ký")}
+            </button>
+          </div>
+        ) : (
           <div
             ref={menuRef}
             className="relative"
@@ -216,14 +229,17 @@ export function AppHeader({ onLogin, onRegister }) {
               type="button"
               onClick={handleAvatarClick}
               title={user?.fullName || "Tài khoản của bạn"}
-              className="w-9 h-9 rounded-full overflow-hidden border-2 border-[#00a8e8] shadow-xs cursor-pointer hover:scale-105 transition-transform flex items-center justify-center"
+              className="w-9 h-9 rounded-full overflow-hidden border-2 border-[#00a3e0] shadow-xs cursor-pointer hover:scale-105 transition-transform flex items-center justify-center relative"
             >
-              <span className="w-full h-full flex items-center justify-center bg-[#e0f2fe] text-[#0b2545] text-xs font-extrabold">
-                {(user?.fullName || "U").slice(0, 1).toUpperCase()}
-              </span>
+              <img
+                src={user?.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80"}
+                alt="User avatar"
+                className="w-full h-full object-cover"
+              />
+              <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-white dark:ring-slate-900"></span>
             </button>
 
-            {/* User Menu Dropdown Popover matching Image */}
+            {/* User Menu Dropdown Popover */}
             {menuOpen && (
               <div
                 className="absolute right-0 top-full mt-2 w-64 bg-white dark:bg-[#111a2e] rounded-3xl p-3 shadow-2xl border border-slate-100 dark:border-slate-800 animate-in fade-in slide-in-from-top-2 duration-200 z-50"
@@ -247,23 +263,6 @@ export function AppHeader({ onLogin, onRegister }) {
                 </div>
               </div>
             )}
-          </div>
-        ) : (
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={onLogin}
-              className="px-3 sm:px-3.5 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-[#002d54] dark:hover:text-sky-400 border border-slate-200 dark:border-slate-700 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-            >
-              {t("login") || "Đăng nhập"}
-            </button>
-            <button
-              type="button"
-              onClick={onRegister || onLogin}
-              className="px-3 sm:px-3.5 py-1.5 text-xs font-bold text-white bg-[#002d54] dark:bg-sky-500 dark:text-slate-950 hover:bg-[#001f3b] dark:hover:bg-sky-600 rounded-full shadow-xs transition-colors cursor-pointer"
-            >
-              {t("register") || "Đăng ký"}
-            </button>
           </div>
         )}
       </div>

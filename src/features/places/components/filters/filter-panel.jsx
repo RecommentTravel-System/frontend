@@ -6,6 +6,7 @@ import {
   RATING_OPTIONS,
   PRICE_OPTIONS
 } from "../../config/filter-config";
+import { getAllCategoriesApi } from "~/features/categories/services/category-api";
 
 /**
  * Reusable Configuration-Driven Filter Panel.
@@ -25,6 +26,36 @@ export function FilterPanel({
   isLoading = false
 }) {
   const { t } = useTranslation();
+  const [dbCategories, setDbCategories] = useState([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    getAllCategoriesApi()
+      .then((res) => {
+        if (cancelled) return;
+        const list = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : [];
+        if (list.length > 0) {
+          const mapped = list.map((c) => {
+            const codeUpper = (c.code || "").toUpperCase();
+            const matchedKey = Object.keys(CATEGORY_FILTER_CONFIGS).find(
+              (k) => k === codeUpper || CATEGORY_FILTER_CONFIGS[k].backendCategory === codeUpper
+            );
+            return {
+              categoryId: matchedKey || c.code || String(c.categoryId),
+              name: c.name,
+              code: c.code
+            };
+          });
+          setDbCategories(mapped);
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to load categories from API:", err);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Local state for smooth distance slider dragging with 500ms debounce
   const [sliderVal, setSliderVal] = useState(filters.distanceKm);
@@ -41,7 +72,8 @@ export function FilterPanel({
     onChangeDistance(newVal);
   };
 
-  const categories = Object.values(CATEGORY_FILTER_CONFIGS);
+  const defaultCategories = Object.values(CATEGORY_FILTER_CONFIGS);
+  const categoriesToRender = dbCategories.length > 0 ? dbCategories : defaultCategories;
   const preferences = currentCategoryConfig?.preferences || [];
 
   return (
@@ -74,9 +106,9 @@ export function FilterPanel({
           {t("places.filter.category") || "Loại địa điểm"}
         </label>
         <div className="flex flex-wrap gap-1.5">
-          {categories.map((cat) => {
+          {categoriesToRender.map((cat) => {
             const isSelected = filters.category === cat.categoryId;
-            const label = t(cat.labelKey) || cat.defaultLabel;
+            const label = cat.name || t(cat.labelKey) || cat.defaultLabel;
             return (
               <button
                 key={cat.categoryId}

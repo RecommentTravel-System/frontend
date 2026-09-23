@@ -177,10 +177,19 @@ export function PlacesPage() {
   // Return to trip creation
   const handleCompleteSelection = () => {
     const updatedList = Array.from(addedPlacesMap.values());
-    navigate("/trip/create", {
+    const originalIds = new Set((tripState.placesList || []).map((place) => place.osmId || place.id));
+    const addedPlaceForDay = tripState.targetDayNum
+      ? updatedList.find((place) => !originalIds.has(place.osmId || place.id))
+      : null;
+
+    if (tripState.targetDayNum && !addedPlaceForDay) return;
+
+    navigate(tripState.targetDayNum ? "/trip/confirm" : "/trip/create", {
       state: {
         ...tripState,
-        placesList: updatedList
+        placesList: updatedList,
+        addedPlaceForDay,
+        targetDayNum: tripState.targetDayNum
       }
     });
   };

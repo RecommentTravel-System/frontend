@@ -1,0 +1,1069 @@
+import { useState, useMemo } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "~/providers/i18n-provider";
+import { AppHeader } from "~/shared/components";
+import { LocationMapModal } from "./location-map-modal";
+
+const INITIAL_DAYS = [
+  {
+    dayId: "day-1",
+    dayNum: 1,
+    dayLabelVi: "Ngày 1 (14 Thg 8)",
+    dayLabelEn: "Day 1 (Aug 14)",
+    titleVi: "Phố Cổ & Check-in Cà phê",
+    titleEn: "Old Quarter & Coffee Check-in",
+    items: [
+      {
+        id: "d1-1",
+        name: "Cộng Cà Phê Nhà Thờ",
+        category: "coffee",
+        categoryVi: "Cà phê",
+        categoryEn: "Coffee",
+        categoryColor: "bg-amber-50 text-amber-700 border-amber-200",
+        barColor: "bg-amber-500",
+        rating: 4.8,
+        reviewsCount: "1,120",
+        address: "27 Nhà Thờ, Hoàn Kiếm",
+        tagVi: "Ghi chú",
+        tagEn: "Notes",
+        image:
+          "https://lh3.googleusercontent.com/aida-public/AB6AXuDubrmT6I6G76VzNEsQTpx3ruw3s_1pXTpTCgcdi6NFXIi0LfVD-xywPD8zQXY5ZPCwZ0dR2Zc6qCOHEAc-dBNhg2pVZqDAF5tw9UGTVmG6cXbN6nk9v4YbOSxxatTlRWVLfxi29jgDF9XC4aq2wGU5ajWXX6BK5_9f_5N4gGU7k_Pt3BLr5uMI7E3C800MX65XYlMqSgBwDTWDiOWCcmBN8W4ekvmsmvbX_XYSWdc"
+      },
+      {
+        id: "d1-2",
+        name: "Nhà Thờ Lớn Hà Nội",
+        category: "checkin",
+        categoryVi: "Check-in",
+        categoryEn: "Check-in",
+        categoryColor: "bg-sky-50 text-sky-700 border-sky-200",
+        barColor: "bg-sky-500",
+        rating: 4.9,
+        reviewsCount: "4,500",
+        address: "Hàng Trống, Hoàn Kiếm",
+        tagVi: "Chụp ảnh kỷ niệm",
+        tagEn: "Photo Spot",
+        image:
+          "https://lh3.googleusercontent.com/aida-public/AB6AXuAmbrUUkMXROP3mGEUUOi8_lWTi19bKO3PtxhEgMjk70OqqVKX48XWbKaoDFfRITBCWj5XYyYCM1QT9yuJWAjOZ9Mh9KWXj1n1xN0O0XUwJtkU9DMjqk84wouh7NIEa3gjNa4cMKEipuSYqdwnNz0rmu9fJv71k_mkeKZb0g4WfI9M0261IdlvyhcP2XKolmLtxzZsDp1MLcic9OTHR8b8bhEk8q13XRsqhdwYAMrg"
+      },
+      {
+        id: "d1-3",
+        name: "Bún Chả Hương Liên",
+        category: "food",
+        categoryVi: "Ẩm thực",
+        categoryEn: "Food",
+        categoryColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
+        barColor: "bg-emerald-500",
+        rating: 4.6,
+        reviewsCount: "Bún Chả Obama",
+        address: "24 Lê Văn Hưu, Hai Bà Trưng",
+        tagVi: "Đã đặt bàn 12h",
+        tagEn: "Booked 12:00",
+        image:
+          "https://lh3.googleusercontent.com/aida-public/AB6AXuCiiuQ2wsuR0njNGC8aEPWZn2HEUm7eDWlkrIFZ62t2IEJ5QgGny81oLlHFPPnZ2GcQq2TzhR5YHeOva4-9Q8Ph6ekhGbtAt59HhHu_HHjJkEiCJ2aPzGPFbhg1TfPEuKRLaWpI0GV4Hm0M7Zbox_nnD9w6vsekXcxa_UGWEj4k1k-0UrZ9Vx0W_DKok9UPSjAAmgtBWcfw7cZ3zd7VSrDK-8uqL5h0wFk4nYRP2J0"
+      }
+    ]
+  },
+  {
+    dayId: "day-2",
+    dayNum: 2,
+    dayLabelVi: "Ngày 2 (15 Thg 8)",
+    dayLabelEn: "Day 2 (Aug 15)",
+    titleVi: "Văn hóa & Lịch sử Thủ Đô",
+    titleEn: "Culture & Capital History",
+    items: [
+      {
+        id: "d2-1",
+        name: "Lăng Bác & Ba Đình",
+        category: "culture",
+        categoryVi: "Văn hóa",
+        categoryEn: "Culture",
+        categoryColor: "bg-sky-50 text-sky-700 border-sky-200",
+        barColor: "bg-sky-500",
+        rating: 4.9,
+        reviewsCount: "12,000+",
+        address: "Số 2 Hùng Vương, Ba Đình",
+        tagVi: "Đến sớm xem lễ đổi gác",
+        tagEn: "Guard change ceremony",
+        image:
+          "https://lh3.googleusercontent.com/aida-public/AB6AXuD1GUjDo_Yuq9J22vlCLsz0ggPVTjYqk_8O6No1rOzdTpmWXq6vbzxk7F-n5naZiM8giseBPmTbsKJQ5tsAN6Bt0bL0AYDlqYYWfwKzVNpVF3UqwRPCeG1_tZ1uJDDEDrmlMCYC9mv3wsGdLAIrNUqvI7bcwuWGIGP1E1fFcHDlcxeu2ndibpei06uDoUBWAwCHumy4PliVI6yxig2_RiEL4HUZ6jCkuDcVamLEmRw"
+      },
+      {
+        id: "d2-2",
+        name: "Hoàng Thành Thăng Long",
+        category: "culture",
+        categoryVi: "Di tích",
+        categoryEn: "Heritage",
+        categoryColor: "bg-sky-50 text-sky-700 border-sky-200",
+        barColor: "bg-sky-500",
+        rating: 4.7,
+        reviewsCount: "3,200",
+        address: "19C Hoàng Diệu, Quán Thánh",
+        tagVi: "Check-in đường Hoàng Diệu",
+        tagEn: "Hoang Dieu street walk",
+        image:
+          "https://lh3.googleusercontent.com/aida-public/AB6AXuAvv4bC3x_Ylsn7UBZgU7XB5DnwtuUKpSyBULC4Ftqq3o77LJK2AmagO-s9rFjg9JMSN8chQRCpE2lpOO8cs2fgHRjnaka7h5KX3WKvyTOaqh6lEE-rNYBI3ApYwKIaHfrPtPsNFpVMHsmp1kGo1Q8XJWmoMYfUZmWbY-TVPDZlydCJUrcMykYxrEAW5SLwuREjVmwQJhCOXsSOCuH3qB3F2lo5Kg3-Az7okmWUMMk"
+      },
+      {
+        id: "d2-3",
+        name: "Phố Cà Phê Đường Tàu",
+        category: "checkin",
+        categoryVi: "Check-in",
+        categoryEn: "Check-in",
+        categoryColor: "bg-amber-50 text-amber-700 border-amber-200",
+        barColor: "bg-amber-500",
+        rating: 4.8,
+        reviewsCount: "Train Street",
+        address: "Trần Phú / Phùng Hưng",
+        tagVi: "Ngắm hoàng hôn tàu hỏa",
+        tagEn: "Train sunset view",
+        image:
+          "https://lh3.googleusercontent.com/aida-public/AB6AXuB70E5HfPU8ywR6ZNEqbDdYkWOfNND-avIU-t11sHtQqEHvRqG0UJUina5VtlXczlJVDPDEvFfv9G1BuLbNc35dmmq6LYxh_sXA8noFWyDs4aDnQRkRuo34-eALVEKL66B_8tsrLkMCUE0T3XHG9J2b3xbm06R6rexV2EaatUHu-EwBFnEq-J9LOjGukGhQ4bVAkB4nCDfbfm3QXSwZzM0rhS-2WsVtj-MUYnBMuvY"
+      },
+      {
+        id: "d2-4",
+        name: "Chả Cá Thăng Long",
+        category: "food",
+        categoryVi: "Ẩm thực",
+        categoryEn: "Food",
+        categoryColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
+        barColor: "bg-emerald-500",
+        rating: 4.7,
+        reviewsCount: "2,800",
+        address: "6B Đường Thành, Cửa Đông",
+        tagVi: "Khuyên dùng mắm tôm",
+        tagEn: "Recommended with shrimp paste",
+        image:
+          "https://lh3.googleusercontent.com/aida-public/AB6AXuDsZfWuD9sO9UGcj-kA2oMRIGvzPlJLSMxvzGOfZpLTE7FhvI1OwV6iCoy2wBNk6JGQ6MWG4YmXiKUjfpTZnn6_bOoXs3V-RKvZNGmcCuWUmoOSx79jZTodSouJ_QJq8BQJgcBY2h2vvmu5QDwl27SC98Y0VFQvgjdL8Hmdq_TlqcPPEpn8dT4lEDOCyKHDHTTB_6-KHX7o2JO0GzXHkN1iJjz9LYPZlGknItgZj2M"
+      }
+    ]
+  },
+  {
+    dayId: "day-3",
+    dayNum: 3,
+    dayLabelVi: "Ngày 3 (16 Thg 8)",
+    dayLabelEn: "Day 3 (Aug 16)",
+    titleVi: "Hồ Tây & Hoàng hôn lãng mạn",
+    titleEn: "West Lake & Romantic Sunset",
+    items: [
+      {
+        id: "d3-1",
+        name: "Chùa Trấn Quốc",
+        category: "culture",
+        categoryVi: "Văn hóa",
+        categoryEn: "Culture",
+        categoryColor: "bg-sky-50 text-sky-700 border-sky-200",
+        barColor: "bg-sky-500",
+        rating: 4.8,
+        reviewsCount: "Trấn Quốc Pagoda",
+        address: "Đường Thanh Niên, Yên Phụ",
+        tagVi: "Cây bồ đề ngàn năm",
+        tagEn: "Ancient Bodhi Tree",
+        image:
+          "https://lh3.googleusercontent.com/aida-public/AB6AXuAoBAmA2tpJp1vCGnspWpgml1dzrNpXT_jXT9e2ND1sk0Cu0fKD_8k2gau86OhiHirGBIQp-Wf6Vib2cfR9tGS67QMGbnFVDAQ0OVQu9dAO2n1znyqPK9wR5GWhSpHHEMmxa2smqwIBnzT8ybFrg7ghlv6NEVHU6lTfa9QzexXY8byiokoF7YmT3LeGrjxz-H56182zna7hRNAIOjiyUfPTj_8sq4uFMkZTtWrG_Sw"
+      },
+      {
+        id: "d3-2",
+        name: "SUP Ngắm Hoàng Hôn",
+        category: "checkin",
+        categoryVi: "Trải nghiệm",
+        categoryEn: "Experience",
+        categoryColor: "bg-teal-50 text-teal-700 border-teal-200",
+        barColor: "bg-teal-500",
+        rating: 4.9,
+        reviewsCount: "Hanoi Kayak Club",
+        address: "292 Lạc Long Quân, Tây Hồ",
+        tagVi: "Đã có áo phao & HDV",
+        tagEn: "Lifejacket & guide included",
+        image:
+          "https://lh3.googleusercontent.com/aida-public/AB6AXuAzZoB89scjJVg6A66pZgRt3IXx86zpoQGczoMrsGzsDYGyEBe4TXok4iz8mjN03dHFNuNp_z5KJXJ0k82SiWQWRGMNtmuWN25eVFGhYpn_r88RTPoKmhPBmg5tjEPC3BQI05JxNalJpRDfG4Lmmv9PyeFFWDdl65DVsG6mNmmuAXJb-JC2-i9DkNQdqTndW5WmsQIbc1kXgiwOnQ57oasCYAqhXtYuIDkcz1vn3rc"
+      },
+      {
+        id: "d3-3",
+        name: "Ốc Nóng & Ăn Vặt Hồ Tây",
+        category: "food",
+        categoryVi: "Ẩm thực",
+        categoryEn: "Food",
+        categoryColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
+        barColor: "bg-emerald-500",
+        rating: 4.6,
+        reviewsCount: "Bà Già Trích Sài",
+        address: "173 Trích Sài, Bưởi, Tây Hồ",
+        tagVi: "Bàn view sát mép hồ",
+        tagEn: "Lakeside view table",
+        image:
+          "https://lh3.googleusercontent.com/aida-public/AB6AXuDceVs92PWGDXydo8X87y9LEF6YXu5DhvAOtKpFOldF1IdeZZFTnwViKOUELh35obilLUmCiK99Qu-y5pFzgpeKFLH7TXmTpQV_qC-uUuIr7NbB9QNeAGcim1hmAB4pEgT42XoHwiTbLVnjs7HJRx7f8VsLSH_oJ79PYOz3G2sn795Otjoe0Zeoy4HfsSwarIg9Bkpog3HhP3XeReaBQArvVvsYNrO_SoUVwx7F2ZE"
+      }
+    ]
+  },
+  {
+    dayId: "day-4",
+    dayNum: 4,
+    dayLabelVi: "Ngày 4 (17 Thg 8)",
+    dayLabelEn: "Day 4 (Aug 17)",
+    titleVi: "Bảo tàng & Nghệ thuật",
+    titleEn: "Museums & Arts",
+    items: [
+      {
+        id: "d4-1",
+        name: "Bảo Tàng Dân Tộc Học",
+        category: "culture",
+        categoryVi: "Bảo tàng",
+        categoryEn: "Museum",
+        categoryColor: "bg-sky-50 text-sky-700 border-sky-200",
+        barColor: "bg-sky-500",
+        rating: 4.8,
+        reviewsCount: "54 Dân tộc",
+        address: "Nguyễn Văn Huyên, Cầu Giấy",
+        tagVi: "Xem múa rối nước",
+        tagEn: "Water puppet show",
+        image:
+          "https://lh3.googleusercontent.com/aida-public/AB6AXuBr5BsrYxH2xVtUjhrtei3ZBXMCinH177AfOEMcJyYDdyKeq35jGwMJJpyZjFT78l5lWRTqY8g2u2wJzgyY5C7JTond-VVWQlkccpfKIY2cBC_E5HunWTcvLZYOZX5IF38wkp2UvgRFGPv8v83R3adlUaa9U18VmzOyWXr2XsGebNPVkhWBQAicti1sD7_ew6N9X8D6jfotmnxK7LR5L8Bc7Qq4cWa2tWNb5jj7EHI"
+      },
+      {
+        id: "d4-2",
+        name: "Bảo Tàng Mỹ Thuật VN",
+        category: "culture",
+        categoryVi: "Nghệ thuật",
+        categoryEn: "Fine Arts",
+        categoryColor: "bg-sky-50 text-sky-700 border-sky-200",
+        barColor: "bg-sky-500",
+        rating: 4.7,
+        reviewsCount: "Fine Arts",
+        address: "66 Nguyễn Thái Học, Ba Đình",
+        tagVi: "Tranh Thiếu nữ bên hoa huệ",
+        tagEn: "Famous oil paintings",
+        image:
+          "https://lh3.googleusercontent.com/aida-public/AB6AXuAK9cmfu2ibCznRV0V0-h6OpzkZyPltk06cJAc-eLAPqDAF0F2QoWa-JLX7lRf0_VtAkWfMFLK33-hebn4jaJgUPmpMtJBIc6NSeAcRGxXLH0EwNK4GTm2Fhx0FKPT3OAVkZFXqdL9V7ENMxZGsUD8cRU3eP2-LpTy-ABEbAUEOF4WHPxtl-rdxGaDDYlKpt0c3cZA7nHTgKMsQmZcGHNrOWTjhbplt7oRAWnNAnAs"
+      },
+      {
+        id: "d4-3",
+        name: "Nhà Hát Lớn & Kem Tràng Tiền",
+        category: "checkin",
+        categoryVi: "Check-in",
+        categoryEn: "Check-in",
+        categoryColor: "bg-amber-50 text-amber-700 border-amber-200",
+        barColor: "bg-amber-500",
+        rating: 4.9,
+        reviewsCount: "Hanoi Opera House",
+        address: "01 Tràng Tiền, Phan Chu Trinh",
+        tagVi: "Âm nhạc đường phố",
+        tagEn: "Street music vibe",
+        image:
+          "https://lh3.googleusercontent.com/aida-public/AB6AXuD4XsGqhPQGXo6SK3ra6zs9rqxJ-tVxagIggYJ4MArop7JnmRUCAr_4x12-XJS95BSJa48T6ptzdRzBnu9si1ur6gb-xUb-9aCcmoIp8Hbk_Ahu2VsigoYgs4t8LprhDmcDzyOSkipcpRM9MTTHKCAAjIVi_D55ldNmbHq-DcNz9AP8XsLH0epHYA1Yi2bljG50ICCpBFn6SnsVKokjqZjyxAchnVIqSCW7eD4B6jU"
+      }
+    ]
+  },
+  {
+    dayId: "day-5",
+    dayNum: 5,
+    dayLabelVi: "Ngày 5 (18 Thg 8)",
+    dayLabelEn: "Day 5 (Aug 18)",
+    titleVi: "Quà lưu niệm & Tạm biệt",
+    titleEn: "Souvenirs & Departure",
+    items: [
+      {
+        id: "d5-1",
+        name: "Ô Mai Tiến Thịnh / Hồng Lam",
+        category: "shopping",
+        categoryVi: "Mua sắm",
+        categoryEn: "Shopping",
+        categoryColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
+        barColor: "bg-emerald-500",
+        rating: 4.8,
+        reviewsCount: "Đặc sản quà biếu",
+        address: "21 Hàng Đường, Hoàn Kiếm",
+        tagVi: "Sấu xào gừng, mơ mận",
+        tagEn: "Dried fruit specialties",
+        image:
+          "https://lh3.googleusercontent.com/aida-public/AB6AXuApQU2bhUBtx1b0RRrBSzYKNMXxjI1mLzP71BPH64LVxgmgq_4SRTJZHTwpU-PlbFkuh_QLTzRUJa7nOLSL1w_a1tes9l0UTprppAxt7bjKzZYJahs6AMbYH8N6e0VY-1sUlhLe5nS5jO4H4Hk4ILHAke2HZRkdyrQrwuiV8u1xf4bgT5T7lwcyCwmRIdD0_bHtah7J2uFYzRDQvxpLMvtts59pxbTzYKRuLR4UI70"
+      },
+      {
+        id: "d5-2",
+        name: "Sân bay Quốc tế Nội Bài",
+        category: "flight",
+        categoryVi: "Chuyến bay",
+        categoryEn: "Flight",
+        categoryColor: "bg-sky-50 text-sky-700 border-sky-200",
+        barColor: "bg-sky-500",
+        rating: 4.8,
+        reviewsCount: "VN219 HAN ➔ SGN",
+        address: "Nhà ga T1 - Cửa số 4",
+        tagVi: "Đã check-in online",
+        tagEn: "Online check-in done",
+        image:
+          "https://lh3.googleusercontent.com/aida-public/AB6AXuCUc6F5u5ApWbpnGqy9vrRo0JfQ8zc8o3f801p3JZF58410m3UyM0QRXD7IO4avpax_eV8T68dODKYS4AoDygE2sFLrQWXOl0JccH6XlD7KOTflhmXMsFPruZ3Ephmj1kqw8srLGxtwYLV-Gki9E8O0lK0l5Om2BM3u6c16eIbrlXXLIZQjhCPiR3vGWLrl_GO_Pum2S9ywi3AJ8cp2_yu6AkpySYJFmX2RIkon9G0"
+      }
+    ]
+  }
+];
+
+const INITIAL_WISHLIST = [
+  {
+    id: "wish-1",
+    name: "Cà Phê Giảng (1946)",
+    category: "coffee",
+    categoryVi: "Cà phê trứng",
+    categoryEn: "Egg Coffee",
+    categoryColor: "bg-amber-50 text-amber-700 border-amber-200",
+    barColor: "bg-amber-500",
+    rating: 4.9,
+    reviewsCount: "4,100",
+    address: "39 Nguyễn Hữu Huân",
+    image:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuChhjb3QmLl8cCoDFR5sgmHi2ipssQ6mxTfWbYulzTehcYBDky8PVAaQ6WyUqSTYx7gHz6PXbzTfzYiJHIs_NuX2jOG34erWjZ2pW-PzIMhzVt9dZY93pFOY41fgWscblAG837oHT8LkLzNJqaHLbtTYSE7jldtVGeOWQJtpGR0yqcYAB-MsMqFW2uRmznjfxuJC08t7e1kFduClSDuUslcW-My1rdgRQrz5mXs-Kk"
+  },
+  {
+    id: "wish-2",
+    name: "Cầu Long Biên Hoàng Hôn",
+    category: "checkin",
+    categoryVi: "Check-in",
+    categoryEn: "Check-in",
+    categoryColor: "bg-sky-50 text-sky-700 border-sky-200",
+    barColor: "bg-sky-500",
+    rating: 4.8,
+    reviewsCount: "8,000",
+    address: "Cầu Long Biên, Hoàn Kiếm",
+    image:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuBE7Q8u4MrIegx-4iZnFWoMCz-Exgi4GKZ5udUDdOciAlFwU9y2JJBH1Ay5zYVx4tvH3RLXAzpRA0JQTDX7a1nLRxHfktwBUTq3K0RtJiVu-xBnUVVX4iE7JlUtY7LEpHFnfroAQz4jYAQQUeRTzvaKmbdCAOmjJ3JG-l46W4jRUz2-pwjGMt_EB9l-XkEL7OjDLs219R9MSyF83jhoJgyJL018rQ4Ex_JE3AfRTjI"
+  },
+  {
+    id: "wish-3",
+    name: "Phở Cuốn Hương Mai",
+    category: "food",
+    categoryVi: "Ẩm thực",
+    categoryEn: "Food",
+    categoryColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    barColor: "bg-emerald-500",
+    rating: 4.6,
+    reviewsCount: "1,900",
+    address: "25 Ngũ Xã, Ba Đình",
+    image:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuBDeByxo_DxogAq3IsAeOActdR-UkFRwnzs_jOyBc6OxHF6463Iy-GNiCKILKWdkXKTCkDEp9zfFAufUcfJaDmCI__fomLc8giGckqfO2Uun1znMYzkN9HTXhIYDaiLdYULOUKWyPXHEc6AqqqqokmYGi32KuGES4hohwz8YV9c3Ioh_hjIvqMU7XyLPMkIJyZP1fnupvYJFF6Do_2RPMm2Gx_-6jUptotISB0vCnY"
+  },
+  {
+    id: "wish-4",
+    name: "Di Tích Nhà Tù Hỏa Lò",
+    category: "culture",
+    categoryVi: "Di tích",
+    categoryEn: "Heritage",
+    categoryColor: "bg-sky-50 text-sky-700 border-sky-200",
+    barColor: "bg-sky-500",
+    rating: 4.9,
+    reviewsCount: "Đêm thiêng liêng",
+    address: "1 Hoả Lò, Trần Hưng Đạo",
+    image:
+      "https://lh3.googleusercontent.com/aida-public/AB6AXuC7taMeCVCw_sPcgGUo5Kw1qMAH9NMXVvlm32Kqq86Lp44I_y7S81eJDOxAKbKiXidcjqChiU8sqjJdhtYm_CMHUuizyKENTbZ51r5aQGAtRayemuies-X0MSo6byqiJvdnK_4GdP4DN3Ywknw1ow_v-_NQ68zWdEI-YaQ8ge5FHOxvjFd-ZMHVPpWD4RCTS-WAXJ_4UwwnORP7XdqKsGz8bcr2vMYISgcJ5OCcgYc"
+  }
+];
+
+export function TripPlanPage() {
+  const { t, language } = useTranslation();
+  const isEn = language === "en";
+  const navigate = useNavigate();
+  const locationState = useLocation().state || {};
+
+  // Trip Metadata
+  const [tripName, setTripName] = useState(
+    locationState.tripName || "Chuyến đi Hà Nội mùa thu - Khám phá 5 ngày 4 đêm"
+  );
+  const [tripDates, setTripDates] = useState(
+    locationState.tripDates || "14 - 19 Thg 8"
+  );
+  const [destination] = useState(
+    locationState.destination || "Hà Nội, Việt Nam"
+  );
+  const [passengerCount] = useState(
+    locationState.passengerCount || 3
+  );
+
+  // Days and Wishlist state
+  const [days, setDays] = useState(INITIAL_DAYS);
+  const [wishlist, setWishlist] = useState(INITIAL_WISHLIST);
+
+  // Filters & Search
+  const [activeCategoryFilter, setActiveCategoryFilter] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isMapModalOpen, setIsMapModalOpen] = useState(false);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [toastMessage, setToastMessage] = useState(null);
+  const [wishlistInput, setWishlistInput] = useState("");
+
+  // Drag state
+  const [draggedItem, setDraggedItem] = useState(null); // { item, sourceColId }
+  const [dragOverColId, setDragOverColId] = useState(null);
+
+  const showToast = (msg) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3500);
+  };
+
+  // Drag & Drop Handlers
+  const handleDragStart = (e, item, sourceColId) => {
+    setDraggedItem({ item, sourceColId });
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", JSON.stringify({ itemId: item.id, sourceColId }));
+  };
+
+  const handleDragOver = (e, colId) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    if (dragOverColId !== colId) {
+      setDragOverColId(colId);
+    }
+  };
+
+  const handleDragLeave = (e, colId) => {
+    if (dragOverColId === colId) {
+      setDragOverColId(null);
+    }
+  };
+
+  const handleDrop = (e, targetColId) => {
+    e.preventDefault();
+    setDragOverColId(null);
+    if (!draggedItem) return;
+
+    const { item, sourceColId } = draggedItem;
+    if (sourceColId === targetColId) return;
+
+    // 1. Remove from source
+    if (sourceColId === "wishlist") {
+      setWishlist((prev) => prev.filter((p) => p.id !== item.id));
+    } else {
+      setDays((prev) =>
+        prev.map((d) =>
+          d.dayId === sourceColId
+            ? { ...d, items: d.items.filter((p) => p.id !== item.id) }
+            : d
+        )
+      );
+    }
+
+    // 2. Add to target
+    if (targetColId === "wishlist") {
+      setWishlist((prev) => [item, ...prev]);
+      showToast(isEn ? `Moved "${item.name}" to Wishlist` : `Đã chuyển "${item.name}" vào danh sách chờ`);
+    } else {
+      setDays((prev) =>
+        prev.map((d) =>
+          d.dayId === targetColId
+            ? { ...d, items: [...d.items, item] }
+            : d
+        )
+      );
+      const targetDay = days.find((d) => d.dayId === targetColId);
+      const dayName = targetDay ? (isEn ? targetDay.dayLabelEn : targetDay.dayLabelVi) : targetColId;
+      showToast(isEn ? `Moved "${item.name}" to ${dayName}` : `Đã chuyển "${item.name}" sang ${dayName}`);
+    }
+
+    setDraggedItem(null);
+  };
+
+  // Move item directly to a specific day
+  const handleAssignToDay = (item, targetDayId) => {
+    setWishlist((prev) => prev.filter((p) => p.id !== item.id));
+    setDays((prev) =>
+      prev.map((d) =>
+        d.dayId === targetDayId
+          ? { ...d, items: [...d.items, item] }
+          : d
+      )
+    );
+    const targetDay = days.find((d) => d.dayId === targetDayId);
+    const dayName = targetDay ? (isEn ? targetDay.dayLabelEn : targetDay.dayLabelVi) : "";
+    showToast(isEn ? `Assigned "${item.name}" to ${dayName}` : `Đã gán "${item.name}" vào ${dayName}`);
+  };
+
+  // Delete item
+  const handleDeleteItem = (colId, itemId) => {
+    if (colId === "wishlist") {
+      setWishlist((prev) => prev.filter((p) => p.id !== itemId));
+    } else {
+      setDays((prev) =>
+        prev.map((d) =>
+          d.dayId === colId
+            ? { ...d, items: d.items.filter((p) => p.id !== itemId) }
+            : d
+        )
+      );
+    }
+    showToast(isEn ? "Activity removed" : "Đã xóa địa điểm");
+  };
+
+  // Quick Add Stop to Day
+  const handleAddStopToDay = (dayId) => {
+    const promptName = window.prompt(isEn ? "Enter place or stop name:" : "Nhập tên điểm dừng chân:");
+    if (!promptName || !promptName.trim()) return;
+
+    const newItem = {
+      id: `custom-${Date.now()}`,
+      name: promptName.trim(),
+      category: "checkin",
+      categoryVi: "Check-in",
+      categoryEn: "Check-in",
+      categoryColor: "bg-sky-50 text-sky-700 border-sky-200",
+      barColor: "bg-sky-500",
+      rating: 5.0,
+      reviewsCount: "Mới thêm",
+      address: destination,
+      tagVi: "Điểm tham quan mới",
+      tagEn: "New place",
+      image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=400&q=80"
+    };
+
+    setDays((prev) =>
+      prev.map((d) => (d.dayId === dayId ? { ...d, items: [...d.items, newItem] } : d))
+    );
+    showToast(isEn ? `Added "${promptName}"` : `Đã thêm "${promptName}"`);
+  };
+
+  // Quick Add to Wishlist
+  const handleAddToWishlist = (e) => {
+    if (e.key === "Enter" && wishlistInput.trim()) {
+      const newItem = {
+        id: `wish-${Date.now()}`,
+        name: wishlistInput.trim(),
+        category: "checkin",
+        categoryVi: "Check-in",
+        categoryEn: "Check-in",
+        categoryColor: "bg-sky-50 text-sky-700 border-sky-200",
+        barColor: "bg-sky-500",
+        rating: 5.0,
+        reviewsCount: "Mới thêm",
+        address: destination,
+        image: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=400&q=80"
+      };
+      setWishlist((prev) => [newItem, ...prev]);
+      setWishlistInput("");
+      showToast(isEn ? "Added to wishlist" : "Đã thêm vào danh sách chờ");
+    }
+  };
+
+  // AI Optimize simulation
+  const handleOptimizeAI = () => {
+    showToast(isEn ? "✨ AI algorithm optimized itinerary order smoothly!" : "✨ AI đã tối ưu hóa thứ tự các điểm dừng!");
+  };
+
+  // Filter items matching search and category
+  const filterItems = (items) => {
+    return items.filter((item) => {
+      const matchesCat =
+        activeCategoryFilter === "all" ||
+        item.category === activeCategoryFilter ||
+        (activeCategoryFilter === "cafe" && item.category === "coffee") ||
+        (activeCategoryFilter === "food" && item.category === "food") ||
+        (activeCategoryFilter === "checkin" && item.category === "checkin") ||
+        (activeCategoryFilter === "culture" && item.category === "culture");
+
+      const q = searchQuery.trim().toLowerCase();
+      const matchesSearch =
+        !q ||
+        item.name.toLowerCase().includes(q) ||
+        item.address.toLowerCase().includes(q) ||
+        item.categoryVi.toLowerCase().includes(q);
+
+      return matchesCat && matchesSearch;
+    });
+  };
+
+  // CONTINUE TO STEP 3 DIRECTLY
+  const handleContinueToStep3 = () => {
+    // Compile all planned places from all days and pass directly to Step 3
+    const confirmedPlaces = days.flatMap((d) =>
+      d.items.map((it) => ({
+        id: it.id,
+        name: it.name,
+        address: it.address,
+        category: it.categoryVi,
+        image: it.image
+      }))
+    );
+
+    navigate("/trip/confirm", {
+      state: {
+        tripName,
+        tripDates,
+        destination,
+        passengerCount,
+        placesList: confirmedPlaces.length > 0 ? confirmedPlaces : locationState.placesList,
+        daysSchedule: days
+      }
+    });
+  };
+
+  return (
+    <div className="bg-[#f8fafc] text-slate-800 font-sans min-h-screen flex flex-col antialiased selection:bg-[#00a3e0] selection:text-white overflow-x-hidden">
+      {/* App Header */}
+      <AppHeader />
+
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed top-18 right-6 z-50 flex items-center gap-2 px-4 py-2.5 bg-[#002b49] text-white rounded-xl shadow-xl border border-sky-400/30 text-xs font-semibold animate-fade-in">
+          <span className="material-symbols-outlined text-[#56f9f9] text-base">info</span>
+          <span>{toastMessage}</span>
+        </div>
+      )}
+
+      {/* MAIN WRAPPER */}
+      <div className="flex-1 flex flex-col w-full relative overflow-hidden">
+        {/* TRIP SUB-HEADER & QUICK CONTROLS */}
+        <section className="bg-white border-b border-slate-200 px-6 py-3 shrink-0 shadow-xs">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+            {/* Title & Badges */}
+            <div>
+              <div className="flex items-center gap-2.5">
+                <span className="material-symbols-outlined text-[#00a3e0] text-[22px]">
+                  flight_takeoff
+                </span>
+                {isEditingTitle ? (
+                  <input
+                    type="text"
+                    value={tripName}
+                    onChange={(e) => setTripName(e.target.value)}
+                    onBlur={() => setIsEditingTitle(false)}
+                    autoFocus
+                    className="text-base sm:text-lg font-bold text-[#002b49] border border-[#00a3e0] rounded px-2 py-0.5 outline-none"
+                  />
+                ) : (
+                  <h1 className="text-base sm:text-lg font-bold text-[#002b49] tracking-tight">
+                    {tripName} ({tripDates})
+                  </h1>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setIsEditingTitle(!isEditingTitle)}
+                  className="text-slate-400 hover:text-[#00658d] transition-colors p-1 cursor-pointer"
+                  title="Đổi tên chuyến đi"
+                >
+                  <span className="material-symbols-outlined text-[16px]">edit</span>
+                </button>
+              </div>
+
+              {/* Meta Attributes Tags (No distance or duration estimates as requested) */}
+              <div className="flex flex-wrap items-center gap-2 mt-1.5 text-xs">
+                <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded bg-sky-50 text-sky-700 border border-sky-200 font-semibold">
+                  <span className="material-symbols-outlined text-[13px]">group</span>
+                  <span>{passengerCount} {isEn ? "members" : "thành viên"}</span>
+                </div>
+                <span className="text-slate-300 text-xs hidden sm:inline">•</span>
+                <span className="text-slate-500">{isEn ? "Auto sync active" : "Cập nhật 2 phút trước"}</span>
+              </div>
+            </div>
+
+            {/* Toolbar & Controls */}
+            <div className="flex flex-wrap items-center gap-2 self-start lg:self-center">
+              {/* Category Filter Pills */}
+              <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-xs font-semibold">
+                <button
+                  type="button"
+                  onClick={() => setActiveCategoryFilter("all")}
+                  className={`px-2.5 py-1 rounded transition-all cursor-pointer ${
+                    activeCategoryFilter === "all"
+                      ? "bg-white text-[#002b49] font-bold shadow-xs"
+                      : "text-slate-600 hover:text-[#002b49]"
+                  }`}
+                >
+                  {isEn ? "All" : "Tất cả"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveCategoryFilter("cafe")}
+                  className={`px-2.5 py-1 rounded transition-all cursor-pointer ${
+                    activeCategoryFilter === "cafe"
+                      ? "bg-white text-[#002b49] font-bold shadow-xs"
+                      : "text-slate-600 hover:text-[#002b49]"
+                  }`}
+                >
+                  {isEn ? "Cafe" : "Cà phê"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveCategoryFilter("checkin")}
+                  className={`px-2.5 py-1 rounded transition-all cursor-pointer ${
+                    activeCategoryFilter === "checkin"
+                      ? "bg-white text-[#002b49] font-bold shadow-xs"
+                      : "text-slate-600 hover:text-[#002b49]"
+                  }`}
+                >
+                  Check-in
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveCategoryFilter("food")}
+                  className={`px-2.5 py-1 rounded transition-all cursor-pointer ${
+                    activeCategoryFilter === "food"
+                      ? "bg-white text-[#002b49] font-bold shadow-xs"
+                      : "text-slate-600 hover:text-[#002b49]"
+                  }`}
+                >
+                  {isEn ? "Food" : "Ẩm thực"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveCategoryFilter("culture")}
+                  className={`px-2.5 py-1 rounded transition-all cursor-pointer ${
+                    activeCategoryFilter === "culture"
+                      ? "bg-white text-[#002b49] font-bold shadow-xs"
+                      : "text-slate-600 hover:text-[#002b49]"
+                  }`}
+                >
+                  {isEn ? "Culture" : "Văn hóa & Di tích"}
+                </button>
+              </div>
+
+              {/* Action buttons */}
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setIsMapModalOpen(true)}
+                  className="flex items-center gap-1 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all shadow-xs cursor-pointer"
+                  title="Xem bản đồ vị trí các điểm"
+                >
+                  <span className="material-symbols-outlined text-[#00a3e0] text-[16px]">splitscreen</span>
+                  <span className="hidden sm:inline">{isEn ? "Map View" : "Xem Bản đồ"}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleOptimizeAI}
+                  className="flex items-center gap-1 bg-[#00a3e0] hover:bg-[#008ec4] text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-xs hover:shadow active:scale-95 transition-all cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+                    auto_awesome
+                  </span>
+                  <span>{isEn ? "AI Optimize" : "Tối ưu AI"}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* MULTI-DAY HORIZONTAL KANBAN TIMELINE STREAM (Bỏ quãng đường & thời gian & chi phí ước tính) */}
+        <section className="flex-1 overflow-x-auto p-4 flex gap-4 min-h-[calc(100vh-190px)] w-full pb-20">
+          {days.map((day) => {
+            const visibleItems = filterItems(day.items);
+            const isDragOver = dragOverColId === day.dayId;
+
+            return (
+              <div
+                key={day.dayId}
+                onDragOver={(e) => handleDragOver(e, day.dayId)}
+                onDragLeave={(e) => handleDragLeave(e, day.dayId)}
+                onDrop={(e) => handleDrop(e, day.dayId)}
+                className={`w-80 min-w-[320px] max-w-[320px] flex flex-col bg-[#f0f7fb] rounded-xl border transition-all shadow-xs ${
+                  isDragOver ? "border-[#00a3e0] ring-2 ring-[#00a3e0]/30 bg-sky-50" : "border-slate-200"
+                }`}
+              >
+                {/* Day Header - Only keep Day Title and Place Count (Bỏ quãng đường km) */}
+                <div className="p-3 border-b border-slate-200 bg-white flex items-center justify-between rounded-t-xl">
+                  <div className="flex items-center gap-2">
+                    <span className="w-6 h-6 rounded bg-sky-100 text-[#00658d] flex items-center justify-center font-bold text-xs border border-sky-200">
+                      D{day.dayNum}
+                    </span>
+                    <div>
+                      <h2 className="text-xs font-bold text-[#002b49]">
+                        {isEn ? day.dayLabelEn : day.dayLabelVi}
+                      </h2>
+                      <p className="text-[11px] text-slate-500 truncate w-40">
+                        {isEn ? day.titleEn : day.titleVi}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-xs font-semibold text-sky-700 block">
+                      {day.items.length} {isEn ? "stops" : "điểm"}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Cards Stack with Drag & Drop */}
+                <div className="p-2.5 flex-1 overflow-y-auto space-y-2.5">
+                  {visibleItems.length === 0 ? (
+                    <div className="py-8 text-center text-slate-400 text-xs border-2 border-dashed border-slate-200 rounded-lg">
+                      {isEn ? "Drag places here" : "Kéo thả địa điểm vào đây"}
+                    </div>
+                  ) : (
+                    visibleItems.map((item) => (
+                      <div
+                        key={item.id}
+                        draggable
+                        onDragStart={(e) => handleDragStart(e, item, day.dayId)}
+                        className="group relative bg-white rounded-lg border border-slate-200 hover:border-[#00a3e0] transition-all p-2.5 shadow-xs cursor-grab active:cursor-grabbing hover:shadow-md"
+                      >
+                        {/* Colored Left Strip Indicator */}
+                        <div className={`absolute left-0 top-0 bottom-0 w-1 ${item.barColor || "bg-[#00a3e0]"} rounded-l`} />
+
+                        {/* Top bar: Drag Handle + Category Tag + Actions */}
+                        <div className="flex items-center justify-between mb-1.5 pl-1.5">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-slate-400 text-[14px] leading-none select-none group-hover:text-[#00a3e0]">
+                              ⋮⋮
+                            </span>
+                            <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${item.categoryColor || "bg-sky-50 text-sky-700 border-sky-200"}`}>
+                              {isEn ? item.categoryEn || item.categoryVi : item.categoryVi}
+                            </span>
+                          </div>
+
+                          <div className="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
+                            {/* Move to next day */}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const nextDayNum = (day.dayNum % days.length) + 1;
+                                handleAssignToDay(item, `day-${nextDayNum}`);
+                              }}
+                              className="text-slate-400 hover:text-[#00658d] p-0.5 cursor-pointer"
+                              title="Đổi sang ngày tiếp theo"
+                            >
+                              <span className="material-symbols-outlined text-[15px]">event_repeat</span>
+                            </button>
+
+                            {/* Delete stop */}
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteItem(day.dayId, item.id)}
+                              className="text-slate-400 hover:text-red-600 p-0.5 cursor-pointer"
+                              title="Xóa điểm dừng"
+                            >
+                              <span className="material-symbols-outlined text-[15px]">delete</span>
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Main Content & Media */}
+                        <div className="flex gap-2.5 pl-1.5">
+                          <div className="w-16 h-16 rounded overflow-hidden shrink-0 border border-slate-200">
+                            <img
+                              src={item.image}
+                              alt={item.name}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-xs font-bold text-[#002b49] truncate">
+                              {item.name}
+                            </h3>
+                            <div className="flex items-center gap-1 text-[11px] text-amber-600 mt-0.5">
+                              <span
+                                className="material-symbols-outlined text-[12px]"
+                                style={{ fontVariationSettings: "'FILL' 1" }}
+                              >
+                                star
+                              </span>
+                              <span className="font-semibold">{item.rating}</span>
+                              <span className="text-slate-400">({item.reviewsCount})</span>
+                            </div>
+                            <p className="text-[11px] text-slate-500 truncate mt-0.5">
+                              {item.address}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Action Bar Bottom (Bỏ giá tiền / chi phí ước tính, chỉ giữ note & tag) */}
+                        <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 pl-1.5">
+                          <span className="text-sky-700 font-semibold truncate max-w-[170px]">
+                            {isEn ? item.tagEn || item.tagVi : item.tagVi}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newNote = window.prompt(isEn ? "Add note:" : "Thêm ghi chú:", item.tagVi || "");
+                              if (newNote !== null) {
+                                setDays((prev) =>
+                                  prev.map((d) =>
+                                    d.dayId === day.dayId
+                                      ? {
+                                          ...d,
+                                          items: d.items.map((p) =>
+                                            p.id === item.id ? { ...p, tagVi: newNote, tagEn: newNote } : p
+                                          )
+                                        }
+                                      : d
+                                  )
+                                );
+                              }
+                            }}
+                            className="flex items-center gap-0.5 text-[#00658d] hover:underline font-semibold cursor-pointer"
+                          >
+                            <span className="material-symbols-outlined text-[13px]">edit_note</span>
+                            <span>{isEn ? "Note" : "Ghi chú"}</span>
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  )}
+
+                  {/* Quick Add Stop in Column */}
+                  <button
+                    type="button"
+                    onClick={() => handleAddStopToDay(day.dayId)}
+                    className="w-full py-2 bg-white/80 border border-dashed border-slate-300 rounded-lg text-xs text-slate-600 hover:text-[#00658d] hover:border-[#00a3e0] hover:bg-white transition-all flex items-center justify-center gap-1.5 font-medium shadow-2xs cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">add</span>
+                    <span>
+                      {isEn ? `Add stop to Day ${day.dayNum}` : `Thêm điểm dừng Ngày ${day.dayNum}`}
+                    </span>
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+
+          {/* COLUMN: WISHLIST / UNASSIGNED BUCKET (Địa điểm chờ sắp xếp) */}
+          <div
+            onDragOver={(e) => handleDragOver(e, "wishlist")}
+            onDragLeave={(e) => handleDragLeave(e, "wishlist")}
+            onDrop={(e) => handleDrop(e, "wishlist")}
+            className={`w-80 min-w-[320px] max-w-[320px] flex flex-col bg-white rounded-xl border shadow-xs transition-all ${
+              dragOverColId === "wishlist" ? "border-[#00a3e0] ring-2 ring-[#00a3e0]/30 bg-sky-50/50" : "border-sky-200"
+            }`}
+          >
+            <div className="p-3 border-b border-sky-100 bg-sky-50/70 flex items-center justify-between rounded-t-xl">
+              <div className="flex items-center gap-2">
+                <span className="w-6 h-6 rounded bg-[#00a3e0] text-white flex items-center justify-center font-bold text-xs">
+                  <span className="material-symbols-outlined text-[14px]">bookmark</span>
+                </span>
+                <div>
+                  <h2 className="text-xs font-bold text-[#002b49]">
+                    {isEn ? "Wishlist & AI Pool" : "Địa điểm chờ sắp xếp"}
+                  </h2>
+                  <p className="text-[11px] text-slate-500">
+                    {isEn ? "Wishlist & AI Suggestions" : "Wishlist & Đề xuất AI"}
+                  </p>
+                </div>
+              </div>
+              <span className="px-2 py-0.5 rounded-full bg-sky-100 text-sky-800 text-xs border border-sky-200 font-bold">
+                {wishlist.length} {isEn ? "places" : "điểm"}
+              </span>
+            </div>
+
+            <div className="p-2.5 flex-1 overflow-y-auto space-y-2.5">
+              {wishlist.length === 0 ? (
+                <div className="py-8 text-center text-slate-400 text-xs border-2 border-dashed border-sky-200 rounded-lg">
+                  {isEn ? "No wishlist items. Drag stops here." : "Chưa có địa điểm chờ"}
+                </div>
+              ) : (
+                wishlist.map((item) => (
+                  <div
+                    key={item.id}
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, item, "wishlist")}
+                    className="group relative bg-white rounded-lg border border-slate-200 hover:border-[#00a3e0] transition-all p-2.5 shadow-xs cursor-grab active:cursor-grabbing hover:shadow-md"
+                  >
+                    <div className="flex items-center justify-between mb-1.5">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-slate-400 text-[14px]">⋮⋮</span>
+                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${item.categoryColor || "bg-amber-50 text-amber-700 border-amber-200"}`}>
+                          {isEn ? item.categoryEn || item.categoryVi : item.categoryVi}
+                        </span>
+                      </div>
+
+                      {/* Assign to Day 1 directly */}
+                      <button
+                        type="button"
+                        onClick={() => handleAssignToDay(item, "day-1")}
+                        className="text-[#00a3e0] hover:text-[#00658d] text-xs font-bold flex items-center gap-0.5 cursor-pointer"
+                      >
+                        + {isEn ? "Assign Day" : "Gán ngày"}
+                      </button>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <div className="w-14 h-14 rounded overflow-hidden shrink-0 border border-slate-200">
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-xs font-bold text-[#002b49] truncate">
+                          {item.name}
+                        </h3>
+                        <div className="flex items-center gap-1 text-[11px] text-amber-600 mt-0.5">
+                          <span
+                            className="material-symbols-outlined text-[12px]"
+                            style={{ fontVariationSettings: "'FILL' 1" }}
+                          >
+                            star
+                          </span>
+                          <span>{item.rating} ({item.reviewsCount})</span>
+                        </div>
+                        <p className="text-[11px] text-slate-500 truncate mt-0.5">
+                          {item.address}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+
+              {/* Quick Add to Wishlist input */}
+              <div className="pt-2">
+                <input
+                  type="text"
+                  value={wishlistInput}
+                  onChange={(e) => setWishlistInput(e.target.value)}
+                  onKeyDown={handleAddToWishlist}
+                  placeholder={isEn ? "+ Enter place name & press Enter..." : "+ Thêm địa điểm & nhấn Enter..."}
+                  className="w-full bg-slate-50 border border-slate-200 text-slate-800 text-xs rounded-lg px-2.5 py-2 placeholder:text-slate-400 focus:border-[#00a3e0] focus:bg-white focus:outline-none transition-all"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      {/* STICKY SUMMARY BOTTOM BAR - Clicking CONTINUE goes straight to STEP 3 */}
+      <footer className="fixed bottom-0 left-0 right-0 h-14 bg-white/95 backdrop-blur border-t border-slate-200 px-6 flex items-center justify-between z-40 select-none shadow-md">
+        {/* Left Back / Summary info */}
+        <div className="flex items-center gap-3 text-xs font-medium text-slate-600">
+          <button
+            type="button"
+            onClick={() => navigate("/trip/create", { state: locationState })}
+            className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 transition-colors cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-base">arrow_back</span>
+            <span>{isEn ? "Back to Step 2" : "Quay lại Bước 2"}</span>
+          </button>
+          <span className="hidden md:inline text-slate-400">|</span>
+          <span className="hidden md:inline text-slate-500">
+            {isEn ? "Total scheduled places: " : "Tổng số điểm đã phân bổ: "}
+            <strong className="text-[#002b49]">
+              {days.reduce((acc, d) => acc + d.items.length, 0)} {isEn ? "places" : "điểm"}
+            </strong>
+          </span>
+        </div>
+
+        {/* Right Global Actions - Goes directly to Step 3 */}
+        <div className="flex items-center gap-2.5">
+          <button
+            type="button"
+            onClick={handleContinueToStep3}
+            className="flex items-center gap-2 bg-[#00a3e0] hover:bg-[#008ec4] text-white text-xs sm:text-sm font-bold px-6 py-2.5 rounded-full shadow hover:shadow-md active:scale-95 transition-all cursor-pointer"
+          >
+            <span
+              className="material-symbols-outlined text-lg"
+              style={{ fontVariationSettings: "'FILL' 1" }}
+            >
+              rocket_launch
+            </span>
+            <span>{isEn ? "Continue to Step 3 (Confirmation)" : "Xác nhận & Tiếp tục sang Bước 3"}</span>
+          </button>
+        </div>
+      </footer>
+
+      {/* Map Modal */}
+      {isMapModalOpen && (
+        <LocationMapModal
+          initialQuery={destination}
+          onClose={() => setIsMapModalOpen(false)}
+          onConfirm={(locName) => {
+            setIsMapModalOpen(false);
+            showToast(`${isEn ? "Selected location" : "Đã chọn tọa độ"}: ${locName}`);
+          }}
+        />
+      )}
+    </div>
+  );
+}

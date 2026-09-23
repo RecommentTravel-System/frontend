@@ -43,7 +43,14 @@ export default function HomeRoute() {
         <LoginCard
           onClose={() => setAuthModal(null)}
           onSubmit={(vals) => {
-            console.log("Login submitted", vals);
+            const account = vals?.data?.userResponse;
+            const roles = account?.roles || (account?.role ? [account.role] : []);
+            if (roles.some((role) => {
+              const r = String(role).toLowerCase();
+              return r === "admin" || r === "role_admin";
+            })) {
+              navigate("/admin");
+            }
             setAuthModal(null);
           }}
           onSignUp={() => setAuthModal("register")}

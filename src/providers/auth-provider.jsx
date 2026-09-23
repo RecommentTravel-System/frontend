@@ -18,6 +18,20 @@ export function AuthProvider({ children }) {
     return savedUser ? JSON.parse(savedUser) : null;
   });
 
+  useEffect(() => {
+    const handleUnauthorized = () => {
+      setToken(null);
+      setUser(null);
+      localStorage.removeItem("wayvee_token");
+      localStorage.removeItem("wayvee_user");
+    };
+
+    window.addEventListener("wayvee:unauthorized", handleUnauthorized);
+    return () => {
+      window.removeEventListener("wayvee:unauthorized", handleUnauthorized);
+    };
+  }, []);
+
   const login = async ({ email, password }) => {
     const response = await loginApi({ email, password });
     if (response.data) {

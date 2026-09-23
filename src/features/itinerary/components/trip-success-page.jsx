@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "~/providers/i18n-provider";
 import { AppHeader, AppFooter } from "~/shared/components";
 import { LoginCard, RegisterCard } from "~/features/auth";
-import "../styles/itinerary-ui.css";
 
 export function TripSuccessPage() {
   const { t, language } = useTranslation();
@@ -23,12 +22,9 @@ export function TripSuccessPage() {
   };
 
   return (
-    <div className="itinerary-step-page trip-success-page bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-slate-200">
+    <div className="bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-slate-200">
       {/* AppHeader identical to homepage */}
-      <AppHeader
-        onLogin={() => setAuthModal("login")}
-        onRegister={() => setAuthModal("register")}
-      />
+      <AppHeader onLogin={() => setAuthModal("login")} />
 
       {/* Main Content */}
       <main className="flex-grow flex flex-col items-center justify-center py-20 px-6 text-center space-y-8 max-w-4xl mx-auto w-full">

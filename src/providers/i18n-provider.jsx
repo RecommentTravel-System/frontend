@@ -30,36 +30,47 @@ export function I18nProvider({ children }) {
     }
   };
 
-  const t = (keyPath, paramsOrNs = "common", maybeNs = "common") => {
+  const t = (keyPath, arg1, arg2) => {
     let ns = "common";
     let params = null;
     let fallbackText = null;
 
-    if (typeof paramsOrNs === "string") {
-      if (dictionaries[language]?.[paramsOrNs] || dictionaries.vi?.[paramsOrNs]) {
-        ns = paramsOrNs;
+    // Check arg1
+    if (typeof arg1 === "string") {
+      if (dictionaries[language]?.[arg1] || dictionaries.vi?.[arg1]) {
+        ns = arg1;
       } else {
-        fallbackText = paramsOrNs;
+        fallbackText = arg1;
       }
-    } else if (paramsOrNs && typeof paramsOrNs === "object") {
-      params = paramsOrNs;
-      if (typeof maybeNs === "string") {
-        ns = maybeNs;
+    } else if (arg1 && typeof arg1 === "object") {
+      params = arg1;
+    }
+
+    // Check arg2
+    if (typeof arg2 === "string") {
+      if (dictionaries[language]?.[arg2] || dictionaries.vi?.[arg2]) {
+        ns = arg2;
+      } else {
+        fallbackText = arg2;
       }
+    } else if (arg2 && typeof arg2 === "object") {
+      params = arg2;
     }
 
     const dict = dictionaries[language]?.[ns] || dictionaries.vi[ns] || {};
     const parts = keyPath.split(".");
     let curr = dict;
+    let found = true;
     for (const p of parts) {
       if (curr && typeof curr === "object" && p in curr) {
         curr = curr[p];
       } else {
-        return fallbackText || keyPath;
+        found = false;
+        break;
       }
     }
 
-    let text = typeof curr === "string" ? curr : (fallbackText || keyPath);
+    let text = (found && typeof curr === "string") ? curr : (fallbackText || keyPath);
     if (params && typeof text === "string") {
       for (const [k, v] of Object.entries(params)) {
         text = text.replaceAll(`{{${k}}}`, String(v));

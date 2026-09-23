@@ -26,7 +26,57 @@ export async function request(endpoint, options = {}) {
           ? undefined
           : JSON.stringify(options.body)
     });
-    const result = await response.json();
+    let result = null;
+    try {
+      result = await response.json();
+    } catch {
+      result = {};
+    }
+
+    const isAuthEndpoint =
+      endpoint.includes("/auth/login") ||
+      endpoint.includes("/auth/signup") ||
+      endpoint.includes("/auth/verify-email");
+
+    // Check if token expired / unauthenticated on a protected endpoint
+    const isUnauthenticated =
+      !isAuthEndpoint &&
+      (response.status === 401 ||
+        result.code === 1006 ||
+        result.code === 1007 ||
+        (result.message &&
+          typeof result.message === "string" &&
+          (result.message.toLowerCase().includes("unauthenticated") ||
+            result.message.toLowerCase().includes("jwt expired") ||
+            result.message.toLowerCase().includes("token expired") ||
+            result.message.toLowerCase().includes("hết hạn"))));
+
+    if (isUnauthenticated) {
+      // Clear token and user from localStorage
+      localStorage.removeItem("wayvee_token");
+      localStorage.removeItem("wayvee_user");
+
+      // Notify AuthProvider and other listeners
+      window.dispatchEvent(
+        new CustomEvent("wayvee:unauthorized", {
+          detail: { endpoint, status: response.status, result }
+        })
+      );
+
+      // Redirect to home if not already there
+      if (window.location.pathname !== "/") {
+        window.location.href = "/";
+      }
+
+      const errorMessage =
+        result.message || "Phiên đăng nhập đã hết hạn. Hệ thống đã tự động đăng xuất.";
+      const error = new Error(errorMessage);
+      error.status = response.status;
+      error.code = result.code;
+      error.response = result;
+      error.isUnauthorized = true;
+      throw error;
+    }
 
     if (!response.ok || (result.code && result.code !== 1000 && result.code !== 200)) {
       const errorMessage = result.message || `Request failed with status ${response.status}`;

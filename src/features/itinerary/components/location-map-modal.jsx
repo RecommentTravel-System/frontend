@@ -357,11 +357,11 @@ export function LocationMapModal({ initialQuery = "", onConfirm, onClose }) {
   };
 
   return (
-    <div className="location-map-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
       <style>{LEAFLET_OVERRIDE_STYLES}</style>
-      <div className="location-map-modal bg-white dark:bg-slate-900 rounded-3xl max-w-2xl w-full p-5 sm:p-6 shadow-2xl space-y-4 border border-slate-200 dark:border-slate-800 flex flex-col max-h-[90vh]">
+      <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-2xl w-full p-5 sm:p-6 shadow-2xl space-y-4 border border-slate-200 dark:border-slate-800 flex flex-col max-h-[90vh]">
         {/* Modal Header */}
-        <div className="location-map-header flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+        <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
           <div>
             <h3 className="text-base font-bold text-[#002d54] dark:text-white flex items-center gap-2">
               <span>📍</span> Chọn vị trí địa điểm trên bản đồ Leaflet
@@ -380,7 +380,7 @@ export function LocationMapModal({ initialQuery = "", onConfirm, onClose }) {
         </div>
 
         {/* Search Input & GPS Bar */}
-        <div className="location-map-search flex gap-2">
+        <div className="flex gap-2">
           <div className="relative flex-1">
             <input
               type="text"
@@ -421,7 +421,7 @@ export function LocationMapModal({ initialQuery = "", onConfirm, onClose }) {
         </div>
 
         {/* Leaflet Map Area matching pb-map-wrapper pattern */}
-        <div className="pb-map-wrapper location-map-canvas relative w-full h-72 sm:h-80 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800">
+        <div className="pb-map-wrapper relative w-full h-72 sm:h-80 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800">
           {!isLeafletReady && (
             <div className="absolute inset-0 flex items-center justify-center text-xs text-slate-500 z-10 bg-slate-100 dark:bg-slate-800">
               Đang tải bản đồ Leaflet...
@@ -430,16 +430,8 @@ export function LocationMapModal({ initialQuery = "", onConfirm, onClose }) {
           <div ref={mapContainerRef} className="w-full h-full" />
         </div>
 
-        <div className="location-map-selection">
-          <span className="location-map-selection-dot">●</span>
-          <div>
-            <span>Địa điểm đang chọn</span>
-            <strong>{selectedLocation.name || "Chưa chọn vị trí"}</strong>
-          </div>
-        </div>
-
         {/* Selected Location Summary & Actions */}
-          <div className="location-map-actions flex items-center gap-2 w-full sm:w-auto">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             <button
               type="button"
               onClick={onClose}

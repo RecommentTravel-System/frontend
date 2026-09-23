@@ -1,5 +1,11 @@
 .trip-info-page {
-  background: #ffffff;
+  background:
+    radial-gradient(circle at 10% 18%, rgba(0, 168, 232, 0.08), transparent 24rem),
+    linear-gradient(180deg, #f8fbfd 0%, #ffffff 38%);
+}
+
+.trip-info-page .wayvee-container {
+  background: rgba(255, 255, 255, 0.86);
 }
 
 .trip-stepper {
@@ -134,7 +140,313 @@
 
 /* Shared wizard shell for itinerary steps 1, 2, 3, and completion. */
 .itinerary-step-page {
-  background: #ffffff;
+  background:
+    radial-gradient(circle at 92% 14%, rgba(0, 168, 232, 0.07), transparent 22rem),
+    linear-gradient(180deg, #f8fbfd 0%, #ffffff 42%);
+}
+
+.itinerary-step-page .wayvee-container {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+/* Step 1 planner workspace, inspired by the supplied WAYVEE reference. */
+.trip-info-modern {
+  background: #f0f7fc !important;
+}
+
+.trip-modern-stepper {
+  padding-top: 1.5rem !important;
+  padding-bottom: 1rem !important;
+}
+
+.trip-modern-stepper > div {
+  max-width: 760px;
+  padding: 1rem 2rem 0.65rem;
+  border: 1px solid #e1edf5;
+  border-radius: 1.75rem;
+  background: #fff;
+  box-shadow: 0 10px 25px rgba(11, 37, 69, 0.06);
+}
+
+.trip-modern-main {
+  max-width: 900px;
+  padding-top: 2rem;
+  padding-bottom: 4rem;
+}
+
+.trip-modern-intro {
+  margin-bottom: 1.5rem;
+}
+
+.trip-modern-intro > span {
+  display: inline-flex;
+  margin-bottom: 0.55rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: #e6f6fd;
+  color: #00a3e0;
+  font-size: 0.65rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+}
+
+.trip-modern-intro h1 {
+  margin: 0;
+  color: #002d5b;
+  font-size: clamp(1.65rem, 3vw, 2.25rem);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+
+.trip-modern-intro p {
+  margin-top: 0.35rem;
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.trip-modern-form {
+  max-width: none;
+}
+
+.trip-modern-card {
+  padding: 1.5rem;
+  border: 1px solid #dce8f0;
+  border-radius: 1rem;
+  background: #fff;
+  box-shadow: 0 8px 20px rgba(11, 37, 69, 0.045);
+}
+
+.trip-modern-card-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #edf2f6;
+}
+
+.trip-modern-card-heading > div:first-child {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #64748b;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.trip-modern-card-heading h2 {
+  margin: 0;
+  color: #002d5b;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  text-transform: none;
+}
+
+.trip-modern-card-heading p {
+  margin-top: 0.25rem;
+  color: #94a3b8;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.trip-modern-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: #00a3e0;
+}
+
+.trip-modern-badge {
+  padding: 0.4rem 0.7rem;
+  border-radius: 999px;
+  background: #e6f6fd;
+  color: #00a3e0;
+  font-size: 0.68rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.trip-modern-summary-body {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.8fr) minmax(0, 1.5fr);
+  gap: 1.25rem;
+  align-items: center;
+  padding-top: 1.25rem;
+}
+
+.trip-modern-summary-body h2 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+.trip-modern-summary-body p {
+  margin-top: 0.3rem;
+  color: #94a3b8;
+  font-size: 0.68rem;
+}
+
+.trip-modern-summary-body > div:last-child > div {
+  padding: 0.75rem;
+  border: 1px solid #edf2f6;
+  border-radius: 0.75rem;
+  background: #f8fafc;
+}
+
+.trip-modern-summary-body button {
+  color: #00a3e0;
+  text-decoration: none;
+}
+
+.trip-modern-destination {
+  padding: 1.5rem;
+}
+
+.trip-modern-location-icon {
+  display: inline-flex;
+  width: 2rem;
+  height: 2rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #e6f6fd;
+  color: #00a3e0;
+  font-size: 1.2rem;
+}
+
+.trip-modern-destination input,
+.trip-modern-destination select {
+  min-height: 48px;
+  border-color: #dce5ec;
+  border-radius: 0.75rem;
+  font-size: 0.82rem;
+}
+
+.trip-modern-destination input:focus,
+.trip-modern-destination select:focus {
+  border-color: #00a3e0;
+  box-shadow: 0 0 0 3px rgba(0, 163, 224, 0.14);
+}
+
+.trip-modern-destination label {
+  font-size: 0.78rem;
+}
+
+.trip-modern-destination > div > div:first-child button {
+  padding: 0.45rem 0.75rem;
+  border: 1px solid #b9e8f8;
+  border-radius: 999px;
+  background: #e6f6fd;
+  color: #00a3e0;
+  text-decoration: none;
+}
+
+.trip-modern-count-field {
+  position: relative;
+}
+
+.trip-modern-count-field > input {
+  padding-right: 7rem;
+}
+
+.trip-modern-count-controls {
+  position: absolute;
+  right: 0.65rem;
+  bottom: 0.28rem;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.trip-modern-count-controls button {
+  width: 1.7rem;
+  height: 1.7rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 50%;
+  background: #fff;
+  color: #475569;
+  font-weight: 800;
+}
+
+.trip-modern-count-controls strong {
+  min-width: 1.2rem;
+  color: #0f172a;
+  text-align: center;
+  font-size: 0.8rem;
+}
+
+.trip-modern-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+}
+
+.trip-modern-tags button {
+  padding: 0.5rem 0.8rem;
+  border: 1px solid #dce5ec;
+  border-radius: 999px;
+  background: #fff;
+  color: #475569;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.trip-modern-tags button:hover,
+.trip-modern-tags button.is-selected {
+  border-color: #00a3e0;
+  background: #00a3e0;
+  color: #fff;
+}
+
+.trip-modern-actions {
+  justify-content: flex-end !important;
+}
+
+.trip-modern-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  min-height: 48px;
+  min-width: 170px !important;
+  border-radius: 999px !important;
+  background: #002d5b !important;
+  box-shadow: 0 10px 22px rgba(0, 45, 91, 0.16) !important;
+}
+
+@media (max-width: 640px) {
+  .trip-modern-stepper > div {
+    margin-inline: 0.5rem;
+    padding-inline: 0.75rem;
+    border-radius: 1.25rem;
+  }
+
+  .trip-modern-main {
+    padding-inline: 1rem;
+  }
+
+  .trip-modern-summary-body {
+    grid-template-columns: 1fr;
+  }
+
+  .trip-modern-card-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .trip-modern-badge {
+    align-self: flex-start;
+  }
+
+  .trip-modern-actions {
+    justify-content: center !important;
+  }
 }
 
 .wizard-stepper {
@@ -398,5 +710,280 @@
   .location-map-actions button {
     width: 100%;
     min-height: 44px;
+  }
+}
+
+/* Step 2 itinerary builder workspace, based on the supplied reference. */
+.trip-create-modern {
+  background: #f1fbff !important;
+}
+
+.trip-create-stepper {
+  padding-top: 1.5rem !important;
+  padding-bottom: 1rem !important;
+}
+
+.trip-create-stepper > div {
+  max-width: 760px;
+  padding: 1rem 2rem 0.65rem;
+  border: 1px solid #dcebf3;
+  border-radius: 1.75rem;
+  background: #fff;
+  box-shadow: 0 10px 25px rgba(0, 51, 102, 0.06);
+}
+
+.trip-create-main {
+  max-width: 1280px;
+  padding-top: 1.2rem;
+  padding-bottom: 4rem;
+}
+
+.trip-create-intro {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #cee7f0;
+}
+
+.trip-create-intro h1 {
+  margin: 0.45rem 0 0.25rem;
+  color: #00658d;
+  font-size: clamp(1.4rem, 2.5vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.trip-create-intro p {
+  max-width: 680px;
+  color: #3e4850;
+  font-size: 0.82rem;
+}
+
+.trip-create-intro > div > span {
+  display: inline-flex;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: #d9f2fb;
+  color: #00658d;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.trip-create-summary,
+.trip-create-location,
+.trip-create-places-card,
+.trip-create-next-section {
+  position: relative;
+  border: 1px solid #cee7f0 !important;
+  border-radius: 1rem !important;
+  background: #fff !important;
+  box-shadow: 0 4px 20px rgba(0, 51, 102, 0.06) !important;
+}
+
+.trip-create-summary {
+  padding: 1.25rem;
+  border-top: 4px solid #00a3e0 !important;
+}
+
+.trip-create-summary::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 5px;
+  border-radius: 1rem 1rem 0 0;
+  background: linear-gradient(90deg, #00a3e0, #9fc2fe);
+}
+
+.trip-create-summary h2,
+.trip-create-location h2,
+.trip-create-next-section h2 {
+  color: #051f25;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.trip-create-summary > h2,
+.trip-create-summary > h2 + div {
+  display: none;
+}
+
+.trip-create-summary [data-purpose="your-trip-summary"] {
+  padding-top: 0.25rem;
+}
+
+.trip-create-summary [data-purpose="your-trip-summary"] > h2 {
+  color: #3a5f94;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.trip-create-location {
+  padding: 1.5rem;
+  border-top: 4px solid #3a5f94 !important;
+}
+
+.trip-create-location form {
+  display: contents;
+}
+
+.trip-create-location input {
+  min-height: 48px;
+  border-color: #bdc8d1;
+  border-radius: 0.75rem;
+  font-size: 0.82rem;
+}
+
+.trip-create-location input:focus {
+  border-color: #00a3e0;
+  box-shadow: 0 0 0 3px rgba(0, 163, 224, 0.14);
+}
+
+.trip-create-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid #d9f2fb;
+}
+
+.trip-create-section-heading p {
+  margin-top: 0.25rem;
+  color: #6e7881;
+  font-size: 0.72rem;
+}
+
+.trip-create-section-heading > span {
+  display: inline-flex;
+  width: 2rem;
+  height: 2rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.65rem;
+  background: #d9f2fb;
+  color: #00658d;
+}
+
+.trip-create-places-card {
+  padding: 1.25rem;
+  border-top: 4px solid #9fc2fe !important;
+}
+
+.trip-create-places-card > h3 {
+  color: #051f25;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+}
+
+.trip-create-places-card article {
+  padding: 0.75rem 0;
+  border-color: #d9f2fb;
+}
+
+.trip-create-places-card article img {
+  border-radius: 0.65rem;
+}
+
+.trip-create-places-card > button {
+  border: 2px dashed #bdc8d1;
+  border-radius: 0.75rem;
+  color: #00658d;
+}
+
+.trip-create-next-section {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+}
+
+.trip-create-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.trip-create-choice {
+  position: relative;
+  padding: 1.25rem;
+  border: 1px solid #bdc8d1;
+  border-radius: 0.75rem;
+  background: #fff;
+  text-align: left;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.trip-create-choice:hover,
+.trip-create-choice.is-recommended {
+  border-color: #00a3e0;
+  box-shadow: 0 8px 20px rgba(0, 101, 141, 0.1);
+  transform: translateY(-2px);
+}
+
+.trip-create-choice strong {
+  color: #00658d;
+  font-size: 0.95rem;
+}
+
+.trip-create-choice p {
+  margin-top: 0.5rem;
+  color: #3e4850;
+  font-size: 0.75rem;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.trip-create-choice span {
+  display: inline-block;
+  margin-top: 0.8rem;
+  color: #00658d;
+  font-size: 0.72rem;
+  font-weight: 800;
+  white-space: normal;
+}
+
+.trip-create-bottom-action button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 48px;
+  border-radius: 999px !important;
+  background: #00658d !important;
+  box-shadow: 0 10px 22px rgba(0, 101, 141, 0.2) !important;
+}
+
+@media (max-width: 640px) {
+  .trip-create-stepper > div {
+    margin-inline: 0.5rem;
+    padding-inline: 0.75rem;
+    border-radius: 1.25rem;
+  }
+
+  .trip-create-main {
+    padding-inline: 1rem;
+  }
+
+  .trip-create-intro {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .trip-create-location,
+  .trip-create-summary,
+  .trip-create-places-card,
+  .trip-create-next-section {
+    padding: 1rem;
+  }
+
+  .trip-create-choice-grid {
+    grid-template-columns: 1fr;
   }
 }

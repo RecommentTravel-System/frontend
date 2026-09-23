@@ -81,7 +81,7 @@ export function HeroPlanner({ onPlannerSubmit }) {
             {/* Guests / Numeric Person Count Field (2 cols) */}
             <div className="px-5 py-2.5 lg:col-span-2 flex flex-col justify-center">
               <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
-                {t("tripInfo.destinationDetails.passengerCountLabel") || "Số người"}
+                {t("hero.guestsLabel") || t("tripInfo.passengerCountLabel") || "Số người"}
               </p>
               <NumericInput
                 value={passengerCount}
