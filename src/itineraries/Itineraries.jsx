@@ -6,8 +6,10 @@ import SiteFooter from '../components/SiteFooter.jsx';
 import Icon from '../components/AccountIcon.jsx';
 import { useAuth } from '../auth/useAuth.js';
 import { readProfile } from '../profile/profileStorage.js';
-import { filters, trips, shortDate } from './trips.js';
+import { filters, trips as sampleTrips, shortDate } from './trips.js';
 import './Itineraries.css';
+import { readTours } from '../tours/tourStorage.js';
+import '../tours/CreateTour.css';
 
 function TripImage({ trip }) {
   const [failed, setFailed] = useState(false);
@@ -25,12 +27,12 @@ function EmptyTrips() {
       <path d="M39 69h20c20 0 21 20 0 20H24c-21 0-22 22 0 22h47" stroke="#647080" strokeWidth="4" strokeLinecap="round" strokeDasharray="4 7" />
       <rect x="93" y="60" width="43" height="49" rx="5" stroke="#535c69" strokeWidth="6" /><path d="M106 60v-9h18v9m-21-9h24m-26 22h26m-24 37v7m25-7v7" stroke="#535c69" strokeWidth="5" strokeLinecap="round" />
     </svg>
-    <Link to="/#destinations" className="trips-explore"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><circle cx="10" cy="10" r="6" /><path d="m15 15 6 6" /></svg>Bắt đầu khám phá</Link>
+    <Link to="/create-tour" className="trips-explore"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true"><circle cx="10" cy="10" r="6" /><path d="m15 15 6 6" /></svg>Bắt đầu khám phá</Link>
     <h2>Bạn chưa có lịch trình nào.</h2><p>Tạo hành trình đầu tiên và bắt đầu chuyến đi của bạn ngay!</p>
   </div>;
 }
 
-function TripList({ filter }) {
+function TripList({ filter, trips }) {
   const visibleTrips = trips.filter(trip => filter.id === 'all' || trip.status === filter.id);
   if (!visibleTrips.length) return <section className="trips-panel trips-empty-panel"><EmptyTrips /></section>;
   return <section className="trips-panel" aria-labelledby="trips-heading">
@@ -41,7 +43,7 @@ function TripList({ filter }) {
         <div className="trip-row-bottom"><dl className="trip-metadata"><div><dt>Ngày đi:</dt><dd>{shortDate(trip.start)}</dd></div><div><dt>Ngày về:</dt><dd>{shortDate(trip.end)}</dd></div><div><dt>Số người:</dt><dd>{trip.guests}</dd></div></dl><Link className="trip-detail-link" to={`/itineraries/${trip.id}?status=${filter.id}`}>Xem chi tiết<span className="trip-sr-only"> {trip.title}</span></Link></div>
       </div>
     </li>)}</ul>
-    <p className="trips-demo-note">Lịch trình minh họa</p>
+    <p className="trips-demo-note">Bao gồm lịch trình tự tạo trên trình duyệt và lịch trình minh họa.</p>
   </section>;
 }
 
@@ -73,8 +75,10 @@ function TripDetail({ trip, filter, user }) {
 export default function Itineraries() {
   const { user } = useAuth();
   const { tripId } = useParams();
+  const [stored] = useState(() => { try { return { trips: readTours(user.email), error: '' }; } catch { return { trips: [], error: 'Không đọc được lịch trình đã lưu. Hãy kiểm tra quyền lưu trữ của trình duyệt.' }; } });
+  const trips = [...stored.trips, ...sampleTrips];
   const [params] = useSearchParams();
-  const [notice, setNotice] = useState('');
+  const [notice, setNotice] = useState(stored.error);
   const filter = filters.find(item => item.id === params.get('status')) || filters[1];
-  return <div className="itineraries-page"><SiteHeader /><main className="account-layout itineraries-layout"><AccountSidebar onNotice={setNotice} /><div className="itineraries-content">{tripId ? <TripDetail trip={trips.find(trip => trip.id === tripId)} filter={filter} user={user} /> : <TripList filter={filter} />}{notice && <p className="trips-notice" role="status">{notice}</p>}</div></main><SiteFooter /></div>;
+  return <div className="itineraries-page"><SiteHeader /><main className="account-layout itineraries-layout"><AccountSidebar onNotice={setNotice} /><div className="itineraries-content"><Link className="trips-create-link" to="/create-tour">＋ Tạo lịch trình</Link>{tripId ? <TripDetail trip={trips.find(trip => trip.id === tripId)} filter={filter} user={user} /> : <TripList filter={filter} trips={trips} />}{notice && <p className="trips-notice" role="status">{notice}</p>}</div></main><SiteFooter /></div>;
 }

@@ -1,0 +1,4 @@
+import './MapResize.css';
+export default function MapResize({ controller }) {
+  return <div className="map-resize-control"><div className="map-resize-grip" {...controller.separator} title="Kéo để đổi độ rộng. Nhấp đúp để đặt lại; dùng phím ← → để điều chỉnh."><span aria-hidden="true" /></div><button type="button" className="map-resize-toggle" aria-label={controller.collapsed ? 'Hiện danh sách kết quả' : 'Thu gọn danh sách, mở rộng bản đồ'} aria-expanded={!controller.collapsed} aria-controls="search-result-panel" onClick={controller.toggle} title={controller.collapsed ? 'Hiện danh sách' : 'Mở rộng bản đồ'}>{controller.collapsed ? '›' : '‹'}<span className="map-resize-mobile-label">{controller.collapsed ? 'Hiện danh sách' : 'Mở rộng bản đồ'}</span></button>{controller.dragging && <div className="map-resize-shield" aria-hidden="true" />}</div>;
+}

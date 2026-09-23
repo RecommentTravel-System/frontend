@@ -1,5 +1,8 @@
 import { useState } from "react";
 import './Home.css';
+import PremiumWeather from './PremiumWeather.jsx';
+import { useNavigate } from 'react-router-dom';
+import SearchDialog from '../search/SearchDialog.jsx';
 import SiteHeader from '../components/SiteHeader.jsx';
 import SiteFooter from '../components/SiteFooter.jsx';
 
@@ -102,6 +105,10 @@ function Star() {
 /* Sections                                                             */
 /* ------------------------------------------------------------------ */
 function Hero() {
+  const navigate = useNavigate();
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [tourSeed, setTourSeed] = useState({ destination: '', start: '', end: '', style: '' });
+  const fieldProps = key => ({ value: tourSeed[key], onChange: event => setTourSeed(previous => ({ ...previous, [key]: event.target.value })) });
   return (
     <section className="home-hero-wrap max-w-6xl mx-auto px-6">
       <div
@@ -115,25 +122,29 @@ function Hero() {
           </h1>
 
           <div className="home-planner bg-white rounded-2xl shadow-lg max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-5 divide-x divide-gray-100 overflow-hidden text-left">
-            <Field label="Địa điểm" placeholder="Bạn đi đâu thế?" />
-            <Field label="Ngày đi" placeholder="DD/MM" />
-            <Field label="Ngày về" placeholder="DD/MM" />
-            <Field label="Kiểu chuyến đi mong muốn" placeholder="Bạn phù hợp với chuyến đi nào" />
-            <button className="home-planner-btn col-span-2 md:col-span-1 m-2 rounded-xl bg-slate-900 text-white text-sm font-semibold px-4 py-3">
+            <Field {...fieldProps("destination")} label="Địa điểm" placeholder="Bạn đi đâu thế?" />
+            <Field {...fieldProps("start")} type="date" label="Ngày đi" placeholder="DD/MM" />
+            <Field {...fieldProps("end")} type="date" label="Ngày về" placeholder="DD/MM" />
+            <Field {...fieldProps("style")} label="Kiểu chuyến đi mong muốn" placeholder="Bạn phù hợp với chuyến đi nào" />
+            <button type="button" onClick={() => navigate("/create-tour", { state: { tourSeed } })} className="home-planner-btn col-span-2 md:col-span-1 m-2 rounded-xl bg-slate-900 text-white text-sm font-semibold px-4 py-3">
               Tạo lịch trình ngay
             </button>
           </div>
+          <button type="button" className="home-search-entry" onClick={() => setSearchOpen(true)}>⌕ Tìm kiếm địa điểm</button>
         </div>
       </div>
+      {searchOpen && <SearchDialog onClose={() => setSearchOpen(false)} onSearch={values => { const params = new URLSearchParams(); for (const [key, value] of Object.entries(values)) if (value !== "") params.set(key, value); navigate(`/search?${params}`); }} />}
     </section>
   );
 }
 
-function Field({ label, placeholder }) {
+function Field({ label, placeholder, ...inputProps }) {
   return (
     <div className="px-4 py-3">
       <p className="text-[11px] font-semibold text-gray-500 mb-1">{label}</p>
       <input
+        {...inputProps}
+        aria-label={label}
         placeholder={placeholder}
         className="w-full text-sm outline-none placeholder-gray-400"
       />
@@ -324,10 +335,20 @@ function ExploreNow() {
 /* Page                                                                 */
 /* ------------------------------------------------------------------ */
 export default function Home() {
+  const [premium, setPremium] = useState(() => { try { return localStorage.getItem('wayvee-home-preview') === 'premium'; } catch { return false; } });
+  const [versionNote, setVersionNote] = useState('');
+  function toggleVersion() {
+    const next = !premium; setPremium(next);
+    try { localStorage.setItem('wayvee-home-preview', next ? 'premium' : 'free'); setVersionNote(''); }
+    catch { setVersionNote('Đã đổi giao diện, nhưng trình duyệt không lưu được lựa chọn.'); }
+  }
   return (
-    <div className="home-page bg-white min-h-screen font-sans">
+    <div className={`home-page bg-white min-h-screen font-sans${premium ? " home-premium" : ""}`}>
       <SiteHeader />
+      <div className="home-version-bar"><span>Test giao diện · {premium ? 'Premium' : 'Free'}</span><button type="button" aria-pressed={premium} onClick={toggleVersion}>{premium ? 'Chuyển sang Free' : 'Dùng thử giao diện Premium'}</button></div>
+      {versionNote && <p className="home-version-note" role="status">{versionNote}</p>}
       <Hero />
+      {premium && <PremiumWeather />}
       <WhyUseWayvee />
       <TravelYourWay />
       <div id="destinations"><HotDestinations /></div>
