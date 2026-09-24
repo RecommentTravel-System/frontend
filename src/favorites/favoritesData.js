@@ -1,6 +1,8 @@
+import { destinations } from '../search/searchData.js';
 // Illustrative places for the UI, not a live destination catalog.
 const photo = id => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=600&q=80`;
 export const places = [
+  ...destinations.map(place => ({ ...place, rating: place.rating.toFixed(1), note: 'Địa điểm khám phá' })),
   { id: 'pho', name: 'Phở Thìn Bờ Hồ', address: '13 Lò Đúc, Hai Bà Trưng, Hà Nội', rating: '4.7', note: 'Cách hồ Hoàn Kiếm…', image: photo('photo-1571896349842-33c89424de2d') },
   { id: 'banh-mi', name: 'Bánh mì Huỳnh Hoa', address: '26 Lê Thị Riêng, Quận 1, TP.HCM', rating: '4.8', note: 'Ẩm thực địa phương', image: photo('photo-1566073771259-6a8506099945') },
   { id: 'bun-bo', name: 'Bún bò Mỹ Kéo', address: '20 Bạch Đằng, TP. Huế, Thừa Thiên Huế', rating: '4.6', note: 'Ngay trung tâm, vị đậm đà', image: photo('photo-1571896349842-33c89424de2d') },

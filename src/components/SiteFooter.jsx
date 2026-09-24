@@ -14,7 +14,7 @@ export default function SiteFooter() {
       <div className="site-footer-grid">
         <div className="site-footer-brand"><BrandLogo /><p>Tạo hành trình cá nhân hóa nhanh chóng, dễ dàng và hiệu quả.</p></div>
         {columns.map(({ title, links }) => <nav key={title} aria-label={title}><h2>{title}</h2><ul>{links.filter(([, to]) => to !== '/profile' || user).map(([label, to]) => <li key={label}><Link to={to}>{label}</Link></li>)}</ul></nav>)}
-        <nav aria-label="Hỗ trợ"><h2>Hỗ trợ</h2><ul><li><a href="mailto:wayvee@gmail.com">Trung tâm hỗ trợ</a></li><li><a href="tel:+84817293860">Trò chuyện ngay</a></li><li><a href="mailto:wayvee@gmail.com?subject=Phan%20hoi%20Wayvee">Gửi phản hồi</a></li><li><a href="mailto:wayvee@gmail.com">Liên hệ chúng tôi</a></li></ul></nav>
+        <nav aria-label="Hỗ trợ"><h2>Hỗ trợ</h2><ul><li><Link to="/support?view=help">Trung tâm hỗ trợ</Link></li><li><Link to="/support?view=chat">Trò chuyện ngay</Link></li><li><Link to="/support?view=feedback">Gửi phản hồi</Link></li><li><a href="mailto:wayvee@gmail.com">Liên hệ chúng tôi</a></li></ul></nav>
         <div className="site-footer-contact"><h2>Liên hệ</h2><address><a href="tel:+84817293860">(+84) 817 293 860</a><a href="mailto:wayvee@gmail.com">wayvee@gmail.com</a></address><a className="site-contact-button" href="mailto:wayvee@gmail.com" aria-label="Gửi email cho Wayvee"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M3 5h18v14H3ZM3 5l9 7 9-7" /></svg></a></div>
       </div>
       <div className="site-footer-bottom">© {new Date().getFullYear()} Wayvee. All rights reserved.</div>

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './Login.css';
+import FormCard from '../components/FormCard.jsx';
 import BrandLogo from '../components/BrandLogo.jsx';
 
 export default function Login({
@@ -31,15 +32,7 @@ export default function Login({
 
   return (
     <div className="login-page">
-      <div className="login-card">
-        <div className="login-header">
-          <h2>Log in or sign up</h2>
-          <button type="button" className="close-btn" onClick={onClose} aria-label="Close">
-            ×
-          </button>
-        </div>
-
-        <div className="login-divider-accent" />
+      <FormCard title="Log in or sign up" onClose={onClose}>
 
         <div className="auth-brand"><BrandLogo /></div>
         <h1>Welcome to Wayvee</h1>
@@ -93,7 +86,7 @@ export default function Login({
         <button type="button" className="link-btn" onClick={onSignUp}>
           Sign up
         </button>
-      </div>
+      </FormCard>
     </div>
   );
 }
