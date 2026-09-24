@@ -1,8 +1,8 @@
 import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import './Home.css';
-import { AppHeader } from '../components/AppHeader.jsx';
-import { Footer } from '../components/Footer.jsx';
-import PremiumWeather from '../premium/PremiumWeather.jsx'; // chỉnh lại path đúng theo project của bạn
+import { AppHeader, AppFooter } from '~/shared/components';
+import PremiumWeather from './PremiumWeather.jsx';
 
 /* ------------------------------------------------------------------ */
 /* Placeholder image helper — swap these seeds for real photo URLs    */
@@ -322,6 +322,7 @@ function ExploreNow() {
 /* Page                                                                 */
 /* ------------------------------------------------------------------ */
 export default function Home() {
+  const navigate = useNavigate();
   const [premium, setPremium] = useState(() => {
     try { return localStorage.getItem('wayvee-home-preview') === 'premium'; }
     catch { return false; }
@@ -362,7 +363,7 @@ export default function Home() {
       <div id="travel-blog"><TravelBlog /></div>
       <div id="trip-reviews"><TripReviews /></div>
       <div id="explore"><ExploreNow /></div>
-      <SiteFooter />
+      <AppFooter />
     </div>
   );
 }

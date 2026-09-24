@@ -1,155 +1,271 @@
-import { useRef, useState, useEffect } from 'react';
-import './Profile.css';
-import { AppHeader, AppFooter } from '~/shared/components';
-import { LoginCard, RegisterCard } from '~/features/auth';
-import { useAuth } from '~/providers/auth-provider';
-import AccountSidebar from '../components/AccountSidebar.jsx';
-import Avatar from '../components/AccountAvatar.jsx';
-import Icon from '../components/AccountIcon.jsx';
-import { readProfile, profileKey } from './profileStorage.js';
-import AvatarEditor from './AvatarEditor.jsx';
+import { useState, useRef, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { ThemeToggle } from "./theme-toggle";
+import { LanguageSwitcher } from "./language-switcher";
+import { useTranslation } from "~/providers/i18n-provider";
+import { useAuth } from "~/providers/auth-provider";
 
-export default function Profile({ user: propUser }) {
-  const { user: authUser } = useAuth();
-  const user = propUser || authUser;
-  const [authModal, setAuthModal] = useState(null);
+export function WayveeLogo({ className = "h-7 sm:h-8 w-auto text-[#0b2545] dark:text-white" }) {
+  return (
+    <svg
+      viewBox="0 0 215 42"
+      className={className}
+      fill="currentColor"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="WAYVEE Logo"
+    >
+      {/* W */}
+      <path d="M 2 5 L 11 37 H 17 L 25 15 L 33 37 H 39 L 48 5 H 40.5 L 36 23 L 28.5 5 H 21.5 L 14 23 L 9.5 5 Z" />
 
-  const [saved, setSaved] = useState(() => readProfile(user));
-  const [values, setValues] = useState(saved);
-  const [notice, setNotice] = useState('');
-  const firstInput = useRef(null);
+      {/* A with signature arch crossbar */}
+      <path d="M 50 37 L 64.5 5 H 71.5 L 86 37 H 77.5 L 74.2 28.5 C 70.5 21 65.5 21 61.8 28.5 L 58.5 37 Z M 63.5 24 C 66.8 17.5 69.2 17.5 72.5 24 C 69.2 19 66.8 19 63.5 24 Z" />
 
-  useEffect(() => {
-    const updated = readProfile(user);
-    setSaved(updated);
-    setValues(updated);
-  }, [user]);
+      {/* Y */}
+      <path d="M 88 5 L 97.5 20 V 37 H 104.5 V 20 L 114 5 H 105.5 L 101 14 L 96.5 5 Z" />
 
-  const name = `${saved.firstName || ''} ${saved.lastName || ''}`.trim() || user?.fullName || 'Người dùng';
+      {/* V */}
+      <path d="M 116 5 L 125.5 37 H 132.5 L 142 5 H 133.5 L 129 25 L 124.5 5 Z" />
 
-  const update = (event) => {
-    setValues({ ...values, [event.target.name]: event.target.value });
-    setNotice('');
-  };
+      {/* E 1 (Futuristic E with floating top bar and connected middle-bottom) */}
+      <path d="M 144 5 H 174 V 10.5 H 144 Z" />
+      <path d="M 144 18.5 H 174 V 24 H 152 V 31.5 H 174 V 37 H 144 Z" />
 
-  const save = (event) => {
-    event.preventDefault();
-    try {
-      localStorage.setItem(profileKey(user?.email), JSON.stringify(values));
-      setSaved({ ...values });
-      setNotice('Đã lưu thay đổi thông tin cá nhân.');
-    } catch {
-      setNotice('Không thể lưu trên trình duyệt. Vui lòng thử lại.');
+      {/* E 2 */}
+      <path d="M 178 5 H 208 V 10.5 H 178 Z" />
+      <path d="M 178 18.5 H 208 V 24 H 186 V 31.5 H 208 V 37 H 178 Z" />
+    </svg>
+  );
+}
+
+export function AppHeader({ onLogin, onRegister }) {
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+  const { user, isAuthenticated, logout } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+  const timeoutRef = useRef(null);
+
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    if (isAuthenticated) {
+      setMenuOpen(true);
     }
   };
 
-  const field = (key, label, type = 'text', placeholder = '', icon) => (
-    <label className={`profile-field profile-field-${key}`}>
-      <span>{label}</span>
-      <div className="profile-input-wrap">
-        {icon && <Icon name={icon} />}
-        <input
-          ref={key === 'firstName' ? firstInput : undefined}
-          name={key}
-          type={type}
-          value={values[key] || ''}
-          onChange={update}
-          placeholder={placeholder}
-          required={key === 'firstName' || key === 'lastName'}
-          autoComplete={({ firstName: 'given-name', lastName: 'family-name', email: 'email', phone: 'tel', birthday: 'bday', address: 'street-address' })[key]}
-        />
-      </div>
-    </label>
-  );
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setMenuOpen(false);
+    }, 150);
+  };
+
+  const handleAvatarClick = () => {
+    if (!isAuthenticated) {
+      if (onLogin) onLogin();
+    } else {
+      setMenuOpen((prev) => !prev);
+    }
+  };
+
+  const handleLogout = () => {
+    setMenuOpen(false);
+    logout();
+  };
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
+
+  const menuItems = [
+    {
+      id: "personalData",
+      label: t("userMenu.personalData"),
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 flex-shrink-0">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+      ),
+      onClick: () => setMenuOpen(false)
+    },
+    {
+      id: "payment",
+      label: t("userMenu.payment"),
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 flex-shrink-0">
+          <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+          <line x1="1" y1="10" x2="23" y2="10" />
+        </svg>
+      ),
+      onClick: () => {
+        setMenuOpen(false);
+        navigate("/payment");
+      }
+    },
+    {
+      id: "trips",
+      label: t("userMenu.trips"),
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 flex-shrink-0">
+          <path d="M6 20h12a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2z" />
+          <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
+        </svg>
+      ),
+      onClick: () => setMenuOpen(false)
+    },
+    {
+      id: "wishLists",
+      label: t("userMenu.wishLists"),
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 flex-shrink-0">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+        </svg>
+      ),
+      onClick: () => setMenuOpen(false)
+    },
+    {
+      id: "reviews",
+      label: t("userMenu.reviews"),
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 flex-shrink-0">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+          <line x1="8" y1="9" x2="16" y2="9" />
+          <line x1="8" y1="13" x2="14" y2="13" />
+        </svg>
+      ),
+      onClick: () => setMenuOpen(false)
+    },
+    {
+      id: "logout",
+      label: t("userMenu.logout"),
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 flex-shrink-0">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+          <polyline points="16 17 21 12 16 7" />
+          <line x1="21" y1="12" x2="9" y2="12" />
+        </svg>
+      ),
+      onClick: handleLogout
+    }
+  ];
 
   return (
-    <div className="profile-page">
-      <AppHeader
-        onLogin={() => setAuthModal('login')}
-        onRegister={() => setAuthModal('register')}
-      />
-      <main className="account-layout">
-        <AccountSidebar name={name} onNotice={setNotice} />
-        <section className="profile-content" aria-labelledby="profile-heading">
-          <div className="profile-summary">
-            <Avatar name={name} large />
-            <div>
-              <h1 id="profile-heading">Thông tin cá nhân</h1>
-              <p>Thông tin và các hoạt động theo thời gian thực của bạn.</p>
-            </div>
-            <button className="profile-edit" onClick={() => firstInput.current?.focus()}>
-              <Icon name="camera" />
-              Chỉnh sửa
+    <header className="wayvee-container py-4 flex items-center justify-between border-b border-gray-100 dark:border-slate-800/80 bg-white/50 dark:bg-slate-900/50 backdrop-blur-xs relative z-40">
+      {/* Brand Logo matching exact homepage */}
+      <Link to="/" className="flex items-center cursor-pointer">
+        <WayveeLogo />
+      </Link>
+
+      {/* Right controls matching Image 2 */}
+      <div className="flex items-center gap-3">
+        <LanguageSwitcher />
+        <ThemeToggle />
+
+        {/* Support headset icon */}
+        <button
+          type="button"
+          aria-label="Support"
+          title="Hỗ trợ"
+          className="w-9 h-9 rounded-full border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-center text-slate-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors shadow-2xs"
+        >
+          <svg
+            aria-hidden="true"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
+            <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
+          </svg>
+        </button>
+
+        {/* Auth section: Show Login & Register buttons when NOT authenticated; Show Avatar + Dropdown when authenticated */}
+        {!isAuthenticated ? (
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                if (onLogin) onLogin();
+                else navigate("/login");
+              }}
+              className="px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 hover:text-[#00a3e0] dark:hover:text-[#00a3e0] hover:bg-sky-50 dark:hover:bg-slate-800 transition-all border border-transparent hover:border-sky-200 dark:hover:border-slate-700 cursor-pointer"
+            >
+              {t("login", "Đăng nhập")}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                if (onRegister) onRegister();
+                else navigate("/register");
+              }}
+              className="px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold text-white bg-[#00a3e0] hover:bg-[#008ec4] transition-all shadow-xs active:scale-95 cursor-pointer"
+            >
+              {t("register", "Đăng ký")}
             </button>
           </div>
+        ) : (
+          <div
+            ref={menuRef}
+            className="relative"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            <button
+              type="button"
+              onClick={handleAvatarClick}
+              title={user?.fullName || "Tài khoản của bạn"}
+              className="w-9 h-9 rounded-full overflow-hidden border-2 border-[#00a3e0] shadow-xs cursor-pointer hover:scale-105 transition-transform flex items-center justify-center relative"
+            >
+              <img
+                src={user?.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80"}
+                alt="User avatar"
+                className="w-full h-full object-cover"
+              />
+              <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-white dark:ring-slate-900"></span>
+            </button>
 
-          <AvatarEditor user={user} name={name} />
-
-          <form className="profile-form" onSubmit={save}>
-            <div className="profile-fields">
-              {field('firstName', 'Tên', 'text', '', 'user')}
-              {field('lastName', 'Họ', 'text', '', 'user')}
-              {field('email', 'Email', 'email', 'em***an@gmail.com', 'mail')}
-              {field('phone', 'Số điện thoại', 'tel', '(+34) 000 000 000')}
-              <div className="profile-personal-row">
-                <label className="profile-field">
-                  <span>Giới tính</span>
-                  <select name="gender" value={values.gender} onChange={update}>
-                    <option value="">Gender</option>
-                    <option>Nữ</option>
-                    <option>Nam</option>
-                    <option>Khác</option>
-                    <option>Không muốn tiết lộ</option>
-                  </select>
-                </label>
-                {field('birthday', 'Ngày sinh', 'date')}
-              </div>
-              <label className="profile-field">
-                <span>Thành phố</span>
-                <select name="city" value={values.city} onChange={update}>
-                  {['Hồ Chí Minh', 'Hà Nội', 'Đà Nẵng', 'Hải Phòng', 'Cần Thơ', 'Huế', 'Khác'].map((city) => (
-                    <option key={city}>{city}</option>
+            {/* User Menu Dropdown Popover */}
+            {menuOpen && (
+              <div
+                className="absolute right-0 top-full mt-2 w-64 bg-white dark:bg-[#111a2e] rounded-3xl p-3 shadow-2xl border border-slate-100 dark:border-slate-800 animate-in fade-in slide-in-from-top-2 duration-200 z-50"
+                role="menu"
+              >
+                <div className="space-y-1">
+                  {menuItems.map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={item.onClick}
+                      className="w-full flex items-center gap-4 px-4 py-3 rounded-2xl text-slate-800 dark:text-slate-100 font-semibold text-sm hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors text-left cursor-pointer"
+                      role="menuitem"
+                    >
+                      <span className="text-slate-700 dark:text-slate-300">
+                        {item.icon}
+                      </span>
+                      <span className="truncate">{item.label}</span>
+                    </button>
                   ))}
-                </select>
-              </label>
-              {field('address', 'Address')}
-            </div>
-            <div className="profile-form-bottom">
-              <p className="profile-notice" role="status">
-                {notice}
-              </p>
-              <div className="profile-form-actions">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setValues({ ...saved });
-                    setNotice('Đã hủy các thay đổi chưa lưu.');
-                  }}
-                >
-                  Hủy
-                </button>
-                <button type="submit">Lưu thay đổi</button>
+                </div>
               </div>
-            </div>
-          </form>
-        </section>
-      </main>
-      <AppFooter />
-
-      {authModal === 'login' && (
-        <LoginCard
-          onClose={() => setAuthModal(null)}
-          onSubmit={() => setAuthModal(null)}
-          onSignUp={() => setAuthModal('register')}
-        />
-      )}
-      {authModal === 'register' && (
-        <RegisterCard
-          onClose={() => setAuthModal(null)}
-          onSubmit={() => setAuthModal(null)}
-          onLogin={() => setAuthModal('login')}
-        />
-      )}
-    </div>
+            )}
+          </div>
+        )}
+      </div>
+    </header>
   );
 }
