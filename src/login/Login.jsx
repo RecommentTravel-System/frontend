@@ -36,7 +36,7 @@ export default function Login({
 
         <div className="auth-brand"><BrandLogo /></div>
         <h1>Welcome to Wayvee</h1>
-        <p className="auth-demo-note">Chế độ test: bấm Continue để vào Profile, không cần email hoặc mật khẩu.</p>
+        <p className="auth-demo-note">Đăng nhập để tiếp tục.</p>
         {message && <p role="status" className="auth-demo-note">{message}</p>}
         <p role="alert" className="auth-feedback">{error}</p>
 

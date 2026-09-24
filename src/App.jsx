@@ -41,10 +41,13 @@ function RequireAuth() {
 }
 
 function AccountPage({ register = false }) {
-  const { user, loginDemo } = useAuth();
+  const { user, login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const destination = '/profile';
+  const requestedDestination = location.state?.from;
+  const destination = typeof requestedDestination === 'string' && requestedDestination.startsWith('/') && !requestedDestination.startsWith('//')
+    ? requestedDestination
+    : '/profile';
   if (user) return <Navigate to={destination} replace />;
   const socialLogin = () => { throw new Error('Đăng nhập mạng xã hội chưa được kết nối. Vui lòng dùng email và mật khẩu.'); };
   const shared = { onClose: () => navigate('/'), onGoogle: socialLogin, onApple: socialLogin, onFacebook: socialLogin };
@@ -52,8 +55,8 @@ function AccountPage({ register = false }) {
     await registerAccount(values);
     navigate('/login', { replace: true, state: { from: destination, message: 'Đăng ký thành công. Hãy đăng nhập để tiếp tục.' } });
   }} />;
-  return <Login {...shared} message={location.state?.message} onSignUp={() => navigate('/register', { state: location.state })} onSubmit={() => {
-    loginDemo();
+  return <Login {...shared} message={location.state?.message} onSignUp={() => navigate('/register', { state: location.state })} onSubmit={async values => {
+    await login(values);
     navigate(destination, { replace: true });
   }} />;
 }

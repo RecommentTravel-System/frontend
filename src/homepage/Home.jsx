@@ -100,6 +100,7 @@ function Star() {
 /* Sections                                                             */
 /* ------------------------------------------------------------------ */
 function Hero() {
+  const navigate = useNavigate();
   return (
     <section className="home-hero-wrap max-w-6xl mx-auto px-6">
       <div
@@ -117,7 +118,7 @@ function Hero() {
             <Field label="Ngày đi" placeholder="DD/MM" />
             <Field label="Ngày về" placeholder="DD/MM" />
             <Field label="Kiểu chuyến đi mong muốn" placeholder="Bạn phù hợp với chuyến đi nào" />
-            <button className="home-planner-btn col-span-2 md:col-span-1 m-2 rounded-xl bg-slate-900 text-white text-sm font-semibold px-4 py-3">
+            <button type="button" onClick={() => navigate('/create-tour')} className="home-planner-btn col-span-2 md:col-span-1 m-2 rounded-xl bg-slate-900 text-white text-sm font-semibold px-4 py-3">
               Tạo lịch trình ngay
             </button>
           </div>
