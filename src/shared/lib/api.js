@@ -52,20 +52,17 @@ export async function request(endpoint, options = {}) {
             result.message.toLowerCase().includes("hết hạn"))));
 
     if (isUnauthenticated) {
-      // Clear token and user from localStorage
-      localStorage.removeItem("wayvee_token");
-      localStorage.removeItem("wayvee_user");
+      if (token) {
+        // Clear token and user from localStorage if token was present
+        localStorage.removeItem("wayvee_token");
+        localStorage.removeItem("wayvee_user");
 
-      // Notify AuthProvider and other listeners
-      window.dispatchEvent(
-        new CustomEvent("wayvee:unauthorized", {
-          detail: { endpoint, status: response.status, result }
-        })
-      );
-
-      // Redirect to home if not already there
-      if (window.location.pathname !== "/") {
-        window.location.href = "/";
+        // Notify AuthProvider and other listeners
+        window.dispatchEvent(
+          new CustomEvent("wayvee:unauthorized", {
+            detail: { endpoint, status: response.status, result }
+          })
+        );
       }
 
       const errorMessage =

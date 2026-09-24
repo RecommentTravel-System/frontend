@@ -78,7 +78,10 @@ export function TripConfirmPage() {
   return (
     <div className="bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-slate-200 relative">
       {/* AppHeader identical to homepage */}
-      <AppHeader onLogin={() => setAuthModal("login")} />
+      <AppHeader
+        onLogin={() => setAuthModal("login")}
+        onRegister={() => setAuthModal("register")}
+      />
 
       {/* BEGIN: StepperSection */}
       <section aria-label="Quy trình từng bước" className="w-full pt-6 pb-4">

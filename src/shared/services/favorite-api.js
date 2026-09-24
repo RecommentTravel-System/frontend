@@ -31,6 +31,8 @@ export function removeFavoriteById(favoriteId) {
   return api.delete(`/api/v1/favorites/${favoriteId}`);
 }
 
+/** Alias for removeFavoriteById */
+export const deleteFavorite = removeFavoriteById;
 /** Search favorites by keyword. */
 export function searchFavorites(keyword) {
   return api.get(`/api/v1/favorites/search?keyword=${encodeURIComponent(keyword)}`);

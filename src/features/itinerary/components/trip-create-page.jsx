@@ -1,9 +1,38 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "~/providers/i18n-provider";
 import { AppHeader } from "~/shared/components";
+import { DateRangePicker } from "~/shared/components/date-range-picker";
 import { LoginCard, RegisterCard } from "~/features/auth";
 import { LocationMapModal } from "./location-map-modal";
+
+function parseDateRange(dateStr) {
+  if (!dateStr) return { start: null, end: null };
+  const parts = dateStr.split("-").map((s) => s.trim());
+  const parsePart = (str) => {
+    if (!str) return null;
+    const match = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if (match) {
+      const day = parseInt(match[1], 10);
+      const month = parseInt(match[2], 10) - 1;
+      const year = parseInt(match[3], 10);
+      return new Date(year, month, day);
+    }
+    const d = new Date(str);
+    return isNaN(d.getTime()) ? null : d;
+  };
+  const start = parsePart(parts[0]);
+  const end = parts[1] ? parsePart(parts[1]) : null;
+  return { start, end };
+}
+
+function calculateDuration(start, end) {
+  if (!start || !end) return "9 ngày 8 đêm";
+  const diffTime = Math.abs(end.getTime() - start.getTime());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+  const nights = Math.max(0, diffDays - 1);
+  return `${diffDays} ngày ${nights} đêm`;
+}
 
 const INITIAL_SAMPLE_PLACES = [
   {
@@ -67,6 +96,18 @@ export function TripCreatePage() {
   const [tripDates, setTripDates] = useState(
     locationState.tripDates || ""
   );
+
+  const initialDates = useMemo(() => parseDateRange(locationState.tripDates || ""), [locationState.tripDates]);
+  const [startDate, setStartDate] = useState(initialDates.start);
+  const [endDate, setEndDate] = useState(initialDates.end);
+
+  const durationBadge = useMemo(() => {
+    if (startDate && endDate) {
+      return calculateDuration(startDate, endDate);
+    }
+    return "9 ngày 8 đêm";
+  }, [startDate, endDate]);
+
   const [destinationInput, setDestinationInput] = useState(
     locationState.destination || ""
   );
@@ -80,7 +121,6 @@ export function TripCreatePage() {
   const [selectedAction, setSelectedAction] = useState("itinerary"); // "itinerary" | "saved_only"
 
   const [isEditingName, setIsEditingName] = useState(false);
-  const [isEditingDates, setIsEditingDates] = useState(false);
 
   // Places list
   const [placesList, setPlacesList] = useState(() => {

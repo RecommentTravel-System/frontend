@@ -367,7 +367,7 @@ export function LocationMapModal({ initialQuery = "", onConfirm, onClose }) {
               <span>📍</span> Chọn vị trí địa điểm trên bản đồ Leaflet
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              Gõ tên tìm kiếm hoặc ghim vị trí trực tiếp trên bản đồ Leaflet bên dưới
+              Gõ tên tìm kiếm hoặc ghim vị trí trực tiếp trên bản đồ bên dưới
             </p>
           </div>
           <button

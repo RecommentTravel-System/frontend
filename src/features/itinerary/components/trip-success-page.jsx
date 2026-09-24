@@ -24,7 +24,10 @@ export function TripSuccessPage() {
   return (
     <div className="bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-slate-200">
       {/* AppHeader identical to homepage */}
-      <AppHeader onLogin={() => setAuthModal("login")} />
+      <AppHeader
+        onLogin={() => setAuthModal("login")}
+        onRegister={() => setAuthModal("register")}
+      />
 
       {/* Main Content */}
       <main className="flex-grow flex flex-col items-center justify-center py-20 px-6 text-center space-y-8 max-w-4xl mx-auto w-full">

@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "~/providers/i18n-provider";
 import { AppHeader } from "~/shared/components";
+import { LoginCard, RegisterCard } from "~/features/auth";
 import { LocationMapModal } from "./location-map-modal";
 
 const INITIAL_DAYS = [
@@ -356,6 +357,98 @@ const INITIAL_WISHLIST = [
   }
 ];
 
+function parseDateRange(dateStr) {
+  if (!dateStr) return { start: null, end: null };
+  const parts = dateStr.split("-").map((s) => s.trim());
+  const parsePart = (str) => {
+    if (!str) return null;
+    const match = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if (match) {
+      const day = parseInt(match[1], 10);
+      const month = parseInt(match[2], 10) - 1;
+      const year = parseInt(match[3], 10);
+      return new Date(year, month, day);
+    }
+    const d = new Date(str);
+    return isNaN(d.getTime()) ? null : d;
+  };
+  const start = parsePart(parts[0]);
+  const end = parts[1] ? parsePart(parts[1]) : null;
+  return { start, end };
+}
+
+function generateDynamicDays(tripDatesStr, initialPlacesList) {
+  const parsed = parseDateRange(tripDatesStr);
+  let totalDays = 5; // default
+  let startDate = parsed.start || new Date();
+
+  if (parsed.start && parsed.end) {
+    const diffTime = Math.abs(parsed.end.getTime() - parsed.start.getTime());
+    totalDays = Math.max(1, Math.min(30, Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1));
+  }
+
+  const defaultThemes = [
+    { vi: "Phố Cổ & Check-in Cà phê", en: "Old Quarter & Coffee Check-in" },
+    { vi: "Văn hóa & Lịch sử Thủ Đô", en: "Culture & Capital History" },
+    { vi: "Hồ Tây & Hoàng hôn lãng mạn", en: "West Lake & Romantic Sunset" },
+    { vi: "Bảo tàng & Nghệ thuật", en: "Museums & Arts" },
+    { vi: "Ẩm thực đường phố & Mua sắm", en: "Street Food & Souvenirs" },
+    { vi: "Trải nghiệm thiên nhiên & Ngoại ô", en: "Nature & Suburb Excursion" },
+    { vi: "Thư giãn & Tự do khám phá", en: "Relax & Free Exploration" }
+  ];
+
+  const generated = [];
+  for (let i = 1; i <= totalDays; i++) {
+    const currentDayDate = new Date(startDate.getTime() + (i - 1) * 24 * 60 * 60 * 1000);
+    const day = currentDayDate.getDate();
+    const month = currentDayDate.getMonth() + 1;
+    const theme = defaultThemes[(i - 1) % defaultThemes.length];
+
+    generated.push({
+      dayId: `day-${i}`,
+      dayNum: i,
+      dayLabelVi: `Ngày ${i} (${day} Thg ${month})`,
+      dayLabelEn: `Day ${i} (Month ${month}/${day})`,
+      titleVi: theme.vi,
+      titleEn: theme.en,
+      items: []
+    });
+  }
+
+  // Pre-fill initial sample places or user-selected places into days
+  if (initialPlacesList && initialPlacesList.length > 0) {
+    initialPlacesList.forEach((p, idx) => {
+      const dayTarget = generated[idx % generated.length];
+      if (dayTarget) {
+        dayTarget.items.push({
+          id: p.id || `place-${idx}`,
+          name: p.name,
+          category: p.category || "checkin",
+          categoryVi: p.category || "Tham quan",
+          categoryEn: p.category || "Sightseeing",
+          categoryColor: "bg-sky-50 text-sky-700 border-sky-200",
+          barColor: "bg-sky-500",
+          rating: p.rating || 4.8,
+          reviewsCount: p.reviewCount || p.reviewsCount || "Được yêu thích",
+          address: p.address || "Điểm đến trung tâm",
+          tagVi: p.specs || "Điểm tham quan nổi bật",
+          tagEn: p.specs || "Top Attraction",
+          image: p.image || "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=400&q=80"
+        });
+      }
+    });
+  } else {
+    // Default fallback initial items
+    INITIAL_DAYS.forEach((initDay, idx) => {
+      if (generated[idx]) {
+        generated[idx].items = initDay.items;
+      }
+    });
+  }
+
+  return generated;
+}
+
 export function TripPlanPage() {
   const { t, language } = useTranslation();
   const isEn = language === "en";
@@ -364,23 +457,37 @@ export function TripPlanPage() {
 
   // Trip Metadata
   const [tripName, setTripName] = useState(
-    locationState.tripName || "Chuyến đi Hà Nội mùa thu - Khám phá 5 ngày 4 đêm"
+    locationState.tripName || "Chuyến đi Hà Nội mùa thu - Khám phá"
   );
   const [tripDates, setTripDates] = useState(
-    locationState.tripDates || "14 - 19 Thg 8"
+    locationState.tripDates || "14/08/2025 - 18/08/2025"
   );
   const [destination] = useState(
     locationState.destination || "Hà Nội, Việt Nam"
   );
   const [passengerCount] = useState(
-    locationState.passengerCount || 3
+    locationState.passengerCount || locationState.memberCount || 2
   );
 
   // Days and Wishlist state
-  const [days, setDays] = useState(INITIAL_DAYS);
+  const [days, setDays] = useState(() => {
+    if (locationState.daysSchedule && locationState.daysSchedule.length > 0) {
+      return locationState.daysSchedule;
+    }
+    return generateDynamicDays(locationState.tripDates, locationState.placesList);
+  });
   const [wishlist, setWishlist] = useState(INITIAL_WISHLIST);
 
-  // Filters & Search
+  // Pagination (3 days per page)
+  const DAYS_PER_PAGE = 3;
+  const [dayPageIndex, setDayPageIndex] = useState(0);
+  const totalDayPages = Math.max(1, Math.ceil(days.length / DAYS_PER_PAGE));
+  const visibleDays = useMemo(() => {
+    const startIdx = dayPageIndex * DAYS_PER_PAGE;
+    return days.slice(startIdx, startIdx + DAYS_PER_PAGE);
+  }, [days, dayPageIndex]);
+
+  const [authModal, setAuthModal] = useState(null);
   const [activeCategoryFilter, setActiveCategoryFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
@@ -388,9 +495,13 @@ export function TripPlanPage() {
   const [toastMessage, setToastMessage] = useState(null);
   const [wishlistInput, setWishlistInput] = useState("");
 
-  // Drag state
-  const [draggedItem, setDraggedItem] = useState(null); // { item, sourceColId }
+  // Date Changer Popover Modal state
+  const [dateChangeMenu, setDateChangeMenu] = useState(null); // { item, currentColId }
+
+  // Drag state (with source index & target index for same-day reordering)
+  const [draggedData, setDraggedData] = useState(null); // { item, sourceColId, sourceIndex }
   const [dragOverColId, setDragOverColId] = useState(null);
+  const [dragOverItemIndex, setDragOverItemIndex] = useState(null);
 
   const showToast = (msg) => {
     setToastMessage(msg);
@@ -398,35 +509,79 @@ export function TripPlanPage() {
   };
 
   // Drag & Drop Handlers
-  const handleDragStart = (e, item, sourceColId) => {
-    setDraggedItem({ item, sourceColId });
+  const handleDragStart = (e, item, sourceColId, sourceIndex) => {
+    setDraggedData({ item, sourceColId, sourceIndex });
     e.dataTransfer.effectAllowed = "move";
-    e.dataTransfer.setData("text/plain", JSON.stringify({ itemId: item.id, sourceColId }));
+    e.dataTransfer.setData("text/plain", JSON.stringify({ itemId: item.id, sourceColId, sourceIndex }));
   };
 
-  const handleDragOver = (e, colId) => {
+  const handleDragOverCol = (e, colId) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = "move";
     if (dragOverColId !== colId) {
       setDragOverColId(colId);
+      setDragOverItemIndex(null);
     }
+  };
+
+  const handleDragOverItem = (e, colId, targetIndex) => {
+    e.preventDefault();
+    e.stopPropagation();
+    e.dataTransfer.dropEffect = "move";
+    setDragOverColId(colId);
+    setDragOverItemIndex(targetIndex);
   };
 
   const handleDragLeave = (e, colId) => {
-    if (dragOverColId === colId) {
+    if (dragOverColId === colId && e.currentTarget === e.target) {
       setDragOverColId(null);
+      setDragOverItemIndex(null);
     }
   };
 
-  const handleDrop = (e, targetColId) => {
+  const handleDrop = (e, targetColId, targetIndex = null) => {
     e.preventDefault();
+    e.stopPropagation();
     setDragOverColId(null);
-    if (!draggedItem) return;
+    setDragOverItemIndex(null);
+    if (!draggedData) return;
 
-    const { item, sourceColId } = draggedItem;
-    if (sourceColId === targetColId) return;
+    const { item, sourceColId, sourceIndex } = draggedData;
 
-    // 1. Remove from source
+    // 1. REORDERING WITHIN THE SAME DAY / COLUMN
+    if (sourceColId === targetColId) {
+      if (targetIndex === null || targetIndex === sourceIndex) {
+        setDraggedData(null);
+        return;
+      }
+
+      if (sourceColId === "wishlist") {
+        setWishlist((prev) => {
+          const next = [...prev];
+          const [removed] = next.splice(sourceIndex, 1);
+          const insertIdx = targetIndex >= next.length ? next.length : targetIndex;
+          next.splice(insertIdx, 0, removed);
+          return next;
+        });
+      } else {
+        setDays((prev) =>
+          prev.map((d) => {
+            if (d.dayId !== sourceColId) return d;
+            const nextItems = [...d.items];
+            const [removed] = nextItems.splice(sourceIndex, 1);
+            const insertIdx = targetIndex >= nextItems.length ? nextItems.length : targetIndex;
+            nextItems.splice(insertIdx, 0, removed);
+            return { ...d, items: nextItems };
+          })
+        );
+      }
+      showToast(isEn ? `Reordered "${item.name}"` : `Đã đổi thứ tự "${item.name}"`);
+      setDraggedData(null);
+      return;
+    }
+
+    // 2. MOVING ACROSS DIFFERENT DAYS / FROM WISHLIST
+    // Remove from source
     if (sourceColId === "wishlist") {
       setWishlist((prev) => prev.filter((p) => p.id !== item.id));
     } else {
@@ -439,29 +594,51 @@ export function TripPlanPage() {
       );
     }
 
-    // 2. Add to target
+    // Add to target
     if (targetColId === "wishlist") {
-      setWishlist((prev) => [item, ...prev]);
+      setWishlist((prev) => {
+        const next = [...prev];
+        const destIdx = targetIndex != null ? targetIndex : 0;
+        next.splice(destIdx, 0, item);
+        return next;
+      });
       showToast(isEn ? `Moved "${item.name}" to Wishlist` : `Đã chuyển "${item.name}" vào danh sách chờ`);
     } else {
       setDays((prev) =>
-        prev.map((d) =>
-          d.dayId === targetColId
-            ? { ...d, items: [...d.items, item] }
-            : d
-        )
+        prev.map((d) => {
+          if (d.dayId !== targetColId) return d;
+          const nextItems = [...d.items];
+          const destIdx = targetIndex != null ? targetIndex : nextItems.length;
+          nextItems.splice(destIdx, 0, item);
+          return { ...d, items: nextItems };
+        })
       );
       const targetDay = days.find((d) => d.dayId === targetColId);
       const dayName = targetDay ? (isEn ? targetDay.dayLabelEn : targetDay.dayLabelVi) : targetColId;
       showToast(isEn ? `Moved "${item.name}" to ${dayName}` : `Đã chuyển "${item.name}" sang ${dayName}`);
     }
 
-    setDraggedItem(null);
+    setDraggedData(null);
   };
 
-  // Move item directly to a specific day
+  // Move item directly to a specific day or wishlist
   const handleAssignToDay = (item, targetDayId) => {
+    // Remove from current
     setWishlist((prev) => prev.filter((p) => p.id !== item.id));
+    setDays((prev) =>
+      prev.map((d) => ({
+        ...d,
+        items: d.items.filter((p) => p.id !== item.id)
+      }))
+    );
+
+    if (targetDayId === "wishlist") {
+      setWishlist((prev) => [item, ...prev]);
+      showToast(isEn ? `Moved "${item.name}" to Wishlist` : `Đã chuyển "${item.name}" vào danh sách chờ`);
+      return;
+    }
+
+    // Add to target day
     setDays((prev) =>
       prev.map((d) =>
         d.dayId === targetDayId
@@ -568,7 +745,6 @@ export function TripPlanPage() {
 
   // CONTINUE TO STEP 3 DIRECTLY
   const handleContinueToStep3 = () => {
-    // Compile all planned places from all days and pass directly to Step 3
     const confirmedPlaces = days.flatMap((d) =>
       d.items.map((it) => ({
         id: it.id,
@@ -594,7 +770,10 @@ export function TripPlanPage() {
   return (
     <div className="bg-[#f8fafc] text-slate-800 font-sans min-h-screen flex flex-col antialiased selection:bg-[#00a3e0] selection:text-white overflow-x-hidden">
       {/* App Header */}
-      <AppHeader />
+      <AppHeader
+        onLogin={() => setAuthModal("login")}
+        onRegister={() => setAuthModal("register")}
+      />
 
       {/* Toast Notification */}
       {toastMessage && (
@@ -738,246 +917,90 @@ export function TripPlanPage() {
           </div>
         </section>
 
-        {/* MULTI-DAY HORIZONTAL KANBAN TIMELINE STREAM (Bỏ quãng đường & thời gian & chi phí ước tính) */}
-        <section className="flex-1 overflow-x-auto p-4 flex gap-4 min-h-[calc(100vh-190px)] w-full pb-20">
-          {days.map((day) => {
-            const visibleItems = filterItems(day.items);
-            const isDragOver = dragOverColId === day.dayId;
-
-            return (
-              <div
-                key={day.dayId}
-                onDragOver={(e) => handleDragOver(e, day.dayId)}
-                onDragLeave={(e) => handleDragLeave(e, day.dayId)}
-                onDrop={(e) => handleDrop(e, day.dayId)}
-                className={`w-80 min-w-[320px] max-w-[320px] flex flex-col bg-[#f0f7fb] rounded-xl border transition-all shadow-xs ${
-                  isDragOver ? "border-[#00a3e0] ring-2 ring-[#00a3e0]/30 bg-sky-50" : "border-slate-200"
-                }`}
-              >
-                {/* Day Header - Only keep Day Title and Place Count (Bỏ quãng đường km) */}
-                <div className="p-3 border-b border-slate-200 bg-white flex items-center justify-between rounded-t-xl">
-                  <div className="flex items-center gap-2">
-                    <span className="w-6 h-6 rounded bg-sky-100 text-[#00658d] flex items-center justify-center font-bold text-xs border border-sky-200">
-                      D{day.dayNum}
-                    </span>
-                    <div>
-                      <h2 className="text-xs font-bold text-[#002b49]">
-                        {isEn ? day.dayLabelEn : day.dayLabelVi}
-                      </h2>
-                      <p className="text-[11px] text-slate-500 truncate w-40">
-                        {isEn ? day.titleEn : day.titleVi}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-xs font-semibold text-sky-700 block">
-                      {day.items.length} {isEn ? "stops" : "điểm"}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Cards Stack with Drag & Drop */}
-                <div className="p-2.5 flex-1 overflow-y-auto space-y-2.5">
-                  {visibleItems.length === 0 ? (
-                    <div className="py-8 text-center text-slate-400 text-xs border-2 border-dashed border-slate-200 rounded-lg">
-                      {isEn ? "Drag places here" : "Kéo thả địa điểm vào đây"}
-                    </div>
-                  ) : (
-                    visibleItems.map((item) => (
-                      <div
-                        key={item.id}
-                        draggable
-                        onDragStart={(e) => handleDragStart(e, item, day.dayId)}
-                        className="group relative bg-white rounded-lg border border-slate-200 hover:border-[#00a3e0] transition-all p-2.5 shadow-xs cursor-grab active:cursor-grabbing hover:shadow-md"
-                      >
-                        {/* Colored Left Strip Indicator */}
-                        <div className={`absolute left-0 top-0 bottom-0 w-1 ${item.barColor || "bg-[#00a3e0]"} rounded-l`} />
-
-                        {/* Top bar: Drag Handle + Category Tag + Actions */}
-                        <div className="flex items-center justify-between mb-1.5 pl-1.5">
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-slate-400 text-[14px] leading-none select-none group-hover:text-[#00a3e0]">
-                              ⋮⋮
-                            </span>
-                            <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${item.categoryColor || "bg-sky-50 text-sky-700 border-sky-200"}`}>
-                              {isEn ? item.categoryEn || item.categoryVi : item.categoryVi}
-                            </span>
-                          </div>
-
-                          <div className="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
-                            {/* Move to next day */}
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const nextDayNum = (day.dayNum % days.length) + 1;
-                                handleAssignToDay(item, `day-${nextDayNum}`);
-                              }}
-                              className="text-slate-400 hover:text-[#00658d] p-0.5 cursor-pointer"
-                              title="Đổi sang ngày tiếp theo"
-                            >
-                              <span className="material-symbols-outlined text-[15px]">event_repeat</span>
-                            </button>
-
-                            {/* Delete stop */}
-                            <button
-                              type="button"
-                              onClick={() => handleDeleteItem(day.dayId, item.id)}
-                              className="text-slate-400 hover:text-red-600 p-0.5 cursor-pointer"
-                              title="Xóa điểm dừng"
-                            >
-                              <span className="material-symbols-outlined text-[15px]">delete</span>
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* Main Content & Media */}
-                        <div className="flex gap-2.5 pl-1.5">
-                          <div className="w-16 h-16 rounded overflow-hidden shrink-0 border border-slate-200">
-                            <img
-                              src={item.image}
-                              alt={item.name}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                            />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <h3 className="text-xs font-bold text-[#002b49] truncate">
-                              {item.name}
-                            </h3>
-                            <div className="flex items-center gap-1 text-[11px] text-amber-600 mt-0.5">
-                              <span
-                                className="material-symbols-outlined text-[12px]"
-                                style={{ fontVariationSettings: "'FILL' 1" }}
-                              >
-                                star
-                              </span>
-                              <span className="font-semibold">{item.rating}</span>
-                              <span className="text-slate-400">({item.reviewsCount})</span>
-                            </div>
-                            <p className="text-[11px] text-slate-500 truncate mt-0.5">
-                              {item.address}
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Action Bar Bottom (Bỏ giá tiền / chi phí ước tính, chỉ giữ note & tag) */}
-                        <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 pl-1.5">
-                          <span className="text-sky-700 font-semibold truncate max-w-[170px]">
-                            {isEn ? item.tagEn || item.tagVi : item.tagVi}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const newNote = window.prompt(isEn ? "Add note:" : "Thêm ghi chú:", item.tagVi || "");
-                              if (newNote !== null) {
-                                setDays((prev) =>
-                                  prev.map((d) =>
-                                    d.dayId === day.dayId
-                                      ? {
-                                          ...d,
-                                          items: d.items.map((p) =>
-                                            p.id === item.id ? { ...p, tagVi: newNote, tagEn: newNote } : p
-                                          )
-                                        }
-                                      : d
-                                  )
-                                );
-                              }
-                            }}
-                            className="flex items-center gap-0.5 text-[#00658d] hover:underline font-semibold cursor-pointer"
-                          >
-                            <span className="material-symbols-outlined text-[13px]">edit_note</span>
-                            <span>{isEn ? "Note" : "Ghi chú"}</span>
-                          </button>
-                        </div>
-                      </div>
-                    ))
-                  )}
-
-                  {/* Quick Add Stop in Column */}
-                  <button
-                    type="button"
-                    onClick={() => handleAddStopToDay(day.dayId)}
-                    className="w-full py-2 bg-white/80 border border-dashed border-slate-300 rounded-lg text-xs text-slate-600 hover:text-[#00658d] hover:border-[#00a3e0] hover:bg-white transition-all flex items-center justify-center gap-1.5 font-medium shadow-2xs cursor-pointer"
-                  >
-                    <span className="material-symbols-outlined text-[16px]">add</span>
-                    <span>
-                      {isEn ? `Add stop to Day ${day.dayNum}` : `Thêm điểm dừng Ngày ${day.dayNum}`}
-                    </span>
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-
-          {/* COLUMN: WISHLIST / UNASSIGNED BUCKET (Địa điểm chờ sắp xếp) */}
+        {/* MAIN BOARD SECTION: LEFT WISHLIST + RIGHT 3-DAY PAGINATED STREAM */}
+        <section className="flex-1 p-4 flex flex-col lg:flex-row gap-5 min-h-[calc(100vh-190px)] w-full pb-20 overflow-x-auto">
+          {/* 1. LEFT COLUMN: WISHLIST / ĐỊA ĐIỂM CHỜ SẮP XẾP */}
           <div
-            onDragOver={(e) => handleDragOver(e, "wishlist")}
+            onDragOver={(e) => handleDragOverCol(e, "wishlist")}
             onDragLeave={(e) => handleDragLeave(e, "wishlist")}
-            onDrop={(e) => handleDrop(e, "wishlist")}
-            className={`w-80 min-w-[320px] max-w-[320px] flex flex-col bg-white rounded-xl border shadow-xs transition-all ${
-              dragOverColId === "wishlist" ? "border-[#00a3e0] ring-2 ring-[#00a3e0]/30 bg-sky-50/50" : "border-sky-200"
+            onDrop={(e) => handleDrop(e, "wishlist", null)}
+            className={`w-full lg:w-80 lg:min-w-[320px] lg:max-w-[320px] flex flex-col bg-white rounded-2xl border shadow-xs transition-all shrink-0 ${
+              dragOverColId === "wishlist" && dragOverItemIndex === null
+                ? "border-[#00a3e0] ring-2 ring-[#00a3e0]/30 bg-sky-50/50"
+                : "border-sky-200 dark:border-slate-800"
             }`}
           >
-            <div className="p-3 border-b border-sky-100 bg-sky-50/70 flex items-center justify-between rounded-t-xl">
+            {/* Wishlist Header */}
+            <div className="p-3.5 border-b border-sky-100 dark:border-slate-800 bg-sky-50/70 dark:bg-slate-800/60 flex items-center justify-between rounded-t-2xl">
               <div className="flex items-center gap-2">
-                <span className="w-6 h-6 rounded bg-[#00a3e0] text-white flex items-center justify-center font-bold text-xs">
-                  <span className="material-symbols-outlined text-[14px]">bookmark</span>
+                <span className="w-7 h-7 rounded-lg bg-[#00a3e0] text-white flex items-center justify-center font-bold text-xs shadow-xs">
+                  <span className="material-symbols-outlined text-[16px]">bookmark</span>
                 </span>
                 <div>
-                  <h2 className="text-xs font-bold text-[#002b49]">
+                  <h2 className="text-xs sm:text-sm font-bold text-[#002b49] dark:text-sky-300">
                     {isEn ? "Wishlist & AI Pool" : "Địa điểm chờ sắp xếp"}
                   </h2>
-                  <p className="text-[11px] text-slate-500">
-                    {isEn ? "Wishlist & AI Suggestions" : "Wishlist & Đề xuất AI"}
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                    {isEn ? "Unassigned places" : "Kéo thả hoặc bấm gán ngày"}
                   </p>
                 </div>
               </div>
-              <span className="px-2 py-0.5 rounded-full bg-sky-100 text-sky-800 text-xs border border-sky-200 font-bold">
+              <span className="px-2.5 py-0.5 rounded-full bg-[#00a3e0] text-white text-xs font-bold shadow-xs">
                 {wishlist.length} {isEn ? "places" : "điểm"}
               </span>
             </div>
 
-            <div className="p-2.5 flex-1 overflow-y-auto space-y-2.5">
+            {/* Wishlist Cards Stack */}
+            <div className="p-3 flex-1 overflow-y-auto space-y-2.5 max-h-[calc(100vh-320px)]">
               {wishlist.length === 0 ? (
-                <div className="py-8 text-center text-slate-400 text-xs border-2 border-dashed border-sky-200 rounded-lg">
-                  {isEn ? "No wishlist items. Drag stops here." : "Chưa có địa điểm chờ"}
+                <div className="py-12 text-center text-slate-400 text-xs border-2 border-dashed border-sky-200 dark:border-slate-800 rounded-xl">
+                  <p className="font-semibold">{isEn ? "No wishlist items" : "Chưa có địa điểm chờ"}</p>
+                  <p className="mt-1 text-[11px]">{isEn ? "Drag places here or add below." : "Kéo thả địa điểm vào đây hoặc nhập thêm bên dưới."}</p>
                 </div>
               ) : (
-                wishlist.map((item) => (
+                wishlist.map((item, itemIdx) => (
                   <div
                     key={item.id}
                     draggable
-                    onDragStart={(e) => handleDragStart(e, item, "wishlist")}
-                    className="group relative bg-white rounded-lg border border-slate-200 hover:border-[#00a3e0] transition-all p-2.5 shadow-xs cursor-grab active:cursor-grabbing hover:shadow-md"
+                    onDragStart={(e) => handleDragStart(e, item, "wishlist", itemIdx)}
+                    onDragOver={(e) => handleDragOverItem(e, "wishlist", itemIdx)}
+                    onDrop={(e) => handleDrop(e, "wishlist", itemIdx)}
+                    className={`group relative bg-white dark:bg-slate-900 rounded-xl border transition-all p-3 shadow-2xs cursor-grab active:cursor-grabbing hover:shadow-md ${
+                      dragOverColId === "wishlist" && dragOverItemIndex === itemIdx
+                        ? "border-[#00a3e0] ring-2 ring-[#00a3e0]/40 -translate-y-0.5 bg-sky-50/50"
+                        : "border-slate-200 dark:border-slate-800 hover:border-[#00a3e0]"
+                    }`}
                   >
-                    <div className="flex items-center justify-between mb-1.5">
+                    <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-1.5">
-                        <span className="text-slate-400 text-[14px]">⋮⋮</span>
-                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${item.categoryColor || "bg-amber-50 text-amber-700 border-amber-200"}`}>
+                        <span className="text-slate-400 text-[14px] select-none group-hover:text-[#00a3e0]">⋮⋮</span>
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${item.categoryColor || "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300"}`}>
                           {isEn ? item.categoryEn || item.categoryVi : item.categoryVi}
                         </span>
                       </div>
 
-                      {/* Assign to Day 1 directly */}
+                      {/* Gán ngày / Đổi ngày button */}
                       <button
                         type="button"
-                        onClick={() => handleAssignToDay(item, "day-1")}
-                        className="text-[#00a3e0] hover:text-[#00658d] text-xs font-bold flex items-center gap-0.5 cursor-pointer"
+                        onClick={() => setDateChangeMenu({ item, currentColId: "wishlist" })}
+                        className="text-[#00a3e0] hover:text-[#007ba8] bg-sky-50 dark:bg-sky-950/60 border border-sky-200 dark:border-sky-800 px-2 py-0.5 rounded-lg text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors"
+                        title="Chọn ngày để gán địa điểm này"
                       >
-                        + {isEn ? "Assign Day" : "Gán ngày"}
+                        <span className="material-symbols-outlined text-[13px]">calendar_month</span>
+                        <span>+ {isEn ? "Assign Day" : "Gán ngày"}</span>
                       </button>
                     </div>
 
-                    <div className="flex gap-2">
-                      <div className="w-14 h-14 rounded overflow-hidden shrink-0 border border-slate-200">
+                    <div className="flex gap-2.5">
+                      <div className="w-16 h-16 rounded-lg overflow-hidden shrink-0 border border-slate-200 dark:border-slate-700">
                         <img
-                          src={item.image}
+                          src={item.image || "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=400&q=80"}
                           alt={item.name}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-xs font-bold text-[#002b49] truncate">
+                        <h3 className="text-xs font-bold text-[#002b49] dark:text-white truncate">
                           {item.name}
                         </h3>
                         <div className="flex items-center gap-1 text-[11px] text-amber-600 mt-0.5">
@@ -987,9 +1010,10 @@ export function TripPlanPage() {
                           >
                             star
                           </span>
-                          <span>{item.rating} ({item.reviewsCount})</span>
+                          <span className="font-semibold">{item.rating || 4.8}</span>
+                          <span className="text-slate-400">({item.reviewsCount || "Được yêu thích"})</span>
                         </div>
-                        <p className="text-[11px] text-slate-500 truncate mt-0.5">
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
                           {item.address}
                         </p>
                       </div>
@@ -1006,12 +1030,332 @@ export function TripPlanPage() {
                   onChange={(e) => setWishlistInput(e.target.value)}
                   onKeyDown={handleAddToWishlist}
                   placeholder={isEn ? "+ Enter place name & press Enter..." : "+ Thêm địa điểm & nhấn Enter..."}
-                  className="w-full bg-slate-50 border border-slate-200 text-slate-800 text-xs rounded-lg px-2.5 py-2 placeholder:text-slate-400 focus:border-[#00a3e0] focus:bg-white focus:outline-none transition-all"
+                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 text-xs rounded-xl px-3 py-2.5 placeholder:text-slate-400 focus:border-[#00a3e0] focus:bg-white dark:focus:bg-slate-900 focus:outline-none transition-all"
                 />
               </div>
             </div>
           </div>
+
+          {/* 2. RIGHT SECTION: PAGINATED DAYS STREAM (3 Days Per Page) */}
+          <div className="flex-1 flex flex-col min-w-0">
+            {/* Pagination Controls Bar */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-3 mb-4 shadow-xs">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#00a3e0]"></span>
+                <span className="text-xs sm:text-sm font-bold text-[#002b49] dark:text-sky-300">
+                  {isEn
+                    ? `Showing Days ${dayPageIndex * 3 + 1} - ${Math.min((dayPageIndex + 1) * 3, days.length)} of ${days.length}`
+                    : `Lịch trình: Ngày ${dayPageIndex * 3 + 1} - ${Math.min((dayPageIndex + 1) * 3, days.length)} (Tổng ${days.length} ngày)`}
+                </span>
+              </div>
+
+              {/* Day page chips & Navigation buttons */}
+              <div className="flex items-center gap-2 flex-wrap">
+                {Array.from({ length: totalDayPages }).map((_, pIdx) => (
+                  <button
+                    key={pIdx}
+                    type="button"
+                    onClick={() => setDayPageIndex(pIdx)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                      dayPageIndex === pIdx
+                        ? "bg-[#002b49] text-white shadow-xs scale-105"
+                        : "bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300"
+                    }`}
+                  >
+                    {isEn ? `Days ${pIdx * 3 + 1}-${Math.min((pIdx + 1) * 3, days.length)}` : `Ngày ${pIdx * 3 + 1} - ${Math.min((pIdx + 1) * 3, days.length)}`}
+                  </button>
+                ))}
+
+                <div className="flex items-center gap-1 border-l border-slate-200 dark:border-slate-700 pl-2">
+                  <button
+                    type="button"
+                    disabled={dayPageIndex === 0}
+                    onClick={() => setDayPageIndex((prev) => Math.max(0, prev - 1))}
+                    className="w-8 h-8 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-30 disabled:hover:bg-transparent cursor-pointer transition-colors"
+                    title="Trang ngày trước"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">chevron_left</span>
+                  </button>
+                  <button
+                    type="button"
+                    disabled={dayPageIndex >= totalDayPages - 1}
+                    onClick={() => setDayPageIndex((prev) => Math.min(totalDayPages - 1, prev + 1))}
+                    className="w-8 h-8 rounded-xl border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-30 disabled:hover:bg-transparent cursor-pointer transition-colors"
+                    title="Trang ngày tiếp theo"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">chevron_right</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* 3 Day Columns Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 flex-1 items-start">
+              {visibleDays.map((day) => {
+                const visibleItems = filterItems(day.items);
+                const isDragOver = dragOverColId === day.dayId;
+
+                return (
+                  <div
+                    key={day.dayId}
+                    onDragOver={(e) => handleDragOverCol(e, day.dayId)}
+                    onDragLeave={(e) => handleDragLeave(e, day.dayId)}
+                    onDrop={(e) => handleDrop(e, day.dayId, null)}
+                    className={`flex flex-col bg-[#f0f7fb] dark:bg-slate-900/90 rounded-2xl border transition-all shadow-xs w-full min-h-[520px] ${
+                      isDragOver && dragOverItemIndex === null
+                        ? "border-[#00a3e0] ring-2 ring-[#00a3e0]/30 bg-sky-50 dark:bg-sky-950/40"
+                        : "border-slate-200 dark:border-slate-800"
+                    }`}
+                  >
+                    {/* Day Column Header */}
+                    <div className="p-3.5 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-between rounded-t-2xl">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="w-7 h-7 rounded-lg bg-sky-100 dark:bg-sky-950/80 text-[#00658d] dark:text-sky-300 flex items-center justify-center font-extrabold text-xs border border-sky-200 dark:border-sky-800 shrink-0">
+                          D{day.dayNum}
+                        </span>
+                        <div className="min-w-0">
+                          <h2 className="text-xs font-bold text-[#002b49] dark:text-white truncate">
+                            {isEn ? day.dayLabelEn : day.dayLabelVi}
+                          </h2>
+                          <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                            {isEn ? day.titleEn : day.titleVi}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <span className="text-xs font-bold text-sky-700 dark:text-sky-400 px-2 py-0.5 bg-sky-50 dark:bg-sky-950/50 rounded-full border border-sky-200 dark:border-sky-800">
+                          {day.items.length} {isEn ? "stops" : "điểm"}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Cards Stack with Same-Day Reordering & Cross-Day Drag */}
+                    <div className="p-3 flex-1 overflow-y-auto space-y-2.5 max-h-[calc(100vh-340px)]">
+                      {visibleItems.length === 0 ? (
+                        <div className="py-12 text-center text-slate-400 text-xs border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
+                          <p className="font-semibold">{isEn ? "Drag places here" : "Kéo thả địa điểm vào đây"}</p>
+                          <p className="mt-1 text-[11px]">{isEn ? "or add custom stop below" : "hoặc thêm điểm dừng bên dưới"}</p>
+                        </div>
+                      ) : (
+                        visibleItems.map((item, itemIdx) => (
+                          <div
+                            key={item.id}
+                            draggable
+                            onDragStart={(e) => handleDragStart(e, item, day.dayId, itemIdx)}
+                            onDragOver={(e) => handleDragOverItem(e, day.dayId, itemIdx)}
+                            onDrop={(e) => handleDrop(e, day.dayId, itemIdx)}
+                            className={`group relative bg-white dark:bg-slate-800/90 rounded-xl border transition-all p-3 shadow-2xs cursor-grab active:cursor-grabbing hover:shadow-md ${
+                              dragOverColId === day.dayId && dragOverItemIndex === itemIdx
+                                ? "border-[#00a3e0] ring-2 ring-[#00a3e0]/40 -translate-y-0.5 bg-sky-50/60 dark:bg-sky-950/50"
+                                : "border-slate-200 dark:border-slate-700/80 hover:border-[#00a3e0]"
+                            }`}
+                          >
+                            {/* Colored Left Strip Indicator */}
+                            <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${item.barColor || "bg-[#00a3e0]"} rounded-l-xl`} />
+
+                            {/* Top Bar: Drag Handle + Category Tag + Actions */}
+                            <div className="flex items-center justify-between mb-2 pl-1.5">
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-slate-400 text-[14px] leading-none select-none group-hover:text-[#00a3e0]">
+                                  ⋮⋮
+                                </span>
+                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${item.categoryColor || "bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950/50 dark:text-sky-300"}`}>
+                                  {isEn ? item.categoryEn || item.categoryVi : item.categoryVi}
+                                </span>
+                              </div>
+
+                              <div className="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
+                                {/* ĐỔI NGÀY POPOVER BUTTON (Shows all actual input dates) */}
+                                <button
+                                  type="button"
+                                  onClick={() => setDateChangeMenu({ item, currentColId: day.dayId })}
+                                  className="text-slate-400 hover:text-[#00a3e0] hover:bg-sky-50 dark:hover:bg-slate-700 p-1 rounded-lg cursor-pointer transition-colors"
+                                  title="Đổi sang ngày khác"
+                                >
+                                  <span className="material-symbols-outlined text-[17px]">calendar_month</span>
+                                </button>
+
+                                {/* Delete stop */}
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteItem(day.dayId, item.id)}
+                                  className="text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 p-1 rounded-lg cursor-pointer transition-colors"
+                                  title="Xóa điểm dừng"
+                                >
+                                  <span className="material-symbols-outlined text-[17px]">delete</span>
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Main Content & Media */}
+                            <div className="flex gap-2.5 pl-1.5">
+                              <div className="w-16 h-16 rounded-lg overflow-hidden shrink-0 border border-slate-200 dark:border-slate-700">
+                                <img
+                                  src={item.image || "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=400&q=80"}
+                                  alt={item.name}
+                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <h3 className="text-xs font-bold text-[#002b49] dark:text-white truncate">
+                                  {item.name}
+                                </h3>
+                                <div className="flex items-center gap-1 text-[11px] text-amber-600 mt-0.5">
+                                  <span
+                                    className="material-symbols-outlined text-[12px]"
+                                    style={{ fontVariationSettings: "'FILL' 1" }}
+                                  >
+                                    star
+                                  </span>
+                                  <span className="font-semibold">{item.rating || 4.8}</span>
+                                  <span className="text-slate-400">({item.reviewsCount || "Được yêu thích"})</span>
+                                </div>
+                                <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                                  {item.address}
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* Action Bar Bottom (Ghi chú) */}
+                            <div className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between text-[11px] text-slate-500 pl-1.5">
+                              <span className="text-sky-700 dark:text-sky-400 font-semibold truncate max-w-[170px]">
+                                {isEn ? item.tagEn || item.tagVi : item.tagVi}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const newNote = window.prompt(isEn ? "Add note:" : "Thêm ghi chú:", item.tagVi || "");
+                                  if (newNote !== null) {
+                                    setDays((prev) =>
+                                      prev.map((d) =>
+                                        d.dayId === day.dayId
+                                          ? {
+                                              ...d,
+                                              items: d.items.map((p) =>
+                                                p.id === item.id ? { ...p, tagVi: newNote, tagEn: newNote } : p
+                                              )
+                                            }
+                                          : d
+                                      )
+                                    );
+                                  }
+                                }}
+                                className="flex items-center gap-0.5 text-[#00658d] dark:text-sky-400 hover:underline font-semibold cursor-pointer"
+                              >
+                                <span className="material-symbols-outlined text-[14px]">edit_note</span>
+                                <span>{isEn ? "Note" : "Ghi chú"}</span>
+                              </button>
+                            </div>
+                          </div>
+                        ))
+                      )}
+
+                      {/* Quick Add Stop in Column */}
+                      <button
+                        type="button"
+                        onClick={() => handleAddStopToDay(day.dayId)}
+                        className="w-full py-2.5 bg-white/90 dark:bg-slate-800/80 border border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-xs text-slate-600 dark:text-slate-300 hover:text-[#00658d] hover:border-[#00a3e0] hover:bg-white transition-all flex items-center justify-center gap-1.5 font-bold shadow-2xs cursor-pointer"
+                      >
+                        <span className="material-symbols-outlined text-[16px]">add</span>
+                        <span>
+                          {isEn ? `Add stop to Day ${day.dayNum}` : `Thêm điểm dừng Ngày ${day.dayNum}`}
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </section>
+      </div>
+
+      {/* DATE CHANGER POPUP MODAL (Lists all input dates + wishlist option) */}
+      {dateChangeMenu && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in duration-150"
+          onClick={() => setDateChangeMenu(null)}
+        >
+          <div
+            className="bg-white dark:bg-slate-900 rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 animate-in zoom-in-95 duration-150"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <div>
+                <h3 className="text-sm font-extrabold text-[#002b49] dark:text-sky-300">
+                  {isEn ? "Select Target Day" : "Chọn ngày chuyển đến"}
+                </h3>
+                <p className="text-xs text-slate-400 truncate max-w-[240px] mt-0.5 font-medium">
+                  {dateChangeMenu.item?.name}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setDateChangeMenu(null)}
+                className="w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-white flex items-center justify-center text-xs font-bold cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* List of all input days */}
+            <div className="max-h-72 overflow-y-auto space-y-2 pr-1">
+              {days.map((d) => {
+                const isCurrent = dateChangeMenu.currentColId === d.dayId;
+                return (
+                  <button
+                    key={d.dayId}
+                    type="button"
+                    disabled={isCurrent}
+                    onClick={() => {
+                      handleAssignToDay(dateChangeMenu.item, d.dayId);
+                      setDateChangeMenu(null);
+                    }}
+                    className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition-all cursor-pointer ${
+                      isCurrent
+                        ? "bg-slate-100 dark:bg-slate-800/40 text-slate-400 border border-slate-200 dark:border-slate-800 cursor-not-allowed"
+                        : "bg-slate-50 dark:bg-slate-800/70 hover:bg-[#e6f6fd] dark:hover:bg-sky-950/60 border border-slate-200 dark:border-slate-700 text-[#002b49] dark:text-slate-200 hover:text-[#00a3e0]"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5 truncate">
+                      <span className="w-6 h-6 rounded-lg bg-[#00a3e0] text-white flex items-center justify-center text-[10px] font-extrabold shrink-0">
+                        D{d.dayNum}
+                      </span>
+                      <span className="truncate">{isEn ? d.dayLabelEn : d.dayLabelVi}</span>
+                    </div>
+                    {isCurrent ? (
+                      <span className="text-[10px] text-slate-400 italic">Hiện tại</span>
+                    ) : (
+                      <span className="text-xs text-[#00a3e0] font-bold">Chuyển →</span>
+                    )}
+                  </button>
+                );
+              })}
+
+              {/* Option to move back to Wishlist */}
+              <button
+                type="button"
+                disabled={dateChangeMenu.currentColId === "wishlist"}
+                onClick={() => {
+                  handleAssignToDay(dateChangeMenu.item, "wishlist");
+                  setDateChangeMenu(null);
+                }}
+                className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition-all cursor-pointer ${
+                  dateChangeMenu.currentColId === "wishlist"
+                    ? "bg-slate-100 dark:bg-slate-800/40 text-slate-400 border border-slate-200 dark:border-slate-800 cursor-not-allowed"
+                    : "bg-amber-50/70 dark:bg-amber-950/30 hover:bg-amber-100 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800/40"
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <span className="material-symbols-outlined text-[16px] text-amber-600">bookmark</span>
+                  <span>{isEn ? "Move to Wishlist" : "Chuyển về Danh sách chờ"}</span>
+                </div>
+                <span className="text-xs text-amber-700 dark:text-amber-400 font-bold">Lưu lại →</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       </div>
 
       {/* STICKY SUMMARY BOTTOM BAR - Clicking CONTINUE goes straight to STEP 3 */}
@@ -1062,6 +1406,23 @@ export function TripPlanPage() {
             setIsMapModalOpen(false);
             showToast(`${isEn ? "Selected location" : "Đã chọn tọa độ"}: ${locName}`);
           }}
+        />
+      )}
+
+      {/* Auth Modals */}
+      {authModal === "login" && (
+        <LoginCard
+          onClose={() => setAuthModal(null)}
+          onSubmit={() => setAuthModal(null)}
+          onSignUp={() => setAuthModal("register")}
+        />
+      )}
+
+      {authModal === "register" && (
+        <RegisterCard
+          onClose={() => setAuthModal(null)}
+          onSubmit={() => setAuthModal(null)}
+          onLogin={() => setAuthModal("login")}
         />
       )}
     </div>

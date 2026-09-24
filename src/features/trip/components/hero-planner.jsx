@@ -18,10 +18,10 @@ export function HeroPlanner({ onPlannerSubmit }) {
     if (e) e.preventDefault();
     if (onPlannerSubmit) {
       onPlannerSubmit({
-        destination: destination || "Huế",
-        tripDates: dateRange.rangeString || "16/07/2025 - 24/07/2025",
-        passengerCount: passengerCount || "2",
-        travelStyle: tripType || "Thư giãn, Khám phá"
+        destination: destination,
+        tripDates: dateRange.rangeString,
+        passengerCount: passengerCount,
+        travelStyle: tripType
       });
     }
   };

@@ -116,7 +116,6 @@
       "nameLabel": "Trip name",
       "defaultName": "Trip Hanoi - Saigon",
       "datesLabel": "Trip dates",
-      "defaultDates": "16/07/2025 - 24/07/2025",
       "edit": "Edit"
     },
     "destinationDetails": {
@@ -179,7 +178,6 @@
       "nameLabel": "Trip name",
       "defaultName": "Trip Hanoi - Saigon",
       "datesLabel": "Trip dates",
-      "defaultDates": "16/07/2025 - 24/07/2025",
       "edit": "Edit"
     },
     "locationDetails": {

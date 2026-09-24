@@ -55,7 +55,7 @@ export function PlaceCard({
   }, [isAuthenticated, favLoading, isFavorite, placeOsmId, place]);
 
   const placeId = place.osmId || place.id;
-  const handleNavigateDetail = () => navigate(`/places/${placeId}`);
+  const handleNavigateDetail = () => navigate(`/places/${placeId}`, { state: { place } });
 
   const displayImage = place.imageUrl && !place.imageUrl.includes("No_image_available")
     ? place.imageUrl

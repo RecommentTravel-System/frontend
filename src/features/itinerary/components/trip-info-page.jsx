@@ -1,10 +1,39 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useTranslation } from "~/providers/i18n-provider";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { AppHeader } from "~/shared/components";
+import { DateRangePicker } from "~/shared/components/date-range-picker";
 import { LoginCard, RegisterCard } from "~/features/auth";
 import { LocationMapModal } from "./location-map-modal";
 import { api } from "~/shared/lib/api";
+
+function parseDateRange(dateStr) {
+  if (!dateStr) return { start: null, end: null };
+  const parts = dateStr.split("-").map((s) => s.trim());
+  const parsePart = (str) => {
+    if (!str) return null;
+    const match = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if (match) {
+      const day = parseInt(match[1], 10);
+      const month = parseInt(match[2], 10) - 1;
+      const year = parseInt(match[3], 10);
+      return new Date(year, month, day);
+    }
+    const d = new Date(str);
+    return isNaN(d.getTime()) ? null : d;
+  };
+  const start = parsePart(parts[0]);
+  const end = parts[1] ? parsePart(parts[1]) : null;
+  return { start, end };
+}
+
+function calculateDuration(start, end) {
+  if (!start || !end) return "9 ngày 8 đêm";
+  const diffTime = Math.abs(end.getTime() - start.getTime());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+  const nights = Math.max(0, diffDays - 1);
+  return `${diffDays} ngày ${nights} đêm`;
+}
 
 const PRESET_STYLES = [
   { id: "relax", labelKey: "tripInfo.styles.relax", defaultLabel: "Thư giãn" },
@@ -14,9 +43,11 @@ const PRESET_STYLES = [
   { id: "outdoor", labelKey: "tripInfo.styles.outdoor", defaultLabel: "Trải nghiệm ngoài trời" }
 ];
 
-export function TripInfoPage({ initialData }) {
+export function TripInfoPage({ initialData: propInitialData }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const locationState = useLocation().state || {};
+  const initialData = propInitialData || locationState;
 
   const [authModal, setAuthModal] = useState(null);
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
@@ -27,18 +58,29 @@ export function TripInfoPage({ initialData }) {
   const [tripDates, setTripDates] = useState(
     initialData?.tripDates || ""
   );
+
+  const initialDates = useMemo(() => parseDateRange(initialData?.tripDates || ""), [initialData?.tripDates]);
+  const [startDate, setStartDate] = useState(initialDates.start);
+  const [endDate, setEndDate] = useState(initialDates.end);
+
+  const durationBadge = useMemo(() => {
+    if (startDate && endDate) {
+      return calculateDuration(startDate, endDate);
+    }
+    return "9 ngày 8 đêm";
+  }, [startDate, endDate]);
+
   const [destination, setDestination] = useState(
     initialData?.destination || ""
   );
   const [companions, setCompanions] = useState(initialData?.companions || "friends");
   const [memberCount, setMemberCount] = useState(
-    initialData?.passengerCount ? Number(initialData.passengerCount) : 2
+    initialData?.passengerCount ? Number(initialData.passengerCount) : (initialData?.memberCount ? Number(initialData.memberCount) : 2)
   );
-  const [selectedStyles, setSelectedStyles] = useState(initialData?.travelStyles || []);
-  const [customStyle, setCustomStyle] = useState("");
+  const [selectedStyles, setSelectedStyles] = useState(initialData?.travelStyles || initialData?.selectedStyles || []);
+  const [customStyle, setCustomStyle] = useState(initialData?.customStyle || "");
 
   const [isEditingName, setIsEditingName] = useState(false);
-  const [isEditingDates, setIsEditingDates] = useState(false);
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -111,7 +153,11 @@ export function TripInfoPage({ initialData }) {
       destination: destination.trim(),
       companions: companions.trim(),
       passengerCount: String(memberCount),
-      travelStyle: chosenStyleLabels.join(", ")
+      memberCount: memberCount,
+      travelStyle: chosenStyleLabels.join(", "),
+      travelStyles: selectedStyles,
+      selectedStyles: selectedStyles,
+      customStyle: customStyle.trim()
     };
 
     try {
@@ -204,7 +250,7 @@ export function TripInfoPage({ initialData }) {
                 </h3>
               </div>
               <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-[#e6f6fd] dark:bg-sky-950/60 text-[#00a3e0]">
-                {t("tripInfo.tripSummary.defaultDuration", "9 ngày 8 đêm")}
+                {durationBadge}
               </span>
             </div>
 
@@ -265,48 +311,25 @@ export function TripInfoPage({ initialData }) {
                   )}
                 </div>
 
-                {/* Date Range Item */}
-                <div className="bg-slate-50/80 dark:bg-slate-800/60 rounded-xl p-3.5 border border-slate-100 dark:border-slate-700/60 flex flex-col justify-between">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                      {t("tripInfo.tripSummary.datesLabel", "Ngày đi - về")}
-                    </span>
-                    <button
-                      className="text-xs font-semibold text-[#00a3e0] hover:underline flex items-center gap-1 cursor-pointer"
-                      type="button"
-                      onClick={() => setIsEditingDates(!isEditingDates)}
-                    >
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <rect height="18" rx="2" strokeWidth="2" width="18" x="3" y="4"></rect>
-                        <line strokeWidth="2" x1="16" x2="16" y1="2" y2="6"></line>
-                        <line strokeWidth="2" x1="8" x2="8" y1="2" y2="6"></line>
-                      </svg>
-                      {t("tripInfo.tripSummary.edit", "Chỉnh sửa")}
-                    </button>
-                  </div>
-                  {isEditingDates ? (
-                    <input
-                      type="text"
-                      value={tripDates}
-                      placeholder={t("tripInfo.tripSummary.placeholderDates", "VD: 16/07/2025 - 24/07/2025")}
-                      onChange={(e) => {
-                        setTripDates(e.target.value);
-                        clearError("tripDates");
-                      }}
-                      onBlur={() => setIsEditingDates(false)}
-                      autoFocus
-                      className="text-sm font-bold text-[#002d5b] dark:text-sky-300 bg-white dark:bg-slate-900 border border-[#00a3e0] rounded px-2 py-0.5 outline-none w-full"
-                    />
-                  ) : (
-                    <div
-                      onClick={() => setIsEditingDates(true)}
-                      className={`text-base font-bold cursor-pointer ${tripDates ? "text-[#002d5b] dark:text-sky-300" : "text-slate-400 italic font-normal text-sm"}`}
-                    >
-                      {tripDates || t("tripInfo.tripSummary.placeholderDates", "Chọn ngày đi - về...")}
-                    </div>
-                  )}
+                {/* Date Range Item (Home-style DateRangePicker) */}
+                <div className="bg-slate-50/80 dark:bg-slate-800/60 rounded-xl p-2 border border-slate-100 dark:border-slate-700/60 flex flex-col justify-center relative overflow-visible">
+                  <DateRangePicker
+                    startDate={startDate}
+                    endDate={endDate}
+                    onChange={(res) => {
+                      setStartDate(res.startDate);
+                      setEndDate(res.endDate);
+                      setTripDates(res.rangeString);
+                      clearError("tripDates");
+                    }}
+                    checkInLabel={t("hero.departDate") || "Ngày đi"}
+                    checkOutLabel={t("hero.returnDate") || "Ngày về"}
+                    startPlaceholder="16/07/2025"
+                    endPlaceholder="24/07/2025"
+                    dateFormat="DD/MM/YYYY"
+                  />
                   {errors.tripDates && (
-                    <p className="text-[11px] text-rose-500 mt-1">{errors.tripDates}</p>
+                    <p className="text-[11px] text-rose-500 mt-1 px-2">{errors.tripDates}</p>
                   )}
                 </div>
               </div>

@@ -116,7 +116,6 @@
       "nameLabel": "Tên chuyến đi",
       "defaultName": "Chuyến đi Hà Nội - Sài Gòn",
       "datesLabel": "Ngày đi - về",
-      "defaultDates": "16/07/2025 - 24/07/2025",
       "edit": "Chỉnh sửa"
     },
     "destinationDetails": {
@@ -179,7 +178,6 @@
       "nameLabel": "Tên chuyến đi",
       "defaultName": "Chuyến đi Hà Nội - Sài Gòn",
       "datesLabel": "Ngày đi - về",
-      "defaultDates": "16/07/2025 - 24/07/2025",
       "edit": "Chỉnh sửa"
     },
     "locationDetails": {
