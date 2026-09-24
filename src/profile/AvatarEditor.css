@@ -1,0 +1,10 @@
+.avatar-editor { display: flex; align-items: center; gap: 22px; padding: 22px; border-radius: 14px; background: #fff; }
+.avatar-editor h2 { margin: 0 0 5px; font-size: 16px; font-weight: 600; }
+.avatar-editor p { margin: 0; color: #8190a3; font-size: 12px; }
+.avatar-editor-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+.avatar-editor-actions button { border: 1px solid #9ab2c6; padding: 7px 12px; border-radius: 7px; background: transparent; color: #416780; }
+.avatar-editor-actions button:disabled { opacity: .5; cursor: wait; }
+.avatar-editor .avatar-notice { margin-top: 9px; max-width: 400px; }
+.profile-avatar > img { width: 100%; height: 100%; object-fit: cover; }
+.site-header .profile-avatar { width: 34px; height: 34px; }
+@media (max-width: 460px) { .avatar-editor { gap: 14px; padding: 18px; align-items: flex-start; } }

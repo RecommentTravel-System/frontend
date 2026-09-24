@@ -11,9 +11,9 @@ const menu = [
   { icon: 'card', label: 'Premium', to: '/payment' },
   { icon: 'calendar', label: 'Lịch trình' },
   { icon: 'heart', label: 'Yêu thích', to: '/favorites' },
-  { icon: 'support', label: 'Hỗ trợ', href: 'mailto:wayvee@gmail.com' },
+  { icon: 'support', label: 'Hỗ trợ', to: '/support' },
   { icon: 'review', label: 'Bài đánh giá', to: '/reviews' },
-  { icon: 'settings', label: 'Cài đặt' },
+  { icon: 'settings', label: 'Cài đặt', to: '/settings' },
 ];
 
 export default function AccountSidebar({ name, onNotice }) {

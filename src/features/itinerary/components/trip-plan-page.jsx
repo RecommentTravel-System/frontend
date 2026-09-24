@@ -1356,8 +1356,6 @@ export function TripPlanPage() {
           </div>
         </div>
       )}
-      </div>
-
       {/* STICKY SUMMARY BOTTOM BAR - Clicking CONTINUE goes straight to STEP 3 */}
       <footer className="fixed bottom-0 left-0 right-0 h-14 bg-white/95 backdrop-blur border-t border-slate-200 px-6 flex items-center justify-between z-40 select-none shadow-md">
         {/* Left Back / Summary info */}

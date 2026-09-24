@@ -8,6 +8,7 @@ import { useAuth } from '../auth/useAuth.js';
 import { readProfile } from '../profile/profileStorage.js';
 import { filters, getAllTrips, shortDate } from './trips.js';
 import './Itineraries.css';
+import '../tours/CreateTour.css';
 
 function TripImage({ trip }) {
   const [failed, setFailed] = useState(false);

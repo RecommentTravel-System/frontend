@@ -1,0 +1,49 @@
+.settings-page { min-height: 100vh; background: #f8f9fb; color: #697485; font: 13px/1.5 Inter, 'Segoe UI', sans-serif; }
+.settings-layout { min-height: 740px; }
+.settings-panel { min-width: 0; background: white; border-radius: 14px; padding: 24px; }
+.settings-panel > h1, .settings-security > h2 { margin: 0; padding-bottom: 17px; border-bottom: 1px solid #e5e9ef; font-size: 21px; font-weight: 600; color: #626e80; }
+.settings-row { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 20px 0 12px; }
+.settings-row h2, .settings-security-item h3 { margin: 0 0 6px; font-size: 14px; font-weight: 600; }
+.settings-row p, .settings-security-item p { margin: 0; color: #a0adbf; font-size: 12px; line-height: 1.6; }
+.settings-switch { display: inline-flex; align-items: center; width: 40px; height: 23px; flex-shrink: 0; border: 0; border-radius: 20px; background: #b5beca; padding: 3px; cursor: pointer; }
+.settings-switch span { width: 17px; height: 17px; background: white; border-radius: 50%; box-shadow: 0 1px 3px #0002; transition: transform 150ms ease; }
+.settings-switch[aria-checked='true'] { background: #063b5c; }
+.settings-switch[aria-checked='true'] span { transform: translateX(17px); }
+.settings-security { margin-top: 48px; }
+.settings-security-item { margin-top: 20px; }
+.settings-security-item button { margin-top: 17px; }
+.settings-primary, .settings-danger { border-radius: 7px; padding: 9px 13px; font: inherit; font-size: 12px; cursor: pointer; }
+.settings-primary { background: #073b5c; border: 1px solid #073b5c; color: white; }
+.settings-primary:hover { background: #145273; }
+.settings-danger { background: transparent; border: 1px solid #f26f78; color: #ed5361; }
+.settings-danger:hover { background: #fff3f3; }
+.settings-notice { margin: 24px 0 0; font-size: 12px; color: #537792; }
+.settings-notice:empty { display: none; }
+.settings-dialog { width: min(460px, calc(100% - 28px)); max-height: calc(100dvh - 40px); overflow-y: auto; margin: auto; padding: 26px; border: 0; border-radius: 18px; background: white; color: #687689; }
+.settings-dialog::backdrop { background: #05132f80; }
+.settings-dialog-heading { display: flex; align-items: center; justify-content: space-between; gap: 15px; }
+.settings-dialog h2 { margin: 0; font-size: 19px; font-weight: 600; }
+.settings-dialog-heading button { border: 0; background: none; color: inherit; font-size: 25px; cursor: pointer; }
+.settings-dialog p { margin: 14px 0; font-size: 12px; line-height: 1.7; }
+.settings-dialog label { display: block; margin-top: 16px; font-size: 12px; }
+.settings-dialog input { display: block; width: 100%; padding: 10px; margin-top: 7px; border: 1px solid #d3dde7; border-radius: 7px; background: white; color: inherit; font: inherit; }
+.settings-dialog-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 22px; }
+.settings-dialog-actions button { border: 1px solid #a6b6c6; border-radius: 7px; background: transparent; padding: 8px 12px; color: inherit; font: inherit; font-size: 12px; cursor: pointer; }
+.settings-dialog-actions .settings-primary { background: #073b5c; color: white; }
+.settings-dialog-actions .settings-danger { border-color: #f26f78; color: #ed5361; }
+.settings-dialog button:disabled { opacity: .5; cursor: not-allowed; }
+.settings-dialog .settings-error { color: #bf5360; }
+.settings-error:empty { display: none; }
+.settings-page button:focus-visible, .settings-dialog :is(button, input):focus-visible { outline: 2px solid #6193ba; outline-offset: 3px; }
+html[data-theme='dark'] .settings-page { background: var(--theme-page); color: var(--theme-text); }
+html[data-theme='dark'] :is(.settings-panel, .settings-dialog) { background: var(--theme-panel); color: var(--theme-text); }
+html[data-theme='dark'] :is(.settings-panel h1, .settings-panel h2, .settings-panel h3) { color: var(--theme-text); border-color: var(--theme-border); }
+html[data-theme='dark'] :is(.settings-row p, .settings-security-item p) { color: var(--theme-muted); }
+html[data-theme='dark'] .settings-dialog input { background: #121c29; border-color: var(--theme-border); }
+html[data-theme='dark'] .settings-switch[aria-checked='true'] { background: #4f9bc6; }
+html[data-theme='dark'] .settings-danger:hover { background: #512735; }
+html[data-theme='dark'] .settings-notice { color: #9bceef; }
+html[data-motion='off'] *, html[data-motion='off'] *::before, html[data-motion='off'] *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+@media (max-width: 760px) { .settings-layout { min-height: 0; } .settings-panel { min-height: 600px; } }
+@media (max-width: 460px) { .settings-panel { padding: 22px 18px; } .settings-panel > h1, .settings-security > h2 { font-size: 19px; } .settings-row { gap: 16px; } }

@@ -7,6 +7,7 @@ import AccountSidebar from '../components/AccountSidebar.jsx';
 import Avatar from '../components/AccountAvatar.jsx';
 import Icon from '../components/AccountIcon.jsx';
 import { readProfile, profileKey } from './profileStorage.js';
+import AvatarEditor from './AvatarEditor.jsx';
 
 export default function Profile({ user: propUser }) {
   const { user: authUser } = useAuth();
@@ -76,41 +77,42 @@ export default function Profile({ user: propUser }) {
               <h1 id="profile-heading">Thông tin cá nhân</h1>
               <p>Thông tin và các hoạt động theo thời gian thực của bạn.</p>
             </div>
-            <button className="profile-edit" type="button" onClick={() => firstInput.current?.focus()}>
+            <button className="profile-edit" onClick={() => firstInput.current?.focus()}>
               <Icon name="camera" />
               Chỉnh sửa
             </button>
           </div>
+
+          <AvatarEditor user={user} name={name} />
+
           <form className="profile-form" onSubmit={save}>
             <div className="profile-fields">
               {field('firstName', 'Tên', 'text', '', 'user')}
               {field('lastName', 'Họ', 'text', '', 'user')}
-              {field('email', 'Email', 'email', 'example@gmail.com', 'mail')}
-              {field('phone', 'Số điện thoại', 'tel', '(+84) 000 000 000')}
+              {field('email', 'Email', 'email', 'em***an@gmail.com', 'mail')}
+              {field('phone', 'Số điện thoại', 'tel', '(+34) 000 000 000')}
               <div className="profile-personal-row">
                 <label className="profile-field">
                   <span>Giới tính</span>
-                  <select name="gender" value={values.gender || ''} onChange={update}>
-                    <option value="">Chọn giới tính</option>
-                    <option value="Nữ">Nữ</option>
-                    <option value="Nam">Nam</option>
-                    <option value="Khác">Khác</option>
-                    <option value="Không muốn tiết lộ">Không muốn tiết lộ</option>
+                  <select name="gender" value={values.gender} onChange={update}>
+                    <option value="">Gender</option>
+                    <option>Nữ</option>
+                    <option>Nam</option>
+                    <option>Khác</option>
+                    <option>Không muốn tiết lộ</option>
                   </select>
                 </label>
                 {field('birthday', 'Ngày sinh', 'date')}
               </div>
               <label className="profile-field">
                 <span>Thành phố</span>
-                <select name="city" value={values.city || 'Hồ Chí Minh'} onChange={update}>
+                <select name="city" value={values.city} onChange={update}>
                   {['Hồ Chí Minh', 'Hà Nội', 'Đà Nẵng', 'Hải Phòng', 'Cần Thơ', 'Huế', 'Khác'].map((city) => (
-                    <option key={city} value={city}>
-                      {city}
-                    </option>
+                    <option key={city}>{city}</option>
                   ))}
                 </select>
               </label>
-              {field('address', 'Địa chỉ')}
+              {field('address', 'Address')}
             </div>
             <div className="profile-form-bottom">
               <p className="profile-notice" role="status">

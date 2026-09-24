@@ -53,3 +53,34 @@ export function startDemoSession() {
 export function clearSession() {
   sessionStorage.removeItem(SESSION_KEY);
 }
+
+export async function changeAccountPassword(user, currentPassword, newPassword) {
+  if (user.mode === 'flow-test') throw new Error('Phiên test chưa có mật khẩu để thay đổi.');
+  if (newPassword.length < 8) throw new Error('Mật khẩu mới cần ít nhất 8 ký tự.');
+  if (newPassword === currentPassword) throw new Error('Mật khẩu mới phải khác mật khẩu hiện tại.');
+  const account = accounts().find(item => item.email === user.email);
+  if (!account || await passwordHash(currentPassword, account.salt) !== account.hash) throw new Error('Mật khẩu hiện tại không đúng.');
+  const salt = crypto.randomUUID();
+  const hash = await passwordHash(newPassword, salt);
+  const current = accounts();
+  const latest = current.find(item => item.email === user.email);
+  if (!latest || latest.hash !== account.hash) throw new Error('Tài khoản đã thay đổi. Vui lòng thử lại.');
+  localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(current.map(item => item.email === user.email ? { ...item, salt, hash } : item)));
+}
+
+export async function deleteLocalAccount(user, currentPassword) {
+  const current = accounts();
+  const account = current.find(item => item.email === user.email);
+  if (user.mode !== 'flow-test' && (!account || await passwordHash(currentPassword, account.salt) !== account.hash)) throw new Error('Mật khẩu hiện tại không đúng.');
+  const keys = ['wayvee-profile:', 'wayvee-avatar:', 'wayvee-favorites:', 'wayvee-reviews:', 'wayvee-feedback:', 'wayvee-settings:'].map(prefix => prefix + user.email);
+  const backup = new Map([...keys, ACCOUNTS_KEY].map(key => [key, localStorage.getItem(key)]));
+  try {
+    localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts().filter(item => item.email !== user.email)));
+    keys.forEach(key => localStorage.removeItem(key));
+  } catch {
+    for (const [key, value] of backup) { try { if (value === null) localStorage.removeItem(key); else localStorage.setItem(key, value); } catch { /* Report the storage failure below. */ } }
+    throw new Error('Không thể xóa dữ liệu trên trình duyệt. Vui lòng kiểm tra quyền lưu trữ.');
+  }
+  window.dispatchEvent(new Event('wayvee-avatar-change'));
+  window.dispatchEvent(new Event('wayvee-preferences-change'));
+}
