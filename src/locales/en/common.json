@@ -76,6 +76,20 @@
     "natureDesc": "Best dining, entertainment, and photo spots recommended around you.",
     "exploreNow": "Explore now →"
   },
+  "tripReviews": {
+    "sectionTitle": "Trip Reviews",
+    "viewDetails": "View details",
+    "excellent": "Excellent",
+    "favorite": "Favorite",
+    "dalatTrip": "Dalat Getaway",
+    "dalatSub": "Dalat, 3 days, Wonderful"
+  },
+  "exploreSection": {
+    "sectionTitle": "Explore Now",
+    "experienceNow": "Experience Now",
+    "suggestion": "Travel destination suggestions",
+    "exploreBtn": "Explore"
+  },
   "footer": {
     "description": "Build personalized trip itineraries quickly, easily, and efficiently.",
     "navigation": "Navigation",

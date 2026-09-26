@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "~/providers/i18n-provider";
 import { AppHeader } from "~/shared/components";
 import { DateRangePicker } from "~/shared/components/date-range-picker";
-import { LoginCard, RegisterCard } from "~/features/auth";
 import { LocationMapModal } from "./location-map-modal";
 
 function parseDateRange(dateStr) {
@@ -86,7 +85,6 @@ export function TripCreatePage() {
   const navigate = useNavigate();
   const locationState = useLocation().state || {};
 
-  const [authModal, setAuthModal] = useState(null);
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
 
   // Form State
@@ -121,6 +119,7 @@ export function TripCreatePage() {
   const [selectedAction, setSelectedAction] = useState("itinerary"); // "itinerary" | "saved_only"
 
   const [isEditingName, setIsEditingName] = useState(false);
+  const [isEditingDates, setIsEditingDates] = useState(false);
 
   // Places list
   const [placesList, setPlacesList] = useState(() => {
@@ -224,41 +223,41 @@ export function TripCreatePage() {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-sky-100 selection:text-[#00a3e0]">
+    <div className="bg-white text-slate-800 font-sans min-h-screen flex flex-col antialiased selection:bg-sky-100 selection:text-[#00a3e0]">
       {/* AppHeader with Login & Register buttons when unauthenticated */}
       <AppHeader
-        onLogin={() => setAuthModal("login")}
-        onRegister={() => setAuthModal("register")}
+        onLogin={() => navigate("/login", { state: { from: "/trip/create" } })}
+        onRegister={() => navigate("/register", { state: { from: "/trip/create" } })}
       />
 
       {/* Main Content Canvas */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
         {/* Stepper Navigation (3 Bước) */}
-        <section className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 shadow-xs border border-slate-100 dark:border-slate-800 max-w-3xl mx-auto">
+        <section className="bg-white rounded-2xl p-4 sm:p-5 shadow-xs border border-slate-100 max-w-3xl mx-auto">
           <div className="relative flex items-center justify-between">
             {/* Connecting Line Bar */}
-            <div className="absolute left-8 right-8 top-1/2 -translate-y-1/2 h-1 bg-slate-200 dark:bg-slate-700 -z-0">
+            <div className="absolute left-8 right-8 top-1/2 -translate-y-1/2 h-1 bg-slate-100 -z-0">
               <div className="h-full bg-[#00a3e0] transition-all duration-500 w-1/2"></div>
             </div>
 
             {/* Step 1: Hoàn thành */}
             <div
               className="relative z-10 flex flex-col items-center group cursor-pointer"
-              onClick={() => navigate("/trip/info", { state: { tripName, tripDates, destination: destinationInput, companions, passengerCount: memberCount } })}
+              onClick={() => navigate("/trip/info", { state: { tripName, tripDates, destination: destinationInput, companions, passengerCount: memberCount, selectedStyles, placesList } })}
             >
               <div className="w-10 h-10 rounded-full bg-[#002d5b] text-white flex items-center justify-center shadow-md text-sm font-bold">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <span className="mt-2 text-xs font-semibold text-slate-600 dark:text-slate-400">
+              <span className="mt-2 text-xs font-semibold text-slate-600">
                 {t("tripCreate.stepper.step1", "1. Nhập thông tin")}
               </span>
             </div>
 
             {/* Step 2: Đang thực hiện (Active) */}
             <div className="relative z-10 flex flex-col items-center">
-              <div className="w-10 h-10 rounded-full bg-[#00a3e0] text-white ring-4 ring-sky-100 dark:ring-sky-950/60 flex items-center justify-center shadow-lg font-bold text-sm">
+              <div className="w-10 h-10 rounded-full bg-[#00a3e0] text-white ring-4 ring-sky-50 flex items-center justify-center shadow-lg font-bold text-sm">
                 2
               </div>
               <span className="mt-2 text-xs font-bold text-[#00a3e0]">
@@ -268,7 +267,7 @@ export function TripCreatePage() {
 
             {/* Step 3: Chưa hoàn thành */}
             <div className="relative z-10 flex flex-col items-center opacity-70">
-              <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 flex items-center justify-center font-semibold text-sm">
+              <div className="w-10 h-10 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center font-semibold text-sm">
                 3
               </div>
               <span className="mt-2 text-xs font-medium text-slate-400">
@@ -279,39 +278,46 @@ export function TripCreatePage() {
         </section>
 
         {/* Header Section Info */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#002d5b] dark:text-sky-300 tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#002d5b] tracking-tight">
               {t("tripCreate.header.mainTitle", "Quản lý & Tùy chỉnh điểm dừng chân")}
             </h1>
-            <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 mt-0.5">
+            <p className="text-sm sm:text-base text-slate-500 mt-0.5">
               {t("tripCreate.header.mainSubtitle", "Xem thông tin hành trình, thêm hoặc điều chỉnh danh sách điểm đến để WAYVEE lên lịch trình hoàn hảo nhất.")}
             </p>
           </div>
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs bg-sky-50 text-[#00a3e0] font-semibold border border-sky-100">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              Đang đồng bộ tự động
+            </span>
+          </div>
         </div>
+
 
         {/* 2 Column Master Layout (Left: Trip Info + Form | Right: Selected List) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           {/* LEFT COLUMN: Thông tin chuyến đi & Form nhập liệu (7 Cols) */}
           <div className="lg:col-span-7 space-y-6">
             {/* Card 1: Thông tin chuyến đi */}
-            <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 shadow-xs border border-slate-200 dark:border-slate-800 relative overflow-hidden">
+            <div className="bg-white rounded-2xl p-5 shadow-xs border border-slate-200 relative overflow-hidden">
               <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#00a3e0] to-[#002d5b]"></div>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <svg className="w-5 h-5 text-[#00a3e0]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                   </svg>
-                  <h2 className="text-xs font-bold uppercase tracking-wider text-[#002d5b] dark:text-sky-300">
+                  <h2 className="text-xs font-bold uppercase tracking-wider text-[#002d5b]">
                     {t("tripCreate.tripSummary.yourTrip", "CHUYẾN ĐI CỦA BẠN")}
                   </h2>
                 </div>
-                <span className="text-xs font-semibold bg-[#e6f6fd] dark:bg-sky-950/60 text-[#00a3e0] px-2.5 py-1 rounded-full">
-                  {t("tripInfo.tripSummary.defaultDuration", "9 ngày 8 đêm")}
+                <span className="text-xs font-semibold bg-[#e6f6fd] text-[#00a3e0] px-2.5 py-1 rounded-full">
+                  {durationBadge}
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50/80 dark:bg-slate-800/60 rounded-xl p-4 border border-slate-100 dark:border-slate-700/50">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50/80 rounded-xl p-4 border border-slate-100">
                 {/* Tên chuyến đi */}
                 <div className="flex justify-between items-start">
                   <div>
@@ -326,12 +332,12 @@ export function TripCreatePage() {
                         onChange={(e) => setTripName(e.target.value)}
                         onBlur={() => setIsEditingName(false)}
                         autoFocus
-                        className="text-sm font-semibold text-slate-900 dark:text-white bg-white dark:bg-slate-900 border border-[#00a3e0] rounded px-2 py-0.5 outline-none mt-0.5 w-full"
+                        className="text-sm font-semibold text-slate-900 bg-white border border-[#00a3e0] rounded px-2 py-0.5 outline-none mt-0.5 w-full"
                       />
                     ) : (
                       <p
                         onClick={() => setIsEditingName(true)}
-                        className={`text-sm font-semibold mt-0.5 cursor-pointer ${tripName ? "text-slate-900 dark:text-white" : "text-slate-400 italic font-normal"}`}
+                        className={`text-sm font-semibold mt-0.5 cursor-pointer ${tripName ? "text-slate-900" : "text-slate-400 italic font-normal"}`}
                         id="tripNameDisplay"
                       >
                         {tripName || t("tripCreate.tripSummary.placeholderName", "Nhập tên chuyến đi...")}
@@ -351,7 +357,7 @@ export function TripCreatePage() {
                 </div>
 
                 {/* Ngày đi - về */}
-                <div className="flex justify-between items-start sm:border-l sm:border-slate-200 dark:sm:border-slate-700 sm:pl-4">
+                <div className="flex justify-between items-start sm:border-l sm:border-slate-200 sm:pl-4">
                   <div>
                     <span className="text-xs font-medium text-slate-400 block">
                       {t("tripCreate.tripSummary.datesLabel", "Ngày đi - về")}
@@ -364,12 +370,12 @@ export function TripCreatePage() {
                         onChange={(e) => setTripDates(e.target.value)}
                         onBlur={() => setIsEditingDates(false)}
                         autoFocus
-                        className="text-sm font-semibold text-slate-900 dark:text-white bg-white dark:bg-slate-900 border border-[#00a3e0] rounded px-2 py-0.5 outline-none mt-0.5 w-full"
+                        className="text-sm font-semibold text-slate-900 bg-white border border-[#00a3e0] rounded px-2 py-0.5 outline-none mt-0.5 w-full"
                       />
                     ) : (
                       <p
                         onClick={() => setIsEditingDates(true)}
-                        className={`text-sm font-semibold mt-0.5 cursor-pointer ${tripDates ? "text-slate-900 dark:text-white" : "text-slate-400 italic font-normal"}`}
+                        className={`text-sm font-semibold mt-0.5 cursor-pointer ${tripDates ? "text-slate-900" : "text-slate-400 italic font-normal"}`}
                       >
                         {tripDates || t("tripCreate.tripSummary.placeholderDates", "Chọn ngày đi - về...")}
                       </p>
@@ -392,17 +398,17 @@ export function TripCreatePage() {
             </div>
 
             {/* Card 2: Form Thêm & Chỉnh sửa địa điểm */}
-            <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-xs border border-slate-200 dark:border-slate-800 space-y-5">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+            <div className="bg-white rounded-2xl p-6 shadow-xs border border-slate-200 space-y-5">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-sky-50 dark:bg-slate-800 flex items-center justify-center text-[#00a3e0]">
+                  <div className="w-8 h-8 rounded-lg bg-sky-50 flex items-center justify-center text-[#00a3e0]">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                    <h3 className="text-lg font-bold text-slate-900">
                       {t("tripCreate.locationDetails.title", "Thông tin điểm đến")}
                     </h3>
                     <p className="text-xs text-slate-400">
@@ -414,14 +420,16 @@ export function TripCreatePage() {
 
               {/* Input Đi đâu? */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center justify-between">
+                <label className="text-xs font-bold text-slate-800 flex items-center justify-between">
                   <span>{t("tripCreate.locationDetails.destinationLabel", "Đi đâu? (Địa điểm, quán cafe, di tích...)")}</span>
                   <span
                     onClick={() => {
                       if (navigator.geolocation) {
                         navigator.geolocation.getCurrentPosition(
-                          () => setDestinationInput("Khu phố 1, Phường Gò Vấp, Thành phố Hồ Chí Minh, 71422, Việt Nam"),
-                          () => { }
+                          (pos) => {
+                            setDestinationInput(`Tọa độ: ${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`);
+                          },
+                          () => setDestinationInput("Khu phố 1, Phường Gò Vấp, Thành phố Hồ Chí Minh, 71422, Việt Nam")
                         );
                       }
                     }}
@@ -437,17 +445,16 @@ export function TripCreatePage() {
                     </svg>
                   </span>
                   <input
-                    className="w-full pl-11 pr-28 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white focus:border-[#00a3e0] focus:ring-2 focus:ring-[#00a3e0]/20 transition-all outline-none cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700/50"
+                    className="w-full pl-11 pr-28 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:border-[#00a3e0] focus:ring-2 focus:ring-[#00a3e0]/20 transition-all outline-none hover:bg-slate-100"
                     id="destinationInput"
                     type="text"
                     placeholder={t("tripInfo.destinationDetails.destinationPlaceholderMap", "Bấm để chọn địa điểm trên bản đồ...")}
                     value={destinationInput}
-                    readOnly
-                    onClick={() => setIsMapModalOpen(true)}
+                    onChange={(e) => setDestinationInput(e.target.value)}
                   />
                   <button
                     onClick={() => setIsMapModalOpen(true)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-[#e6f6fd] dark:bg-sky-950/60 text-[#00a3e0] hover:bg-sky-100 rounded-lg text-xs font-semibold transition-colors cursor-pointer border border-sky-200 dark:border-sky-800"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-[#e6f6fd] text-[#00a3e0] hover:bg-sky-100 rounded-lg text-xs font-semibold transition-colors cursor-pointer border border-sky-200"
                     type="button"
                   >
                     {t("tripCreate.locationDetails.selectMap", "Chọn bản đồ")}
@@ -459,7 +466,7 @@ export function TripCreatePage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Đi cùng ai */}
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
+                  <label className="block text-xs font-bold text-slate-800">
                     {t("tripCreate.locationDetails.companionsLabel", "Đi cùng ai?")}
                   </label>
                   <div className="relative">
@@ -469,7 +476,7 @@ export function TripCreatePage() {
                       </svg>
                     </span>
                     <select
-                      className="w-full pl-9 pr-8 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white focus:border-[#00a3e0] focus:ring-1 focus:ring-[#00a3e0] outline-none cursor-pointer"
+                      className="w-full pl-9 pr-8 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:border-[#00a3e0] focus:ring-1 focus:ring-[#00a3e0] outline-none cursor-pointer"
                       value={companions}
                       onChange={(e) => setCompanions(e.target.value)}
                     >
@@ -484,11 +491,11 @@ export function TripCreatePage() {
 
                 {/* Số lượng người */}
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-bold text-slate-800 dark:text-slate-200">
+                  <label className="block text-xs font-bold text-slate-800">
                     {t("tripCreate.locationDetails.passengerCountLabel", "Số lượng thành viên")}
                   </label>
-                  <div className="flex items-center justify-between bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-1.5">
-                    <span className="text-xs text-slate-600 dark:text-slate-300 flex items-center gap-1 font-medium">
+                  <div className="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5">
+                    <span className="text-xs text-slate-600 flex items-center gap-1 font-medium">
                       <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                       </svg>
@@ -496,7 +503,7 @@ export function TripCreatePage() {
                     </span>
                     <div className="flex items-center gap-3">
                       <button
-                        className="w-7 h-7 rounded-lg bg-white dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-white flex items-center justify-center font-bold transition-all cursor-pointer border border-slate-200 dark:border-slate-600 shadow-2xs"
+                        className="w-7 h-7 rounded-lg bg-white hover:bg-slate-200 text-slate-700 flex items-center justify-center font-bold transition-all cursor-pointer border border-slate-200 shadow-2xs"
                         onClick={() => setMemberCount(Math.max(1, memberCount - 1))}
                         type="button"
                       >
@@ -506,7 +513,7 @@ export function TripCreatePage() {
                         {memberCount}
                       </span>
                       <button
-                        className="w-7 h-7 rounded-lg bg-white dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-white flex items-center justify-center font-bold transition-all cursor-pointer border border-slate-200 dark:border-slate-600 shadow-2xs"
+                        className="w-7 h-7 rounded-lg bg-white hover:bg-slate-200 text-slate-700 flex items-center justify-center font-bold transition-all cursor-pointer border border-slate-200 shadow-2xs"
                         onClick={() => setMemberCount(Math.min(50, memberCount + 1))}
                         type="button"
                       >
@@ -519,7 +526,7 @@ export function TripCreatePage() {
 
               {/* Phong cách chuyến đi */}
               <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center justify-between">
+                <label className="text-xs font-bold text-slate-800 flex items-center justify-between">
                   <span>{t("tripCreate.locationDetails.travelStyleLabel", "Phong cách & Sở thích chuyến đi")}</span>
                   <span className="text-xs text-slate-400 font-normal">
                     {t("tripCreate.locationDetails.selectedCount", "Đã chọn")} {selectedStyles.length}
@@ -535,7 +542,7 @@ export function TripCreatePage() {
                         onClick={() => toggleStyle(style.id)}
                         className={`px-3.5 py-1.5 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${isSelected
                           ? "bg-[#00a3e0] text-white shadow-xs"
-                          : "bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-[#00a3e0] hover:text-[#00a3e0]"
+                          : "bg-slate-50 text-slate-700 border border-slate-200 hover:border-[#00a3e0] hover:text-[#00a3e0]"
                           }`}
                       >
                         <span>{t(style.labelKey, style.defaultLabel)}</span>
@@ -564,12 +571,12 @@ export function TripCreatePage() {
 
           {/* RIGHT COLUMN: Danh sách địa điểm đã chọn (5 Cols) */}
           <div className="lg:col-span-5 space-y-4">
-            <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 shadow-xs border border-slate-200 dark:border-slate-800">
+            <div className="bg-white rounded-2xl p-5 shadow-xs border border-slate-200">
               {/* List Header */}
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                    <h3 className="text-base font-bold text-slate-900">
                       {t("tripCreate.selectedPlaces.title", "DANH SÁCH ĐỊA ĐIỂM")}
                     </h3>
                     <span className="px-2 py-0.5 bg-[#00a3e0] text-white text-xs font-bold rounded-full">
@@ -582,7 +589,7 @@ export function TripCreatePage() {
                 </div>
                 <div className="flex items-center gap-1">
                   <button
-                    className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition-colors cursor-pointer"
+                    className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
                     title={t("tripCreate.selectedPlaces.clearAll", "Xóa tất cả")}
                     onClick={handleClearAll}
                     type="button"
@@ -596,7 +603,7 @@ export function TripCreatePage() {
 
               {/* Add Quick Location Button */}
               <button
-                className="w-full my-3 py-2.5 px-4 border-2 border-dashed border-sky-300 dark:border-sky-800 hover:border-[#00a3e0] text-[#00a3e0] bg-sky-50/50 dark:bg-sky-950/20 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all hover:bg-sky-50 cursor-pointer"
+                className="w-full my-3 py-2.5 px-4 border-2 border-dashed border-sky-300 hover:border-[#00a3e0] text-[#00a3e0] bg-sky-50/50 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all hover:bg-sky-50 cursor-pointer"
                 onClick={handleQuickAdd}
                 type="button"
               >
@@ -611,13 +618,13 @@ export function TripCreatePage() {
                 {placesList.length === 0 ? (
                   <div className="py-8 text-center text-slate-400 text-xs">
                     <p className="font-semibold">{t("tripCreate.selectedPlaces.emptyTitle", "Chưa có địa điểm nào")}</p>
-                    <p className="mt-1">{t("tripCreate.selectedPlaces.emptyDesc", "Bấm nút \"Thêm địa điểm nhanh\" bên trên để chọn địa điểm xung quanh!")}</p>
+                    <p className="mt-1">{t("tripCreate.selectedPlaces.emptyDesc", "Bấm nút \"Thêm địa điểm nhanh\" bên trên hoặc nhập địa điểm để thêm!")}</p>
                   </div>
                 ) : (
                   placesList.map((place, index) => (
                     <div
                       key={place.id || index}
-                      className="group bg-slate-50 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700/60 hover:border-[#00a3e0] rounded-xl p-3 shadow-2xs hover:shadow-md transition-all flex gap-3 relative"
+                      className="group bg-slate-50 hover:bg-white border border-slate-200 hover:border-[#00a3e0] rounded-xl p-3 shadow-2xs hover:shadow-md transition-all flex gap-3 relative"
                     >
                       <div className="relative w-20 h-20 rounded-lg overflow-hidden shrink-0">
                         <img
@@ -625,14 +632,14 @@ export function TripCreatePage() {
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           src={place.image || "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=400&q=80"}
                         />
-                        <span className="absolute bottom-1 left-1 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xs px-1.5 py-0.5 rounded text-[10px] font-bold text-[#00a3e0]">
+                        <span className="absolute bottom-1 left-1 bg-white/90 backdrop-blur-xs px-1.5 py-0.5 rounded text-[10px] font-bold text-[#00a3e0]">
                           #{index + 1}
                         </span>
                       </div>
 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between">
-                          <h4 className="text-sm font-bold text-slate-900 dark:text-white truncate">
+                          <h4 className="text-sm font-bold text-slate-900 truncate">
                             {place.name}
                           </h4>
                           <div className="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
@@ -654,7 +661,7 @@ export function TripCreatePage() {
                         </p>
 
                         <div className="flex items-center gap-2 mt-2">
-                          <span className="inline-flex items-center gap-1 text-[11px] font-semibold bg-[#e6f6fd] dark:bg-sky-950/60 text-[#00a3e0] px-2 py-0.5 rounded">
+                          <span className="inline-flex items-center gap-1 text-[11px] font-semibold bg-[#e6f6fd] text-[#00a3e0] px-2 py-0.5 rounded">
                             {place.category || "Điểm tham quan"}
                           </span>
                           <span className="text-xs text-slate-400">{place.duration || "~45 phút"}</span>
@@ -662,7 +669,7 @@ export function TripCreatePage() {
                       </div>
 
                       {/* Drag Handle */}
-                      <div className="flex items-center text-slate-300 dark:text-slate-600 hover:text-slate-500 cursor-grab">
+                      <div className="flex items-center text-slate-300 hover:text-slate-500 cursor-grab">
                         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm-2-8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 4c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
                         </svg>
@@ -671,18 +678,29 @@ export function TripCreatePage() {
                   ))
                 )}
               </div>
+
+              {/* Total Route Estimation Banner */}
+              <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                <span className="flex items-center gap-1">
+                  <span className="material-symbols-outlined text-base text-[#00a3e0]">route</span>
+                  Ước tính di chuyển liên tuyến:
+                </span>
+                <span className="font-semibold text-[#00a3e0]">
+                  ~{(Math.max(1, placesList.length) * 4.2).toFixed(1)} km ({placesList.length} điểm)
+                </span>
+              </div>
             </div>
           </div>
         </div>
 
         {/* BOTTOM SECTION: Hướng đi tiếp theo & Next Step Actions */}
-        <section className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-xs border border-slate-200 dark:border-slate-800 space-y-6">
+        <section className="bg-white rounded-2xl p-6 shadow-xs border border-slate-200 space-y-6">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-sky-50 dark:bg-slate-800 flex items-center justify-center text-[#00a3e0] text-xl">
+            <div className="w-10 h-10 rounded-xl bg-sky-50 flex items-center justify-center text-[#00a3e0] text-xl">
               💡
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+              <h2 className="text-lg font-bold text-slate-900">
                 {t("tripCreate.actionSelector.title", "Bạn muốn làm gì tiếp theo?")}
               </h2>
               <p className="text-xs text-slate-400">
@@ -698,8 +716,8 @@ export function TripCreatePage() {
               onClick={handleSelectItineraryPlan}
               className={`group relative rounded-xl p-5 border-2 transition-all cursor-pointer ${
                 selectedAction === "itinerary"
-                  ? "border-[#00a3e0] bg-[#e6f6fd]/50 dark:bg-sky-950/30 ring-2 ring-[#00a3e0]/20"
-                  : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-[#00a3e0]/60"
+                  ? "border-[#00a3e0] bg-[#e6f6fd]/50 ring-2 ring-[#00a3e0]/20"
+                  : "border-slate-200 bg-white hover:border-[#00a3e0]/60"
               }`}
             >
               <span className="absolute -top-3 right-4 px-2.5 py-0.5 bg-[#002d5b] text-white text-[11px] font-bold rounded-full shadow-xs flex items-center gap-1">
@@ -712,52 +730,52 @@ export function TripCreatePage() {
                   </svg>
                 </div>
                 <div className="space-y-1.5 flex-1 min-w-0">
-                  <h3 className="text-base font-bold text-[#002d5b] dark:text-sky-300 group-hover:text-[#00a3e0] transition-colors flex items-center justify-between">
-                    <span>{t("tripCreate.actionSelector.option1Title", "Sắp xếp & Tùy chỉnh lịch trình")}</span>
+                  <h3 className="text-base font-bold text-[#002d5b] group-hover:text-[#00a3e0] transition-colors flex items-center justify-between">
+                    <span>{t("tripCreate.actionSelector.option1Title", "Tạo lịch trình tự động bằng AI")}</span>
                     {selectedAction === "itinerary" && (
                       <span className="text-[#00a3e0] text-sm">✓</span>
                     )}
                   </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed break-words">
+                  <p className="text-xs text-slate-500 leading-relaxed break-words">
                     {t("tripCreate.actionSelector.option1Desc", {count: placesList.length}, `Thuật toán thông minh tự động phân bổ ${placesList.length} địa điểm đã chọn theo từng ngày, tối ưu quãng đường đi và gợi ý giờ ghé thăm hợp lý nhất.`)}
                   </p>
                   <div className="pt-1.5">
                     <span className="inline-flex items-center gap-1 text-xs font-bold text-[#00a3e0] group-hover:translate-x-1 transition-transform">
-                      {t("tripCreate.actionSelector.option1Link", "Mở trình sắp xếp lịch trình →")}
+                      {t("tripCreate.actionSelector.option1Link", "Mở trình sắp xếp lịch trình AI →")}
                     </span>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Choice 2: Lưu danh sách chờ (Ở lại bước 2) */}
+            {/* Choice 2: Lưu danh sách chờ */}
             <div
               onClick={handleSelectSavedOnly}
               className={`group relative rounded-xl p-5 border-2 transition-all cursor-pointer ${
                 selectedAction === "saved_only"
-                  ? "border-[#002d5b] dark:border-sky-500 bg-sky-50/50 dark:bg-sky-950/40 ring-2 ring-[#002d5b]/20"
-                  : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-slate-400"
+                  ? "border-[#002d5b] bg-sky-50/50 ring-2 ring-[#002d5b]/20"
+                  : "border-slate-200 bg-white hover:border-slate-400"
               }`}
             >
               <div className="flex items-start gap-3.5">
-                <div className="w-11 h-11 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                <div className="w-11 h-11 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
                   </svg>
                 </div>
                 <div className="space-y-1.5 flex-1 min-w-0">
-                  <h3 className="text-base font-bold text-slate-800 dark:text-slate-200 group-hover:text-[#002d5b] dark:group-hover:text-white transition-colors flex items-center justify-between">
+                  <h3 className="text-base font-bold text-slate-800 group-hover:text-[#002d5b] transition-colors flex items-center justify-between">
                     <span>{t("tripCreate.actionSelector.option2Title", "Chỉ lưu địa điểm vào danh sách chờ")}</span>
                     {selectedAction === "saved_only" && (
-                      <span className="text-[#002d5b] dark:text-sky-400 text-sm font-bold">✓</span>
+                      <span className="text-[#002d5b] text-sm font-bold">✓</span>
                     )}
                   </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed break-words">
+                  <p className="text-xs text-slate-500 leading-relaxed break-words">
                     {t("tripCreate.actionSelector.option2Desc", {tripName}, `Lưu các địa điểm bạn quan tâm vào bộ sưu tập '${tripName}' để bạn tự sắp xếp thủ công vào thời gian rảnh.`)}
                   </p>
                   <div className="pt-1.5">
-                    <span className="inline-flex items-center gap-1 text-xs font-bold text-slate-600 dark:text-slate-400 group-hover:translate-x-1 transition-transform">
-                      {t("tripCreate.actionSelector.option2Link", "Lưu danh sách & tiếp tục →")}
+                    <span className="inline-flex items-center gap-1 text-xs font-bold text-slate-600 group-hover:translate-x-1 transition-transform">
+                      {t("tripCreate.actionSelector.option2Link", "Lưu vào kho chờ →")}
                     </span>
                   </div>
                 </div>
@@ -766,10 +784,10 @@ export function TripCreatePage() {
           </div>
 
           {/* Final Master Action Button */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-100">
             <button
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-full text-xs font-semibold transition-all cursor-pointer"
-              onClick={() => navigate("/trip/info", { state: { tripName, tripDates, destination: destinationInput, companions, passengerCount: memberCount } })}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-full text-xs font-semibold transition-all cursor-pointer"
+              onClick={() => navigate("/trip/info", { state: { tripName, tripDates, destination: destinationInput, companions, passengerCount: memberCount, selectedStyles, placesList } })}
               type="button"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -795,7 +813,7 @@ export function TripCreatePage() {
       </main>
 
       {/* Footnote */}
-      <footer className="mt-auto border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-6 text-xs text-slate-500 dark:text-slate-400">
+      <footer className="mt-auto border-t border-slate-200 bg-white py-6 text-xs text-slate-500">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p>© 2025 WAYVEE Navigation Platform. Giữ bản quyền hành trình khám phá.</p>
           <div className="flex items-center gap-6">
@@ -818,22 +836,7 @@ export function TripCreatePage() {
         />
       )}
 
-      {/* Auth Modals */}
-      {authModal === "login" && (
-        <LoginCard
-          onClose={() => setAuthModal(null)}
-          onSubmit={() => setAuthModal(null)}
-          onSignUp={() => setAuthModal("register")}
-        />
-      )}
-
-      {authModal === "register" && (
-        <RegisterCard
-          onClose={() => setAuthModal(null)}
-          onSubmit={() => setAuthModal(null)}
-          onLogin={() => setAuthModal("login")}
-        />
-      )}
     </div>
   );
 }
+

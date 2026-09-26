@@ -1,13 +1,10 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "~/providers/i18n-provider";
 import { AppHeader, AppFooter } from "~/shared/components";
-import { LoginCard, RegisterCard } from "~/features/auth";
 
 export function TripSuccessPage() {
   const { t, language } = useTranslation();
   const navigate = useNavigate();
-  const [authModal, setAuthModal] = useState(null);
 
   const handleShare = () => {
     if (navigator.share) {
@@ -25,8 +22,8 @@ export function TripSuccessPage() {
     <div className="bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-slate-200">
       {/* AppHeader identical to homepage */}
       <AppHeader
-        onLogin={() => setAuthModal("login")}
-        onRegister={() => setAuthModal("register")}
+        onLogin={() => navigate("/login", { state: { from: "/trip/success" } })}
+        onRegister={() => navigate("/register", { state: { from: "/trip/success" } })}
       />
 
       {/* Main Content */}
@@ -73,23 +70,6 @@ export function TripSuccessPage() {
 
       {/* Official AppFooter */}
       <AppFooter />
-
-      {/* Auth Modals */}
-      {authModal === "login" && (
-        <LoginCard
-          onClose={() => setAuthModal(null)}
-          onSubmit={() => setAuthModal(null)}
-          onSignUp={() => setAuthModal("register")}
-        />
-      )}
-
-      {authModal === "register" && (
-        <RegisterCard
-          onClose={() => setAuthModal(null)}
-          onSubmit={() => setAuthModal(null)}
-          onLogin={() => setAuthModal("login")}
-        />
-      )}
     </div>
   );
 }

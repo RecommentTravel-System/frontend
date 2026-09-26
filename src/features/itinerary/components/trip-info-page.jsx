@@ -3,7 +3,6 @@ import { useTranslation } from "~/providers/i18n-provider";
 import { useNavigate, useLocation } from "react-router-dom";
 import { AppHeader } from "~/shared/components";
 import { DateRangePicker } from "~/shared/components/date-range-picker";
-import { LoginCard, RegisterCard } from "~/features/auth";
 import { LocationMapModal } from "./location-map-modal";
 import { api } from "~/shared/lib/api";
 
@@ -49,7 +48,6 @@ export function TripInfoPage({ initialData: propInitialData }) {
   const locationState = useLocation().state || {};
   const initialData = propInitialData || locationState;
 
-  const [authModal, setAuthModal] = useState(null);
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
 
   const [tripName, setTripName] = useState(
@@ -173,45 +171,48 @@ export function TripInfoPage({ initialData: propInitialData }) {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-sky-100 selection:text-[#00a3e0]">
+    <div className="bg-white text-slate-800 font-sans min-h-screen flex flex-col antialiased selection:bg-sky-100 selection:text-[#00a3e0]">
       {/* Main AppHeader with Login & Register when unauthenticated */}
       <AppHeader
-        onLogin={() => setAuthModal("login")}
-        onRegister={() => setAuthModal("register")}
+        onLogin={() => navigate("/login", { state: { from: "/trip/info" } })}
+        onRegister={() => navigate("/register", { state: { from: "/trip/info" } })}
       />
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full" data-purpose="primary-flow-container">
         {/* BEGIN: StepperBar */}
-        <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 shadow-xs border border-slate-100 dark:border-slate-800 mb-8" data-purpose="progress-stepper">
+        <div className="bg-white rounded-2xl p-5 shadow-xs border border-slate-100 mb-8" data-purpose="progress-stepper">
           <div className="max-w-xl mx-auto flex items-center justify-between relative">
             {/* Connecting Background Lines */}
-            <div className="absolute left-8 right-8 top-5 -translate-y-1/2 h-0.5 bg-slate-200 dark:bg-slate-700 z-0"></div>
+            <div className="absolute left-8 right-8 top-5 -translate-y-1/2 h-0.5 bg-slate-200 z-0"></div>
             <div className="absolute left-8 w-1/4 top-5 -translate-y-1/2 h-0.5 bg-[#00a3e0] z-0"></div>
 
             {/* Step 1 (Current Active Step) */}
             <div className="relative z-10 flex flex-col items-center group cursor-pointer">
-              <div className="w-10 h-10 rounded-full bg-[#00a3e0] text-white flex items-center justify-center font-bold text-sm shadow-md shadow-sky-100 dark:shadow-none ring-4 ring-sky-50 dark:ring-sky-950/40">
+              <div className="w-10 h-10 rounded-full bg-[#00a3e0] text-white flex items-center justify-center font-bold text-sm shadow-md shadow-sky-100 ring-4 ring-sky-50">
                 1
               </div>
-              <span className="mt-2 text-xs sm:text-sm font-bold text-slate-900 dark:text-white text-center">
+              <span className="mt-2 text-xs sm:text-sm font-bold text-slate-900 text-center">
                 {t("tripInfo.stepper.step1", "1. Nhập thông tin")}
               </span>
             </div>
 
             {/* Step 2 */}
-            <div className="relative z-10 flex flex-col items-center text-slate-400 group">
-              <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 flex items-center justify-center font-semibold text-sm">
+            <div
+              className="relative z-10 flex flex-col items-center text-slate-400 group cursor-pointer"
+              onClick={handleSubmit}
+            >
+              <div className="w-10 h-10 rounded-full bg-slate-100 border-2 border-slate-200 text-slate-500 flex items-center justify-center font-semibold text-sm">
                 2
               </div>
-              <span className="mt-2 text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 text-center">
+              <span className="mt-2 text-xs sm:text-sm font-medium text-slate-500 text-center">
                 {t("tripInfo.stepper.step2", "2. Chọn địa điểm")}
               </span>
             </div>
 
             {/* Step 3 */}
             <div className="relative z-10 flex flex-col items-center text-slate-400 group">
-              <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-slate-400 flex items-center justify-center font-semibold text-sm">
+              <div className="w-10 h-10 rounded-full bg-slate-100 border-2 border-slate-200 text-slate-400 flex items-center justify-center font-semibold text-sm">
                 3
               </div>
               <span className="mt-2 text-xs sm:text-sm font-medium text-slate-400 text-center">
@@ -221,6 +222,7 @@ export function TripInfoPage({ initialData: propInitialData }) {
           </div>
         </div>
         {/* END: StepperBar */}
+
 
         {/* Section Heading & Subtitle */}
         <div className="mb-6">
@@ -338,26 +340,32 @@ export function TripInfoPage({ initialData: propInitialData }) {
           {/* END: TripSummaryCard */}
 
           {/* BEGIN: LocationInformationCard (Card 2) */}
-          <section className="bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-7 shadow-xs border border-slate-200 dark:border-slate-800" data-purpose="location-details-card">
+          <section className="bg-white rounded-2xl p-6 sm:p-7 shadow-xs border border-slate-200" data-purpose="location-details-card">
             {/* Header of Location Card */}
-            <div className="flex items-center justify-between pb-4 mb-6 border-b border-slate-100 dark:border-slate-800">
+            <div className="flex items-center justify-between pb-4 mb-6 border-b border-slate-100">
               <div>
-                <h2 className="text-xl sm:text-2xl font-bold text-[#002d5b] dark:text-sky-300 tracking-tight">
+                <h2 className="text-xl sm:text-2xl font-bold text-[#002d5b] tracking-tight">
                   {t("tripInfo.destinationDetails.title", "Thông tin địa điểm")}
                 </h2>
                 <p className="text-xs text-slate-400 mt-0.5">
                   {t("tripInfo.destinationDetails.subtitle", "Tùy chỉnh mục tiêu điểm xuất phát, thành viên và gu trải nghiệm")}
                 </p>
               </div>
+              <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-sky-50 text-[#00a3e0]">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                  <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                </svg>
+              </span>
             </div>
 
             <div className="space-y-6">
               {/* Destination Field */}
               <div data-purpose="destination-input-group">
                 <div className="flex items-center justify-between mb-2">
-                  <label className="block text-sm font-bold text-slate-800 dark:text-slate-200" htmlFor="destination-input">
+                  <label className="block text-sm font-bold text-slate-800" htmlFor="destination-input">
                     {t("tripInfo.destinationDetails.destinationLabel", "Đi đâu?")} <span className="text-rose-500">*</span>
-                  </label>                  
+                  </label>
                 </div>
 
                 {/* Input Container with Location Pin Icon */}
@@ -368,9 +376,9 @@ export function TripInfoPage({ initialData: propInitialData }) {
                     </svg>
                   </div>
                   <input
-                    className="w-full pl-10 pr-12 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:border-[#00a3e0] focus:ring-2 focus:ring-[#00a3e0]/20 transition-all outline-none cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700/50"
+                    className="w-full pl-10 pr-12 py-3 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-800 placeholder-slate-400 focus:border-[#00a3e0] focus:ring-2 focus:ring-[#00a3e0]/20 transition-all outline-none cursor-pointer hover:bg-slate-50"
                     id="destination-input"
-                    placeholder={t("tripInfo.destinationDetails.destinationPlaceholderMap", "Bấm để chọn địa điểm trên bản đồ...")}
+                    placeholder={t("tripInfo.destinationDetails.destinationPlaceholderMap", "Bấm để chọn địa điểm trên bản đồ hoặc nhập thành phố...")}
                     type="text"
                     value={destination}
                     readOnly
@@ -392,6 +400,7 @@ export function TripInfoPage({ initialData: propInitialData }) {
                   <p className="text-[11px] text-rose-500 mt-1">{errors.destination}</p>
                 )}
               </div>
+
 
               {/* Two Column Row: Companions & Member Count */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5" data-purpose="companions-and-count">
@@ -574,22 +583,6 @@ export function TripInfoPage({ initialData: propInitialData }) {
         />
       )}
 
-      {/* Auth Modals */}
-      {authModal === "login" && (
-        <LoginCard
-          onClose={() => setAuthModal(null)}
-          onSubmit={() => setAuthModal(null)}
-          onSignUp={() => setAuthModal("register")}
-        />
-      )}
-
-      {authModal === "register" && (
-        <RegisterCard
-          onClose={() => setAuthModal(null)}
-          onSubmit={() => setAuthModal(null)}
-          onLogin={() => setAuthModal("login")}
-        />
-      )}
     </div>
   );
 }

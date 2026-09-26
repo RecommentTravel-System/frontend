@@ -17,7 +17,6 @@ import Support from './support/Support.jsx';
 import SearchLoading from './search/SearchLoading.jsx';
 const SearchPage = lazy(() => import('./search/SearchPage.jsx'));
 import LocationDetails from './location/LocationDetails.jsx';
-import CreateTour from './tours/CreateTour.jsx';
 import { usePreferences } from './settings/preferences.js';
 
 // Routes bổ sung từ nhánh HEAD (chưa có bản tương đương ở nhánh Duc)
@@ -88,8 +87,8 @@ function AppRoutes() {
       <Route path="/" element={<><Home /><Link to="/payment" className="premium-shortcut">WAYVEE Premium</Link></>} />
       <Route path="/login" element={<AccountPage />} />
       <Route path="/register" element={<AccountPage register />} />
+      <Route path="/create-tour" element={<Navigate to="/trip/info" replace />} />
       <Route element={<RequireAuth />}>
-        <Route path="/create-tour" element={<CreateTour />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/itineraries" element={<Itineraries />} />
         <Route path="/itineraries/:tripId" element={<Itineraries />} />

@@ -3,6 +3,10 @@
   overflow: hidden;
 }
 
+.dark .home-page {
+  color: #f8fafc;
+}
+
 .home-header {
   height: 66px;
   padding-top: 14px;

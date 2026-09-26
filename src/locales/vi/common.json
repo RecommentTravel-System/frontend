@@ -76,6 +76,20 @@
     "natureDesc": "Gợi ý các địa điểm ăn uống, vui chơi và check-in đẹp nhất xung quanh bạn.",
     "exploreNow": "Khám phá ngay →"
   },
+  "tripReviews": {
+    "sectionTitle": "Đánh giá chuyến đi",
+    "viewDetails": "Xem chi tiết",
+    "excellent": "Xuất sắc",
+    "favorite": "Yêu thích",
+    "dalatTrip": "Chuyến đi Đà Lạt",
+    "dalatSub": "Đà Lạt, 3 ngày, Vui vẻ"
+  },
+  "exploreSection": {
+    "sectionTitle": "Khám phá ngay",
+    "experienceNow": "Trải nghiệm ngay",
+    "suggestion": "Gợi ý địa điểm du lịch",
+    "exploreBtn": "Khám phá"
+  },
   "footer": {
     "description": "Tạo hành trình cá nhân hóa nhanh chóng, dễ dàng và hiệu quả.",
     "navigation": "Điều hướng",

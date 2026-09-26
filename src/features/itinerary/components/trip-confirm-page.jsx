@@ -2,14 +2,12 @@ import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "~/providers/i18n-provider";
 import { AppHeader } from "~/shared/components";
-import { LoginCard, RegisterCard } from "~/features/auth";
 
 export function TripConfirmPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const locationState = useLocation().state || {};
 
-  const [authModal, setAuthModal] = useState(null);
   const [loadingStage, setLoadingStage] = useState(null); // null | "processing" | "confirming"
 
   // Form State
@@ -79,8 +77,8 @@ export function TripConfirmPage() {
     <div className="bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-slate-200 relative">
       {/* AppHeader identical to homepage */}
       <AppHeader
-        onLogin={() => setAuthModal("login")}
-        onRegister={() => setAuthModal("register")}
+        onLogin={() => navigate("/login", { state: { from: "/trip/confirm" } })}
+        onRegister={() => navigate("/register", { state: { from: "/trip/confirm" } })}
       />
 
       {/* BEGIN: StepperSection */}
@@ -400,22 +398,6 @@ export function TripConfirmPage() {
         </div>
       )}
 
-      {/* Auth Modals */}
-      {authModal === "login" && (
-        <LoginCard
-          onClose={() => setAuthModal(null)}
-          onSubmit={() => setAuthModal(null)}
-          onSignUp={() => setAuthModal("register")}
-        />
-      )}
-
-      {authModal === "register" && (
-        <RegisterCard
-          onClose={() => setAuthModal(null)}
-          onSubmit={() => setAuthModal(null)}
-          onLogin={() => setAuthModal("login")}
-        />
-      )}
     </div>
   );
 }

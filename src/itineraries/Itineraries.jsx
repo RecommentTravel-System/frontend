@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Link, useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import AccountSidebar from '../components/AccountSidebar.jsx';
 import SiteHeader from '../components/SiteHeader.jsx';
@@ -7,6 +7,7 @@ import Icon from '../components/AccountIcon.jsx';
 import { useAuth } from '../auth/useAuth.js';
 import { readProfile } from '../profile/profileStorage.js';
 import { filters, getAllTrips, shortDate } from './trips.js';
+import { api } from '../shared/lib/api.js';
 import './Itineraries.css';
 import '../tours/CreateTour.css';
 
@@ -336,7 +337,64 @@ export default function Itineraries() {
   const [notice, setNotice] = useState('');
   const navigate = useNavigate();
 
-  const allTrips = useMemo(() => getAllTrips(), []);
+  const [remoteTrips, setRemoteTrips] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    async function fetchTrips() {
+      if (!user) return;
+      try {
+        setIsLoading(true);
+        const res = await api.get('/api/v1/trips/me');
+        if (mounted && res && res.data && Array.isArray(res.data)) {
+          const mapped = res.data.map((beTrip) => {
+            const startStr = beTrip.startDate ? String(beTrip.startDate) : '2025-07-16';
+            const endStr = beTrip.endDate ? String(beTrip.endDate) : '2025-07-24';
+            const statusMap = {
+              PLANNING: 'ongoing',
+              IN_PROGRESS: 'ongoing',
+              COMPLETED: 'completed',
+              CANCELLED: 'cancelled'
+            };
+            return {
+              id: String(beTrip.tripId),
+              title: beTrip.tripName || 'Chuyến đi của tôi',
+              destination: 'Việt Nam',
+              image: 'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=500&q=80',
+              status: statusMap[beTrip.status] || 'ongoing',
+              confirmed: Boolean(beTrip.itineraryArranged),
+              hasItinerary: Boolean(beTrip.itineraryArranged),
+              start: startStr,
+              end: endStr,
+              time: '08:00 – 18:00',
+              duration: '4N / 3Đ',
+              guests: 2,
+              summary: '2 người · Lịch trình đồng bộ từ tài khoản',
+              description: `Chuyến đi ${beTrip.tripName} đã được lưu vào hệ thống của bạn.`,
+              places: ['Hà Nội', 'TP. Hồ Chí Minh'],
+              amenities: ['WiFi', 'Check-in', 'Bản đồ số', 'Hướng dẫn viên']
+            };
+          });
+          setRemoteTrips(mapped);
+        }
+      } catch (err) {
+        console.warn('Could not fetch remote trips:', err);
+      } finally {
+        if (mounted) setIsLoading(false);
+      }
+    }
+    fetchTrips();
+    return () => { mounted = false; };
+  }, [user]);
+
+  const allTrips = useMemo(() => {
+    const base = getAllTrips();
+    if (!remoteTrips.length) return base;
+    const ids = new Set(remoteTrips.map((t) => t.id));
+    return [...remoteTrips, ...base.filter((t) => !ids.has(t.id))];
+  }, [remoteTrips]);
+
   const filter = filters.find((item) => item.id === params.get('status')) || filters[0];
 
   const handleCreateItinerary = (trip) => {
