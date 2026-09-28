@@ -31,7 +31,9 @@
     "guestsLabel": "Số người",
     "tripType": "Kiểu chuyến đi",
     "tripTypePlaceholder": "Chuyến đi bạn mong muốn",
-    "createButton": "Tạo lịch trình ngay"
+    "createButton": "Tạo lịch trình ngay",
+    "browsePlaces": "Tìm địa điểm",
+    "placeSearchPlaceholder": "Tìm quán ăn, cà phê, điểm tham quan…"
   },
   "why": {
     "sectionTitle": "Vì sao nên sử dụng Wayvee?",

@@ -10,6 +10,7 @@ const menu = [
   { icon: 'user', label: 'Thông tin cá nhân', to: '/profile' },
   { icon: 'card', label: 'Premium', to: '/payment' },
   { icon: 'calendar', label: 'Lịch trình' },
+  { icon: 'saved-trip', label: 'Lịch trình đã lưu', to: '/saved-trips' },
   { icon: 'heart', label: 'Yêu thích', to: '/favorites' },
   { icon: 'support', label: 'Hỗ trợ', to: '/support' },
   { icon: 'review', label: 'Bài đánh giá', to: '/reviews' },
@@ -36,7 +37,7 @@ export default function AccountSidebar({ name, onNotice }) {
       <div className="account-identity"><Avatar name={displayName} /><div><strong>{displayName}</strong><small>{user ? 'Premium' : 'Chào mừng bạn'}</small></div></div>
       <nav aria-label="Tài khoản">
         {menu.filter(item => user || item.to !== '/profile').map(({ icon, label, to, href }) => {
-          const content = <><Icon name={icon} /><span>{label}</span>{icon === 'calendar' && <Icon name="chevron" />}</>;
+          const content = <><Icon name={icon === 'saved-trip' ? 'calendar' : icon} /><span>{label}</span>{icon === 'calendar' && <Icon name="chevron" />}</>;
           const className = `account-nav-item${icon === 'settings' ? ' account-settings' : ''}`;
           if (icon === 'calendar') return <div key={icon} className="account-itineraries"><Link to="/itineraries?status=ongoing" className={`${className}${itineraryActive ? ' is-active' : ''}`} aria-current={itineraryActive ? 'true' : undefined}>{content}</Link>{itineraryActive && <div className="account-subnav" aria-label="Trạng thái lịch trình">{filters.map(filter => <Link key={filter.id} to={`/itineraries?status=${filter.id}`} className={currentFilter === filter.id ? 'is-active' : ''} aria-current={currentFilter === filter.id ? 'page' : undefined}>{filter.label}</Link>)}</div>}</div>;
           if (to) return <NavLink key={icon} to={to} className={({ isActive }) => `${className}${isActive ? ' is-active' : ''}`}>{content}</NavLink>;

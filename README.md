@@ -2,6 +2,32 @@
 
 ## Development
 
+## Backend API configuration
+
+Set `VITE_API_URL=https://backend-0xea.onrender.com` in `.env.local` for local builds,
+and in Vercel Project Settings → Environment Variables for Production (and Preview if used).
+Redeploy after changing the variable: Vite embeds its value at build time.
+Do not append `/wayvee` or `/api` to the Render base URL. Restart Vite after changing local environment files.
+
+`src/shared/lib/api.js` is the shared fetch wrapper for authentication, users,
+categories, reviews, favorites, analytics, trips, location image uploads and reverse geocoding.
+It reads only `VITE_API_URL`; the old `VITE_API_BASE_URL` variable is no longer used.
+There is no localhost fallback. Missing configuration produces an explicit error before sending a request.
+Login calls `/api/auth/login`. Protected requests retain the existing `wayvee_token`
+Bearer header and expired-session behavior; multipart uploads keep their browser-generated boundary.
+
+Separate services keep their existing destinations: `/api/weather` is a Vercel function,
+avatar signing `/api/avatar/sign` is currently a Node development middleware (not deployed
+as a Vercel function), Cloudinary receives signed avatar uploads, and Nominatim supplies map search.
+The Render location-image upload `/api/v1/locations/images` uses the shared wrapper.
+Avatar signing requires its own production deployment; do not redirect it to an unimplemented Render endpoint.
+
+The backend must allow the deployed frontend origin via CORS, including OPTIONS preflight,
+GET/POST/PUT/PATCH/DELETE and the Authorization and Content-Type request headers.
+No secrets belong in `VITE_*` variables. Keep `.env.local` ignored by Git.
+
+## Running locally
+
 Run `npm install` and `npm run dev`. Routes: `/`, `/login`, `/register`, `/profile`, `/payment`.
 The old `/#profile` link redirects to `/profile`.
 

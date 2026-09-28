@@ -23,11 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 
-<<<<<<< HEAD
 # Environment
 .env
 .env.*
 !.env.example
-=======
-.env.local
->>>>>>> Duc

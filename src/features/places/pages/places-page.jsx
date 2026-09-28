@@ -17,9 +17,10 @@ export function PlacesPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const tripState = location.state || {};
+  const searchParams = new URLSearchParams(location.search);
 
   // Destination context
-  const destination = tripState.destination || "Huế";
+  const destination = searchParams.get('destination') || tripState.destination || "Huế";
   const coordinates = useMemo(() => resolveCoordinates(destination), [destination]);
 
   // View mode: 'list' (Image 1) or 'grid' (Image 2)
@@ -43,7 +44,7 @@ export function PlacesPage() {
     applyFilters,
     resetFilters,
     toBackendPayload
-  } = usePlacesFilter();
+  } = usePlacesFilter({ keyword: searchParams.get('q') || '' });
 
   // Data fetching state
   const [places, setPlaces] = useState([]);
@@ -52,7 +53,7 @@ export function PlacesPage() {
   const ITEMS_PER_PAGE = 6;
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [hasSearched, setHasSearched] = useState(false);
+  const [hasSearched, setHasSearched] = useState(() => searchParams.get('browse') === '1' || Boolean(searchParams.get('q')));
   const [showMapModal, setShowMapModal] = useState(false);
   const [authModal, setAuthModal] = useState(null);
 
