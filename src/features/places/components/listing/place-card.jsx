@@ -32,7 +32,11 @@ export function PlaceCard({
 
   const handleToggleFavorite = useCallback(async (e) => {
     e.stopPropagation();
-    if (!isAuthenticated || favLoading) return;
+    if (!isAuthenticated) {
+      window.dispatchEvent(new CustomEvent("wayvee:prompt-login"));
+      return;
+    }
+    if (favLoading || !placeOsmId) return;
     setFavLoading(true);
     try {
       if (isFavorite) {
@@ -40,10 +44,10 @@ export function PlaceCard({
         setIsFavorite(false);
       } else {
         await addFavorite({
-          osmId: placeOsmId,
+          osmId: Number(placeOsmId) || placeOsmId,
           placeName: place.name,
-          latitude: place.latitude,
-          longitude: place.longitude
+          latitude: place.latitude || place.lat || 0,
+          longitude: place.longitude || place.lng || place.lon || 0
         });
         setIsFavorite(true);
       }
@@ -98,11 +102,25 @@ export function PlaceCard({
           {/* Favorite button */}
           <button
             type="button"
-            onClick={() => setIsFavorite(!isFavorite)}
-            className="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-xs flex items-center justify-center text-slate-700 dark:text-slate-200 hover:text-rose-500 cursor-pointer shadow-xs"
-            aria-label="Yêu thích"
+            onClick={handleToggleFavorite}
+            disabled={favLoading}
+            className={`absolute top-2.5 right-2.5 w-8 h-8 rounded-full backdrop-blur-xs flex items-center justify-center cursor-pointer shadow-xs transition-all hover:scale-110 active:scale-90 ${
+              isFavorite
+                ? "bg-white/95 dark:bg-slate-900/95 text-rose-500 ring-1 ring-rose-200 dark:ring-rose-900/40"
+                : "bg-white/80 dark:bg-slate-900/80 text-slate-700 dark:text-slate-200 hover:text-rose-500"
+            }`}
+            aria-label={isFavorite ? "Bỏ yêu thích" : "Yêu thích"}
+            title={isFavorite ? "Bỏ yêu thích" : "Yêu thích"}
           >
-            <span className={isFavorite ? "text-rose-500" : ""}>♥</span>
+            {isFavorite ? (
+              <svg className="w-4.5 h-4.5 fill-rose-500 text-rose-500" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+              </svg>
+            ) : (
+              <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+            )}
           </button>
           {/* Category Pill on Image */}
           <span className="absolute bottom-2 left-2 px-2 py-0.5 rounded-md text-[10px] font-bold bg-[#0b2545]/85 text-white backdrop-blur-xs">
@@ -204,11 +222,25 @@ export function PlaceCard({
         {/* Favorite button */}
         <button
           type="button"
-          onClick={() => setIsFavorite(!isFavorite)}
-          className="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-white/80 dark:bg-slate-900/80 backdrop-blur-xs flex items-center justify-center text-slate-700 dark:text-slate-200 hover:text-rose-500 cursor-pointer shadow-xs"
-          aria-label="Yêu thích"
+          onClick={handleToggleFavorite}
+          disabled={favLoading}
+          className={`absolute top-2.5 right-2.5 w-8 h-8 rounded-full backdrop-blur-xs flex items-center justify-center cursor-pointer shadow-xs transition-all hover:scale-110 active:scale-90 ${
+            isFavorite
+              ? "bg-white/95 dark:bg-slate-900/95 text-rose-500 ring-1 ring-rose-200 dark:ring-rose-900/40"
+              : "bg-white/80 dark:bg-slate-900/80 text-slate-700 dark:text-slate-200 hover:text-rose-500"
+          }`}
+          aria-label={isFavorite ? "Bỏ yêu thích" : "Yêu thích"}
+          title={isFavorite ? "Bỏ yêu thích" : "Yêu thích"}
         >
-          <span className={isFavorite ? "text-rose-500" : ""}>♥</span>
+          {isFavorite ? (
+            <svg className="w-4.5 h-4.5 fill-rose-500 text-rose-500" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+            </svg>
+          ) : (
+            <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+          )}
         </button>
         {/* Category Pill */}
         <span className="absolute bottom-2 left-2 px-2 py-0.5 rounded-md text-[10px] font-bold bg-[#0b2545]/85 text-white backdrop-blur-xs">

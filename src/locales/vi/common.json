@@ -185,8 +185,7 @@
     },
     "header": {
       "mainTitle": "Quản lý & Tùy chỉnh điểm dừng chân",
-      "mainSubtitle": "Xem thông tin hành trình, thêm hoặc điều chỉnh danh sách điểm đến để WAYVEE lên lịch trình hoàn hảo nhất.",
-      "syncingBadge": "Đang đồng bộ tự động"
+      "mainSubtitle": "Xem thông tin hành trình, thêm hoặc điều chỉnh danh sách điểm đến để WAYVEE lên lịch trình hoàn hảo nhất."
     },
     "tripSummary": {
       "title": "Chuyến đi của bạn",

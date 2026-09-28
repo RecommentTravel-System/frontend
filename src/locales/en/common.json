@@ -185,8 +185,7 @@
     },
     "header": {
       "mainTitle": "Manage & Customize Stops",
-      "mainSubtitle": "View itinerary information, add or adjust destinations for WAYVEE to build your perfect trip.",
-      "syncingBadge": "Auto-syncing"
+      "mainSubtitle": "View itinerary information, add or adjust destinations for WAYVEE to build your perfect trip."
     },
     "tripSummary": {
       "title": "Your Trip",

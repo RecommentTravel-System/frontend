@@ -277,25 +277,6 @@ export function TripCreatePage() {
           </div>
         </section>
 
-        {/* Header Section Info */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#002d5b] tracking-tight">
-              {t("tripCreate.header.mainTitle", "Quản lý & Tùy chỉnh điểm dừng chân")}
-            </h1>
-            <p className="text-sm sm:text-base text-slate-500 mt-0.5">
-              {t("tripCreate.header.mainSubtitle", "Xem thông tin hành trình, thêm hoặc điều chỉnh danh sách điểm đến để WAYVEE lên lịch trình hoàn hảo nhất.")}
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs bg-sky-50 text-[#00a3e0] font-semibold border border-sky-100">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              Đang đồng bộ tự động
-            </span>
-          </div>
-        </div>
-
-
         {/* 2 Column Master Layout (Left: Trip Info + Form | Right: Selected List) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           {/* LEFT COLUMN: Thông tin chuyến đi & Form nhập liệu (7 Cols) */}

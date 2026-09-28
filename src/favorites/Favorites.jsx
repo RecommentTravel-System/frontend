@@ -63,7 +63,6 @@ export default function Favorites() {
             <header className="favorites-heading">
               <div>
                 <h1>Địa điểm yêu thích</h1>
-                <p>Danh sách các điểm đến bạn đã lưu từ hệ thống WAYVEE.</p>
               </div>
               <Link to="/places" className="favorites-outline-button">
                 <span aria-hidden="true">⌕</span> Khám phá địa điểm mới
@@ -82,14 +81,28 @@ export default function Favorites() {
                     ? `${fav.latitude.toFixed(4)}, ${fav.longitude.toFixed(4)}`
                     : 'Việt Nam';
 
+                  const targetPlace = {
+                    id: fav.osmId,
+                    osmId: fav.osmId,
+                    name: placeName,
+                    latitude: fav.latitude,
+                    longitude: fav.longitude,
+                    imageUrl: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=800&q=80",
+                    address: fav.latitude && fav.longitude ? `Tọa độ: ${fav.latitude.toFixed(4)}, ${fav.longitude.toFixed(4)}` : "Việt Nam",
+                    categoryCode: "ATTRACTION",
+                    description: "Địa điểm yêu thích đã lưu trên hệ thống WAYVEE."
+                  };
+
                   return (
                     <article className="favorite-place" key={fav.favoriteId || fav.osmId}>
                       <div className="favorite-place-photo">
-                        <img
-                          src={`https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=400&q=80`}
-                          alt={placeName}
-                          loading="lazy"
-                        />
+                        <Link to={`/places/${fav.osmId}`} state={{ place: targetPlace }}>
+                          <img
+                            src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=400&q=80"
+                            alt={placeName}
+                            loading="lazy"
+                          />
+                        </Link>
                         <button
                           type="button"
                           className="favorite-heart"
@@ -98,19 +111,21 @@ export default function Favorites() {
                           aria-pressed="true"
                           title="Bỏ yêu thích"
                         >
-                          <Icon name="heart" />
+                          <svg className="w-4 h-4 fill-rose-500 text-rose-500" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                          </svg>
                         </button>
                       </div>
                       <div className="favorite-place-info">
-                        <h2>{placeName}</h2>
+                        <h2>
+                          <Link to={`/places/${fav.osmId}`} state={{ place: targetPlace }} className="hover:text-[#00a3e0]">
+                            {placeName}
+                          </Link>
+                        </h2>
                         {fav.latitude && fav.longitude ? (
-                          <a
-                            href={`https://www.google.com/maps/search/?api=1&query=${fav.latitude},${fav.longitude}`}
-                            target="_blank"
-                            rel="noreferrer"
-                          >
-                            <span aria-hidden="true">⌾</span> Tọa độ: {coordsText}
-                          </a>
+                          <span className="text-slate-500 text-xs">
+                            <span aria-hidden="true">⌾</span> Tọa độ: {fav.latitude.toFixed(4)}, {fav.longitude.toFixed(4)}
+                          </span>
                         ) : (
                           <span className="text-slate-500 text-xs">
                             <span aria-hidden="true">⌾</span> {coordsText}
@@ -118,7 +133,11 @@ export default function Favorites() {
                         )}
                         {fav.osmId && (
                           <p className="favorite-place-note">
-                            <Link to={`/places/${fav.osmId}`} className="text-[#00a3e0] hover:underline">
+                            <Link
+                              to={`/places/${fav.osmId}`}
+                              state={{ place: targetPlace }}
+                              className="text-[#00a3e0] hover:underline inline-flex items-center gap-1 font-medium"
+                            >
                               Xem chi tiết địa điểm trên WAYVEE →
                             </Link>
                           </p>

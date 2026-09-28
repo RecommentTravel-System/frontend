@@ -57,6 +57,12 @@ export function PlacesPage() {
   const [showMapModal, setShowMapModal] = useState(false);
   const [authModal, setAuthModal] = useState(null);
 
+  useEffect(() => {
+    const onPromptLogin = () => setAuthModal("login");
+    window.addEventListener("wayvee:prompt-login", onPromptLogin);
+    return () => window.removeEventListener("wayvee:prompt-login", onPromptLogin);
+  }, []);
+
   // Selected places to add to trip itinerary
   const [selectedPlaceIds, setSelectedPlaceIds] = useState(() => {
     const existing = tripState.placesList || [];
@@ -353,7 +359,7 @@ export function PlacesPage() {
                     Vui lòng chọn tiêu chí lọc & Bấm xác nhận
                   </h3>
                   <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
-                    Hãy chọn loại địa điểm (Quán ăn, Quán cà phê, Khu vui chơi...) và tùy chỉnh khoảng cách ở cột bên trái, sau đó nhấn nút <strong className="text-slate-800 dark:text-slate-200">"Áp dụng bộ lọc"</strong> để tìm kiếm dữ liệu thực từ Overpass API!
+                    Hãy chọn loại địa điểm (Quán ăn, Quán cà phê, Khu vui chơi...) và tùy chỉnh khoảng cách ở cột bên trái, sau đó nhấn nút <strong className="text-slate-800 dark:text-slate-200">"Áp dụng bộ lọc"</strong>
                   </p>
                 </div>
               </div>

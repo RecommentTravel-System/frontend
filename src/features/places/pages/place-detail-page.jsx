@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { AppHeader, AppFooter } from "~/shared/components";
 import { LoginCard, RegisterCard } from "~/features/auth";
+import { useAuth } from "~/providers/auth-provider";
+import { checkFavorite, addFavorite, removeFavoriteByOsmId } from "~/shared/services/favorite-api";
 import { getPlaceById } from "../services/places-api";
 
 export function PlaceDetailPage() {
@@ -9,14 +11,73 @@ export function PlaceDetailPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const initialPlace = location.state?.place || null;
+  const { isAuthenticated } = useAuth();
 
-  const [place, setPlace] = useState(initialPlace);
+  const [place, setPlace] = useState(
+    initialPlace || {
+      id,
+      osmId: id,
+      name: `Địa điểm #${id}`,
+      address: "Khu vực du lịch",
+      categoryCode: "ATTRACTION",
+      description: "Địa điểm tham quan, trải nghiệm du lịch và ẩm thực hấp dẫn dành cho du khách trên hệ thống WAYVEE.",
+      amenities: ["Wifi miễn phí", "Chỗ để xe", "Thanh toán thẻ", "Điều hòa", "Chụp ảnh check-in", "Thân thiện gia đình"]
+    }
+  );
   const [loading, setLoading] = useState(!initialPlace);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [favLoading, setFavLoading] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
   const [showFullDesc, setShowFullDesc] = useState(false);
   const [showFullAmenities, setShowFullAmenities] = useState(false);
   const [authModal, setAuthModal] = useState(null);
+
+  const placeOsmId = place?.osmId || place?.id || id;
+
+  useEffect(() => {
+    if (!isAuthenticated || !placeOsmId) {
+      setIsFavorite(false);
+      return;
+    }
+    let cancelled = false;
+    checkFavorite(placeOsmId)
+      .then((res) => {
+        if (!cancelled) {
+          setIsFavorite(res?.data === true || res === true);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuthenticated, placeOsmId]);
+
+  const handleToggleFavorite = async () => {
+    if (!isAuthenticated) {
+      setAuthModal("login");
+      return;
+    }
+    if (favLoading || !placeOsmId) return;
+    setFavLoading(true);
+    try {
+      if (isFavorite) {
+        await removeFavoriteByOsmId(placeOsmId);
+        setIsFavorite(false);
+      } else {
+        await addFavorite({
+          osmId: Number(placeOsmId) || placeOsmId,
+          placeName: place?.name || `Địa điểm #${placeOsmId}`,
+          latitude: Number(place?.latitude || place?.lat) || 0,
+          longitude: Number(place?.longitude || place?.lng || place?.lon) || 0
+        });
+        setIsFavorite(true);
+      }
+    } catch (err) {
+      console.error("Failed to toggle favorite:", err);
+    } finally {
+      setFavLoading(false);
+    }
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -27,17 +88,6 @@ export function PlaceDetailPage() {
         if (isMounted) {
           if (data) {
             setPlace((prev) => ({ ...(prev || {}), ...data }));
-          } else if (!initialPlace) {
-            // Fallback default info if not found
-            setPlace({
-              id,
-              osmId: id,
-              name: `Địa điểm #${id}`,
-              address: "Khu vực trung tâm du lịch",
-              categoryCode: "ATTRACTION",
-              description: "Địa điểm tham quan, trải nghiệm du lịch và ẩm thực hấp dẫn dành cho du khách.",
-              amenities: ["Wifi miễn phí", "Chỗ để xe", "Thanh toán thẻ", "Điều hòa", "Chụp ảnh check-in", "Thân thiện gia đình"]
-            });
           }
         }
       } catch (err) {
@@ -70,29 +120,9 @@ export function PlaceDetailPage() {
     );
   }
 
-  if (!place) {
-    return (
-      <div className="bg-[#f8fafc] dark:bg-slate-950 min-h-screen flex flex-col">
-        <AppHeader
-          onLogin={() => setAuthModal("login")}
-          onRegister={() => setAuthModal("register")}
-        />
-        <div className="max-w-6xl mx-auto px-4 py-16 flex-grow text-center space-y-4">
-          <h2 className="text-xl font-bold text-slate-800 dark:text-white">Không tìm thấy địa điểm</h2>
-          <button
-            type="button"
-            onClick={() => navigate(-1)}
-            className="px-5 py-2.5 bg-[#0b2545] text-white text-xs font-bold rounded-xl cursor-pointer shadow hover:bg-[#102f58]"
-          >
-            Quay lại
-          </button>
-        </div>
-        <AppFooter />
-      </div>
-    );
-  }
-
-  const mainImage = place.imageUrl || null;
+  const safeLat = Number(place.latitude || place.lat) || 16.4637;
+  const safeLng = Number(place.longitude || place.lng || place.lon) || 107.5909;
+  const mainImage = place.imageUrl || "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=1200&q=80";
 
   return (
     <div className="bg-[#f8fafc] dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans min-h-screen flex flex-col antialiased">
@@ -124,11 +154,25 @@ export function PlaceDetailPage() {
           <div className="flex items-center gap-3">
             <button
               type="button"
-              onClick={() => setIsFavorite(!isFavorite)}
-              className="w-10 h-10 rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-rose-500 cursor-pointer shadow-2xs transition-transform hover:scale-105"
-              title="Yêu thích"
+              onClick={handleToggleFavorite}
+              disabled={favLoading}
+              className={`w-10 h-10 rounded-full border flex items-center justify-center cursor-pointer shadow-2xs transition-all hover:scale-110 active:scale-95 ${
+                isFavorite
+                  ? "border-rose-200 dark:border-rose-900/50 bg-rose-50 dark:bg-rose-950/40 text-rose-500"
+                  : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:text-rose-500 hover:border-rose-200"
+              }`}
+              title={isFavorite ? "Bỏ yêu thích" : "Yêu thích"}
+              aria-label={isFavorite ? "Bỏ yêu thích" : "Yêu thích"}
             >
-              <span className={`text-base ${isFavorite ? "text-rose-500" : ""}`}>♥</span>
+              {isFavorite ? (
+                <svg className="w-5 h-5 fill-rose-500 text-rose-500" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+              )}
             </button>
             <button
               type="button"
@@ -223,7 +267,7 @@ export function PlaceDetailPage() {
             Location
           </h2>
           <div className="w-full h-64 sm:h-72 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800">
-            {place.latitude != null && place.longitude != null && <iframe
+            <iframe
               title="Bản đồ địa điểm"
               width="100%"
               height="100%"
@@ -231,8 +275,8 @@ export function PlaceDetailPage() {
               scrolling="no"
               marginHeight="0"
               marginWidth="0"
-              src={`https://www.openstreetmap.org/export/embed.html?bbox=${place.longitude - 0.01}%2C${place.latitude - 0.01}%2C${place.longitude + 0.01}%2C${place.latitude + 0.01}&layer=mapnik&marker=${place.latitude}%2C${place.longitude}`}
-            />}
+              src={`https://www.openstreetmap.org/export/embed.html?bbox=${(safeLng - 0.01).toFixed(6)}%2C${(safeLat - 0.01).toFixed(6)}%2C${(safeLng + 0.01).toFixed(6)}%2C${(safeLat + 0.01).toFixed(6)}&layer=mapnik&marker=${safeLat}%2C${safeLng}`}
+            />
           </div>
         </section>
 

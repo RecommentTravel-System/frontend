@@ -10,13 +10,19 @@ export function DateRangePicker({
   endPlaceholder = "DD/MM/YYYY",
   checkInLabel = "Ngày đi",
   checkOutLabel = "Ngày về",
-  dateFormat = "DD/MM/YYYY" // "DD/MM/YYYY" | "MM/DD/YYYY"
+  dateFormat = "DD/MM/YYYY", // "DD/MM/YYYY" | "MM/DD/YYYY"
+  minDate = null
 }) {
   const { language } = useTranslation();
   const [activePicker, setActivePicker] = useState(null); // null | "start" | "end"
   const [internalStart, setInternalStart] = useState(() => (startDate ? new Date(startDate) : null));
   const [internalEnd, setInternalEnd] = useState(() => (endDate ? new Date(endDate) : null));
   const [hoverDate, setHoverDate] = useState(null);
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const effectiveMinDate = minDate ? new Date(minDate) : today;
+  effectiveMinDate.setHours(0, 0, 0, 0);
 
   // Month view for the single calendar
   const [viewDate, setViewDate] = useState(() => {
@@ -60,8 +66,14 @@ export function DateRangePicker({
     return `${day}/${month}/${year}`;
   };
 
+  const isPrevMonthDisabled =
+    viewDate.getFullYear() < effectiveMinDate.getFullYear() ||
+    (viewDate.getFullYear() === effectiveMinDate.getFullYear() &&
+      viewDate.getMonth() <= effectiveMinDate.getMonth());
+
   const handlePrevMonth = (e) => {
     e.stopPropagation();
+    if (isPrevMonthDisabled) return;
     setViewDate((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
   };
 
@@ -88,6 +100,9 @@ export function DateRangePicker({
   };
 
   const handleDateClick = (clickedDate) => {
+    const clickedMidnight = new Date(clickedDate.getFullYear(), clickedDate.getMonth(), clickedDate.getDate());
+    if (clickedMidnight < effectiveMinDate) return;
+
     if (activePicker === "start") {
       // Pick start date
       setInternalStart(clickedDate);
@@ -186,8 +201,13 @@ export function DateRangePicker({
         <div className="flex items-center justify-between mb-3 px-1">
           <button
             type="button"
+            disabled={isPrevMonthDisabled}
             onClick={handlePrevMonth}
-            className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors cursor-pointer"
+            className={`w-7 h-7 flex items-center justify-center rounded-full text-slate-600 dark:text-slate-300 transition-colors ${
+              isPrevMonthDisabled
+                ? "opacity-30 cursor-not-allowed pointer-events-none"
+                : "hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+            }`}
             title="Tháng trước"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -227,6 +247,13 @@ export function DateRangePicker({
               return <div key={`empty-${idx}`} className="h-9 w-full" />;
             }
 
+            const isPast = date < effectiveMinDate;
+            const isBeforeStart =
+              activePicker === "end" &&
+              internalStart &&
+              date < new Date(internalStart.getFullYear(), internalStart.getMonth(), internalStart.getDate());
+            const isDisabled = isPast || isBeforeStart;
+
             const isStart = isSameDay(date, internalStart);
             const isEnd = isSameDay(date, internalEnd);
             const effectiveEnd =
@@ -236,24 +263,29 @@ export function DateRangePicker({
 
             let cellClass = "text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg";
 
-            if (isStart && isEnd) {
-              cellClass = "bg-[#0b2545] dark:bg-sky-500 text-white font-bold rounded-lg shadow-xs";
+            if (isDisabled) {
+              cellClass = "text-slate-300 dark:text-slate-600 opacity-30 cursor-not-allowed select-none";
+            } else if (isStart && isEnd) {
+              cellClass = "bg-[#00a3e0] text-white font-bold rounded-lg shadow-xs";
             } else if (isStart) {
-              cellClass = "bg-[#0b2545] dark:bg-sky-500 text-white font-bold rounded-l-lg";
+              cellClass = "bg-[#00a3e0] text-white font-bold rounded-l-lg";
             } else if (isEnd) {
-              cellClass = "bg-[#0b2545] dark:bg-sky-500 text-white font-bold rounded-r-lg";
+              cellClass = "bg-[#00a3e0] text-white font-bold rounded-r-lg";
             } else if (isInRange) {
-              cellClass = "bg-[#e0f2fe] dark:bg-sky-950/70 text-[#0b2545] dark:text-sky-200 font-semibold";
+              cellClass = "bg-[#e0f2fe] dark:bg-sky-950/70 text-[#00a3e0] dark:text-sky-200 font-semibold";
             }
 
             return (
               <button
                 key={date.toISOString()}
                 type="button"
-                className={`h-9 w-full flex items-center justify-center text-xs transition-colors cursor-pointer font-medium ${cellClass}`}
-                onClick={() => handleDateClick(date)}
+                disabled={isDisabled}
+                className={`h-9 w-full flex items-center justify-center text-xs transition-colors font-medium ${cellClass} ${
+                  isDisabled ? "pointer-events-none" : "cursor-pointer"
+                }`}
+                onClick={() => !isDisabled && handleDateClick(date)}
                 onMouseEnter={() => {
-                  if (internalStart && !internalEnd) {
+                  if (!isDisabled && internalStart && !internalEnd) {
                     setHoverDate(date);
                   }
                 }}
@@ -321,7 +353,7 @@ export function DateRangePicker({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
             </svg>
           </div>
-          <p className="text-xs sm:text-sm font-bold text-slate-900 dark:text-slate-100 truncate">
+          <p className={`text-xs sm:text-sm truncate ${internalStart ? "font-bold text-slate-900 dark:text-slate-100" : "font-normal text-slate-400 dark:text-slate-500"}`}>
             {internalStart ? formatDateString(internalStart) : startPlaceholder}
           </p>
         </div>
@@ -364,7 +396,7 @@ export function DateRangePicker({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
             </svg>
           </div>
-          <p className="text-xs sm:text-sm font-bold text-slate-900 dark:text-slate-100 truncate">
+          <p className={`text-xs sm:text-sm truncate ${internalEnd ? "font-bold text-slate-900 dark:text-slate-100" : "font-normal text-slate-400 dark:text-slate-500"}`}>
             {internalEnd ? formatDateString(internalEnd) : endPlaceholder}
           </p>
         </div>

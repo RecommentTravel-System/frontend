@@ -72,8 +72,8 @@ export function HeroPlanner({ onPlannerSubmit }) {
                 onChange={(res) => setDateRange(res)}
                 checkInLabel={t("hero.departDate") || "Ngày đi"}
                 checkOutLabel={t("hero.returnDate") || "Ngày về"}
-                startPlaceholder="16/07/2025"
-                endPlaceholder="24/07/2025"
+                startPlaceholder={t("tripInfo.dates.selectStart", "Chọn ngày đi")}
+                endPlaceholder={t("tripInfo.dates.selectEnd", "Chọn ngày về")}
                 dateFormat="DD/MM/YYYY"
               />
             </div>

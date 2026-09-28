@@ -3,8 +3,7 @@ import { useTranslation } from "~/providers/i18n-provider";
 import {
   CATEGORY_FILTER_CONFIGS,
   DISTANCE_OPTIONS,
-  RATING_OPTIONS,
-  PRICE_OPTIONS
+  RATING_OPTIONS
 } from "../../config/filter-config";
 import { getAllCategoriesApi } from "~/features/categories/services/category-api";
 
@@ -187,36 +186,7 @@ export function FilterPanel({
 
       <hr className="border-slate-100 dark:border-slate-800" />
 
-      {/* 4. Price Level (Common Filter) */}
-      <div className="space-y-2">
-        <label className="block text-xs font-bold text-slate-800 dark:text-slate-300 uppercase tracking-wider">
-          {t("places.filter.price") || "Mức giá"}
-        </label>
-        <div className="grid grid-cols-4 gap-1.5">
-          {PRICE_OPTIONS.map((item) => {
-            const isSelected = filters.priceLevel === item.value;
-            return (
-              <button
-                key={item.value}
-                type="button"
-                title={t(item.descKey) || item.value}
-                onClick={() => onSelectPrice(item.value)}
-                className={`py-1.5 text-xs font-bold rounded-lg border text-center transition-all cursor-pointer ${
-                  isSelected
-                    ? "bg-[#0b2545] dark:bg-sky-500 border-[#0b2545] dark:border-sky-500 text-white dark:text-slate-950 shadow-xs"
-                    : "border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
-                }`}
-              >
-                {item.label}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      <hr className="border-slate-100 dark:border-slate-800" />
-
-      {/* 5. Dynamic Category Preferences */}
+      {/* 4. Dynamic Category Preferences */}
       <div className="space-y-2.5">
         <div className="flex items-center justify-between">
           <label className="text-xs font-bold text-slate-800 dark:text-slate-300 uppercase tracking-wider">

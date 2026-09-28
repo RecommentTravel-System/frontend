@@ -27,7 +27,7 @@ function parseDateRange(dateStr) {
 }
 
 function calculateDuration(start, end) {
-  if (!start || !end) return "9 ngày 8 đêm";
+  if (!start || !end) return "";
   const diffTime = Math.abs(end.getTime() - start.getTime());
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
   const nights = Math.max(0, diffDays - 1);
@@ -65,7 +65,7 @@ export function TripInfoPage({ initialData: propInitialData }) {
     if (startDate && endDate) {
       return calculateDuration(startDate, endDate);
     }
-    return "9 ngày 8 đêm";
+    return "";
   }, [startDate, endDate]);
 
   const [destination, setDestination] = useState(
@@ -76,7 +76,6 @@ export function TripInfoPage({ initialData: propInitialData }) {
     initialData?.passengerCount ? Number(initialData.passengerCount) : (initialData?.memberCount ? Number(initialData.memberCount) : 2)
   );
   const [selectedStyles, setSelectedStyles] = useState(initialData?.travelStyles || initialData?.selectedStyles || []);
-  const [customStyle, setCustomStyle] = useState(initialData?.customStyle || "");
 
   const [isEditingName, setIsEditingName] = useState(false);
 
@@ -119,8 +118,8 @@ export function TripInfoPage({ initialData: propInitialData }) {
     if (!memberCount || memberCount < 1) {
       newErrors.passengerCount = t("tripInfo.validation.passengerCountRequired", "Vui lòng nhập số lượng người");
     }
-    if (selectedStyles.length === 0 && !customStyle.trim()) {
-      newErrors.travelStyle = t("tripInfo.validation.travelStyleRequired", "Vui lòng chọn hoặc nhập phong cách chuyến đi");
+    if (selectedStyles.length === 0) {
+      newErrors.travelStyle = t("tripInfo.validation.travelStyleRequired", "Vui lòng chọn phong cách chuyến đi");
     }
     return newErrors;
   };
@@ -141,9 +140,6 @@ export function TripInfoPage({ initialData: propInitialData }) {
       const found = PRESET_STYLES.find((s) => s.id === id);
       return found ? t(found.labelKey, found.defaultLabel) : id;
     });
-    if (customStyle.trim()) {
-      chosenStyleLabels.push(customStyle.trim());
-    }
 
     const formData = {
       tripName: tripName.trim(),
@@ -154,8 +150,7 @@ export function TripInfoPage({ initialData: propInitialData }) {
       memberCount: memberCount,
       travelStyle: chosenStyleLabels.join(", "),
       travelStyles: selectedStyles,
-      selectedStyles: selectedStyles,
-      customStyle: customStyle.trim()
+      selectedStyles: selectedStyles
     };
 
     try {
@@ -251,9 +246,11 @@ export function TripInfoPage({ initialData: propInitialData }) {
                   {t("tripInfo.tripSummary.yourTrip", "CHUYẾN ĐI CỦA BẠN")}
                 </h3>
               </div>
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-[#e6f6fd] dark:bg-sky-950/60 text-[#00a3e0]">
-                {durationBadge}
-              </span>
+              {durationBadge ? (
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-[#e6f6fd] dark:bg-sky-950/60 text-[#00a3e0]">
+                  {durationBadge}
+                </span>
+              ) : null}
             </div>
 
             {/* Body Grid of Card 1 */}
@@ -326,8 +323,8 @@ export function TripInfoPage({ initialData: propInitialData }) {
                     }}
                     checkInLabel={t("hero.departDate") || "Ngày đi"}
                     checkOutLabel={t("hero.returnDate") || "Ngày về"}
-                    startPlaceholder="16/07/2025"
-                    endPlaceholder="24/07/2025"
+                    startPlaceholder={t("tripInfo.dates.selectStart", "Chọn ngày đi")}
+                    endPlaceholder={t("tripInfo.dates.selectEnd", "Chọn ngày về")}
                     dateFormat="DD/MM/YYYY"
                   />
                   {errors.tripDates && (
@@ -518,17 +515,6 @@ export function TripInfoPage({ initialData: propInitialData }) {
                   })}
                 </div>
 
-                {/* Optional Custom Tag Input */}
-                <input
-                  className="w-full px-4 py-2.5 text-xs sm:text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl placeholder-slate-400 focus:bg-white dark:focus:bg-slate-900 focus:border-[#00a3e0] focus:ring-1 focus:ring-[#00a3e0] transition outline-none text-slate-800 dark:text-slate-100"
-                  placeholder={t("tripInfo.destinationDetails.travelStylePlaceholder", "Nhập thêm sở thích khác (ví dụ: Cà phê ngắm cảnh, Chụp ảnh film...)")}
-                  type="text"
-                  value={customStyle}
-                  onChange={(e) => {
-                    setCustomStyle(e.target.value);
-                    clearError("travelStyle");
-                  }}
-                />
                 {errors.travelStyle && (
                   <p className="text-[11px] text-rose-500 mt-1">{errors.travelStyle}</p>
                 )}

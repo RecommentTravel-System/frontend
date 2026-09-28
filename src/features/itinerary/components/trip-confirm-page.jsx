@@ -1,7 +1,35 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "~/providers/i18n-provider";
 import { AppHeader } from "~/shared/components";
+
+function parseDateRange(dateStr) {
+  if (!dateStr) return { start: null, end: null };
+  const parts = dateStr.split("-").map((s) => s.trim());
+  const parsePart = (str) => {
+    if (!str) return null;
+    const match = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if (match) {
+      const day = parseInt(match[1], 10);
+      const month = parseInt(match[2], 10) - 1;
+      const year = parseInt(match[3], 10);
+      return new Date(year, month, day);
+    }
+    const d = new Date(str);
+    return isNaN(d.getTime()) ? null : d;
+  };
+  const start = parsePart(parts[0]);
+  const end = parts[1] ? parsePart(parts[1]) : null;
+  return { start, end };
+}
+
+function calculateDuration(start, end) {
+  if (!start || !end) return "";
+  const diffTime = Math.abs(end.getTime() - start.getTime());
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+  const nights = Math.max(0, diffDays - 1);
+  return `${diffDays}N / ${nights}Đ`;
+}
 
 export function TripConfirmPage() {
   const { t } = useTranslation();
@@ -10,16 +38,19 @@ export function TripConfirmPage() {
 
   const [loadingStage, setLoadingStage] = useState(null); // null | "processing" | "confirming"
 
-  // Form State
-  const [tripName, setTripName] = useState(locationState.tripName || t("tripConfirm.tripSummary.defaultName"));
-  const [tripDates, setTripDates] = useState(locationState.tripDates || t("tripConfirm.tripSummary.defaultDates"));
-  const [destination, setDestination] = useState(locationState.destination || t("tripConfirm.tripSummary.defaultLocation"));
-  const [passengerCount, setPassengerCount] = useState(locationState.passengerCount || t("tripConfirm.tripSummary.defaultPassengers"));
+  // Form State (Read-only)
+  const tripName = locationState.tripName || "Khám phá Cố đô Huế";
+  const tripDates = locationState.tripDates || "15/08/2025 - 18/08/2025";
+  const destination = locationState.destination || "Huế, Việt Nam";
+  const passengerCount = locationState.passengerCount || 2;
 
-  const [isEditingName, setIsEditingName] = useState(false);
-  const [isEditingDates, setIsEditingDates] = useState(false);
-  const [isEditingLocation, setIsEditingLocation] = useState(false);
-  const [isEditingPassengers, setIsEditingPassengers] = useState(false);
+  const parsedDates = useMemo(() => parseDateRange(tripDates), [tripDates]);
+  const durationBadge = useMemo(() => {
+    if (parsedDates.start && parsedDates.end) {
+      return calculateDuration(parsedDates.start, parsedDates.end);
+    }
+    return "4N / 3Đ";
+  }, [parsedDates]);
 
   // List of confirmed places from user itinerary
   const placesList =
@@ -27,377 +58,364 @@ export function TripConfirmPage() {
       ? locationState.placesList
       : [
           {
-            name: "Cộng Cà Phê Nhà Thờ",
-            address: "27 Nhà Thờ, Hàng Trống, Hoàn Kiếm, Hà Nội",
-            specs: "View ngắm trọn Nhà Thờ Lớn · Cà phê cốt dừa",
+            name: "Đại Nội Huế",
+            address: "Phú Hậu, Thành phố Huế, Thừa Thiên Huế",
+            specs: "Di tích lịch sử & Quần thể Hoàng thành triều Nguyễn",
             rating: 5,
             score: "4.8",
-            reviewCount: "1,120",
-            tags: ["Cà phê", "Check-in"],
+            reviewCount: "8,500+",
+            tags: ["Di tích", "Văn hóa", "Di sản UNESCO"],
             image:
-              "https://lh3.googleusercontent.com/aida-public/AB6AXuDubrmT6I6G76VzNEsQTpx3ruw3s_1pXTpTCgcdi6NFXIi0LfVD-xywPD8zQXY5ZPCwZ0dR2Zc6qCOHEAc-dBNhg2pVZqDAF5tw9UGTVmG6cXbN6nk9v4YbOSxxatTlRWVLfxi29jgDF9XC4aq2wGU5ajWXX6BK5_9f_5N4gGU7k_Pt3BLr5uMI7E3C800MX65XYlMqSgBwDTWDiOWCcmBN8W4ekvmsmvbX_XYSWdc"
+              "https://images.unsplash.com/photo-1583417319070-4a69db38a482?auto=format&fit=crop&w=800&q=80"
           },
           {
-            name: "Lăng Chủ Tịch Hồ Chí Minh",
-            address: "Số 2 Hùng Vương, Ba Đình, Hà Nội",
-            specs: "Công trình văn hóa lịch sử cấp quốc gia",
+            name: "Cộng Cà Phê",
+            address: "22 Bến Nghé, Phú Hội, Thành phố Huế",
+            specs: "View ngắm phố đi bộ · Cà phê cốt dừa đặc trưng",
             rating: 5,
-            score: "4.9",
-            reviewCount: "12,000+",
-            tags: ["Văn hóa", "Di tích"],
+            score: "4.7",
+            reviewCount: "1,120",
+            tags: ["Cà phê", "Check-in", "Thư giãn"],
             image:
-              "https://lh3.googleusercontent.com/aida-public/AB6AXuD1GUjDo_Yuq9J22vlCLsz0ggPVTjYqk_8O6No1rOzdTpmWXq6vbzxk7F-n5naZiM8giseBPmTbsKJQ5tsAN6Bt0bL0AYDlqYYWfwKzVNpVF3UqwRPCeG1_tZ1uJDDEDrmlMCYC9mv3wsGdLAIrNUqvI7bcwuWGIGP1E1fFcHDlcxeu2ndibpei06uDoUBWAwCHumy4PliVI6yxig2_RiEL4HUZ6jCkuDcVamLEmRw"
+              "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=800&q=80"
           }
         ];
 
   const handleConfirmClick = () => {
-    // Stage 1: Processing
     setLoadingStage("processing");
 
     setTimeout(() => {
-      // Stage 2: Confirming
       setLoadingStage("confirming");
 
       setTimeout(() => {
-        // Complete -> Navigate to Success Page
         setLoadingStage(null);
         navigate("/trip/success", {
           state: {
             tripName,
             tripDates,
             destination,
-            passengerCount
+            passengerCount,
+            placesList
           }
         });
-      }, 1500);
-    }, 1500);
+      }, 1200);
+    }, 1200);
   };
 
   return (
-    <div className="bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-slate-200 relative">
-      {/* AppHeader identical to homepage */}
+    <div className="bg-[#f8fafc] dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-[#00a3e0] selection:text-white">
+      {/* App Header */}
       <AppHeader
         onLogin={() => navigate("/login", { state: { from: "/trip/confirm" } })}
         onRegister={() => navigate("/register", { state: { from: "/trip/confirm" } })}
       />
 
-      {/* BEGIN: StepperSection */}
-      <section aria-label="Quy trình từng bước" className="w-full pt-6 pb-4">
-        <div className="max-w-2xl mx-auto px-4">
-          <div className="relative flex items-center justify-between">
-            {/* Connecting Line Background */}
-            <div className="absolute left-6 right-6 top-[15px] h-[1.5px] bg-[#002d54] dark:bg-sky-500 -z-0"></div>
+      {/* Main Content */}
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full" data-purpose="primary-flow-container">
+        
+        {/* BEGIN: StepperBar (Exact style & colors from Step 1 and Step 2) */}
+        <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 shadow-xs border border-slate-100 dark:border-slate-800 mb-8" data-purpose="progress-stepper">
+          <div className="max-w-xl mx-auto flex items-center justify-between relative">
+            {/* Connecting Background Lines */}
+            <div className="absolute left-8 right-8 top-5 -translate-y-1/2 h-0.5 bg-slate-200 dark:bg-slate-700 z-0"></div>
+            <div className="absolute left-8 right-8 top-5 -translate-y-1/2 h-0.5 bg-[#00a3e0] z-0"></div>
 
-            {/* Step 1: Nhập thông tin (Completed) */}
-            <div className="flex flex-col items-center relative z-10 cursor-pointer" onClick={() => navigate("/trip/info")}>
-              <div className="w-8 h-8 rounded-full bg-[#002d54] dark:bg-sky-500 text-white dark:text-slate-950 flex items-center justify-center font-bold text-sm shadow-sm">
+            {/* Step 1 (Completed) */}
+            <div
+              className="relative z-10 flex flex-col items-center group cursor-pointer"
+              onClick={() => navigate("/trip/info", { state: locationState })}
+            >
+              <div className="w-10 h-10 rounded-full bg-[#00a3e0] text-white flex items-center justify-center font-bold text-sm shadow-md shadow-sky-100">
                 1
               </div>
-              <span className="mt-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
-                {t("tripConfirm.stepper.step1")}
+              <span className="mt-2 text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-400 text-center">
+                {t("tripInfo.stepper.step1", "1. Nhập thông tin")}
               </span>
             </div>
 
-            {/* Step 2: Tạo lịch trình (Completed) */}
-            <div className="flex flex-col items-center relative z-10 cursor-pointer" onClick={() => navigate("/trip/create")}>
-              <div className="w-8 h-8 rounded-full bg-[#002d54] dark:bg-sky-500 text-white dark:text-slate-950 flex items-center justify-center font-bold text-sm shadow-sm">
+            {/* Step 2 (Completed) */}
+            <div
+              className="relative z-10 flex flex-col items-center group cursor-pointer"
+              onClick={() =>
+                navigate("/trip/create", {
+                  state: {
+                    ...locationState,
+                    tripName,
+                    tripDates,
+                    destination,
+                    passengerCount,
+                    placesList
+                  }
+                })
+              }
+            >
+              <div className="w-10 h-10 rounded-full bg-[#00a3e0] text-white flex items-center justify-center font-bold text-sm shadow-md shadow-sky-100">
                 2
               </div>
-              <span className="mt-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
-                {t("tripConfirm.stepper.step2")}
+              <span className="mt-2 text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-400 text-center">
+                {t("tripInfo.stepper.step2", "2. Chọn địa điểm")}
               </span>
             </div>
 
-            {/* Step 3: Hoàn tất (Active / Solid Navy Larger) */}
-            <div className="flex flex-col items-center relative z-10">
-              <div className="w-10 h-10 -my-1 rounded-full bg-[#002d54] dark:bg-sky-500 text-white dark:text-slate-950 flex items-center justify-center font-bold text-base shadow-sm ring-4 ring-[#002d54]/20 dark:ring-sky-500/20">
+            {/* Step 3 (Current Active Step) */}
+            <div className="relative z-10 flex flex-col items-center group">
+              <div className="w-10 h-10 rounded-full bg-[#00a3e0] text-white flex items-center justify-center font-bold text-sm shadow-md shadow-sky-100 ring-4 ring-sky-50 dark:ring-sky-950">
                 3
               </div>
-              <span className="mt-1 text-xs font-extrabold text-[#002d54] dark:text-sky-400">
-                {t("tripConfirm.stepper.step3")}
+              <span className="mt-2 text-xs sm:text-sm font-bold text-slate-900 dark:text-white text-center">
+                {t("tripInfo.stepper.step3", "3. Hoàn tất")}
               </span>
             </div>
           </div>
         </div>
-      </section>
-      {/* END: StepperSection */}
+        {/* END: StepperBar */}
 
-      {/* BEGIN: MainContent */}
-      <main className="flex-grow w-full max-w-4xl mx-auto px-6 lg:px-8 py-6 space-y-6" data-purpose="page-main-content">
-        <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
-          {t("tripConfirm.tripSummary.title")}
-        </h1>
-
-        {/* Sub-block 1: Your Trip */}
-        <div className="space-y-3" data-purpose="your-trip-summary">
-          <h2 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
-            {t("tripConfirm.tripSummary.yourTrip")}
-          </h2>
-
-          {/* Trip Name Row */}
-          <div className="flex items-baseline justify-between text-sm">
-            <div>
-              <span className="text-xs font-medium text-slate-500 dark:text-slate-400 block">
-                {t("tripConfirm.tripSummary.nameLabel")}
-              </span>
-              {isEditingName ? (
-                <input
-                  type="text"
-                  value={tripName}
-                  onChange={(e) => setTripName(e.target.value)}
-                  onBlur={() => setIsEditingName(false)}
-                  autoFocus
-                  className="text-xs text-slate-800 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded px-2 py-0.5 mt-0.5 outline-none"
-                />
-              ) : (
-                <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">{tripName}</span>
-              )}
-            </div>
-            <button
-              className="text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-[#002d54] dark:hover:text-sky-400 underline underline-offset-2 transition-colors cursor-pointer"
-              type="button"
-              onClick={() => setIsEditingName(!isEditingName)}
-            >
-              {t("tripConfirm.tripSummary.edit")}
-            </button>
+        {/* Section Heading & Subtitle */}
+        <div className="mb-6">
+          <div className="inline-flex items-center gap-2 mb-2">
+            <span className="text-xs font-extrabold uppercase tracking-widest text-[#00a3e0] bg-[#e6f6fd] dark:bg-sky-950/60 px-3 py-1 rounded-full">
+              REVIEW & CONFIRM
+            </span>
           </div>
-
-          {/* Dates Row */}
-          <div className="flex items-baseline justify-between text-sm">
-            <div>
-              <span className="text-xs font-medium text-slate-500 dark:text-slate-400 block">
-                {t("tripConfirm.tripSummary.datesLabel")}
-              </span>
-              {isEditingDates ? (
-                <input
-                  type="text"
-                  value={tripDates}
-                  onChange={(e) => setTripDates(e.target.value)}
-                  onBlur={() => setIsEditingDates(false)}
-                  autoFocus
-                  className="text-xs text-slate-800 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded px-2 py-0.5 mt-0.5 outline-none"
-                />
-              ) : (
-                <span className="text-xs font-medium text-slate-700 dark:text-slate-300">{tripDates}</span>
-              )}
-            </div>
-            <button
-              className="text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-[#002d54] dark:hover:text-sky-400 underline underline-offset-2 transition-colors cursor-pointer"
-              type="button"
-              onClick={() => setIsEditingDates(!isEditingDates)}
-            >
-              {t("tripConfirm.tripSummary.edit")}
-            </button>
-          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#002d5b] dark:text-sky-300 tracking-tight">
+            {t("tripConfirm.tripSummary.title", "Thông tin lịch trình")}
+          </h1>
+          <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 mt-1">
+            Kiểm tra và xác nhận lại các chi tiết của chuyến đi trước khi lưu hành trình.
+          </p>
         </div>
 
-        {/* Sub-block 2: Địa điểm */}
-        <div className="space-y-3 pt-2" data-purpose="location-summary">
-          <h2 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
-            {t("tripConfirm.tripSummary.locationTitle")}
-          </h2>
-
-          {/* Location Row */}
-          <div className="flex items-baseline justify-between text-sm">
-            <div>
-              <span className="text-xs font-medium text-slate-500 dark:text-slate-400 block">
-                {t("tripConfirm.tripSummary.locationLabel")}
-              </span>
-              {isEditingLocation ? (
-                <input
-                  type="text"
-                  value={destination}
-                  onChange={(e) => setDestination(e.target.value)}
-                  onBlur={() => setIsEditingLocation(false)}
-                  autoFocus
-                  className="text-xs text-slate-800 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded px-2 py-0.5 mt-0.5 outline-none"
-                />
-              ) : (
-                <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">{destination}</span>
-              )}
-            </div>
-            <button
-              className="text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-[#002d54] dark:hover:text-sky-400 underline underline-offset-2 transition-colors cursor-pointer"
-              type="button"
-              onClick={() => setIsEditingLocation(!isEditingLocation)}
-            >
-              {t("tripConfirm.tripSummary.edit")}
-            </button>
-          </div>
-
-          {/* Passenger Count Row */}
-          <div className="flex items-baseline justify-between text-sm">
-            <div>
-              <span className="text-xs font-medium text-slate-500 dark:text-slate-400 block">
-                {t("tripConfirm.tripSummary.passengerLabel")}
-              </span>
-              {isEditingPassengers ? (
-                <input
-                  type="text"
-                  value={passengerCount}
-                  onChange={(e) => setPassengerCount(e.target.value)}
-                  onBlur={() => setIsEditingPassengers(false)}
-                  autoFocus
-                  className="text-xs text-slate-800 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded px-2 py-0.5 mt-0.5 outline-none"
-                />
-              ) : (
-                <span className="text-xs font-medium text-slate-700 dark:text-slate-300">{passengerCount}</span>
-              )}
-            </div>
-            <button
-              className="text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-[#002d54] dark:hover:text-sky-400 underline underline-offset-2 transition-colors cursor-pointer"
-              type="button"
-              onClick={() => setIsEditingPassengers(!isEditingPassengers)}
-            >
-              {t("tripConfirm.tripSummary.edit")}
-            </button>
-          </div>
-        </div>
-
-        {/* Selected Place Cards List */}
-        <div className="space-y-4 pt-2">
-          {placesList.map((place, idx) => (
-            <div
-              key={idx}
-              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row gap-5 shadow-xs relative overflow-hidden"
-            >
-              {/* Place Thumbnail Container */}
-              <div className="w-full sm:w-56 h-44 sm:h-36 rounded-xl overflow-hidden flex-shrink-0 relative">
-                <img alt={place.name} className="w-full h-full object-cover" src={place.image} />
-
-                {/* Badge: Ưu đãi */}
-                <span className="absolute top-2.5 left-2.5 bg-sky-400/90 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-xs">
-                  {t("tripConfirm.placeItem.discountBadge")}
+        {/* BEGIN: Trip Details Summary Card */}
+        <section className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-xs border border-slate-200 dark:border-slate-800 space-y-6 mb-6">
+          {/* Card Section 1: CHUYẾN ĐI CỦA BẠN */}
+          <div>
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3 mb-4">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#00a3e0]"></span>
+                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                  {t("tripConfirm.tripSummary.yourTrip", "CHUYẾN ĐI CỦA BẠN")}
+                </h2>
+              </div>
+              {durationBadge && (
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-[#e6f6fd] dark:bg-sky-950/60 text-[#00a3e0]">
+                  {durationBadge}
                 </span>
+              )}
+            </div>
 
-                {/* Favorite Heart Button */}
-                <button
-                  type="button"
-                  className="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-white/90 dark:bg-slate-900/90 text-slate-600 dark:text-slate-300 hover:text-red-500 flex items-center justify-center shadow-xs transition-colors cursor-pointer"
-                >
-                  <svg className="w-4 h-4 fill-none stroke-current stroke-2" viewBox="0 0 24 24">
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                  </svg>
-                </button>
-
-                {/* Carousel Pagination Dots */}
-                <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-white opacity-100" />
-                  <span className="w-1.5 h-1.5 rounded-full bg-white opacity-60" />
-                  <span className="w-1.5 h-1.5 rounded-full bg-white opacity-60" />
-                  <span className="w-1.5 h-1.5 rounded-full bg-white opacity-60" />
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Tên chuyến đi */}
+              <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+                <span className="text-xs font-medium text-slate-400 block">
+                  {t("tripConfirm.tripSummary.nameLabel", "Tên chuyến đi")}
+                </span>
+                <span className="text-sm sm:text-base font-bold text-slate-900 dark:text-white mt-1 block">
+                  {tripName}
+                </span>
               </div>
 
-              {/* Details Column */}
-              <div className="flex-grow min-w-0 flex flex-col justify-between space-y-2">
-                <div>
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">
-                        {place.name}
-                      </h3>
+              {/* Ngày đi - về */}
+              <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+                <span className="text-xs font-medium text-slate-400 block">
+                  {t("tripConfirm.tripSummary.datesLabel", "Ngày đi - về")}
+                </span>
+                <span className="text-sm sm:text-base font-bold text-slate-900 dark:text-white mt-1 block">
+                  {tripDates}
+                </span>
+              </div>
+            </div>
+          </div>
 
-                      {/* Star Rating */}
-                      <div className="flex items-center text-amber-400 text-xs flex-shrink-0">
-                        {Array.from({ length: place.rating || 5 }).map((_, i) => (
-                          <span key={i}>★</span>
-                        ))}
-                      </div>
-                    </div>
+          {/* Card Section 2: ĐỊA ĐIỂM & THÀNH VIÊN */}
+          <div>
+            <div className="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3 mb-4">
+              <span className="w-2 h-2 rounded-full bg-[#00a3e0]"></span>
+              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                {t("tripConfirm.tripSummary.locationTitle", "ĐỊA ĐIỂM")}
+              </h2>
+            </div>
 
-                    {/* Rating Badge & Reviews */}
-                    <div className="flex items-center space-x-1.5 text-xs flex-shrink-0">
-                      <div className="text-right">
-                        <span className="text-[11px] font-bold text-sky-600 dark:text-sky-400 block">
-                          {t("tripConfirm.placeItem.excellent")}
-                        </span>
-                        <span className="text-[10px] text-slate-400 block">
-                          {place.reviewCount} {t("tripConfirm.placeItem.reviews")}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Nơi đến */}
+              <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+                <span className="text-xs font-medium text-slate-400 block">
+                  {t("tripConfirm.tripSummary.locationLabel", "Nơi đến")}
+                </span>
+                <span className="text-sm sm:text-base font-bold text-slate-900 dark:text-white mt-1 block">
+                  {destination}
+                </span>
+              </div>
+
+              {/* Số lượng người */}
+              <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800">
+                <span className="text-xs font-medium text-slate-400 block">
+                  {t("tripConfirm.tripSummary.passengerLabel", "Số lượng người tham gia")}
+                </span>
+                <span className="text-sm sm:text-base font-bold text-slate-900 dark:text-white mt-1 block">
+                  {passengerCount} thành viên
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
+        {/* END: Trip Details Summary Card */}
+
+        {/* Selected Place Cards Section */}
+        <section className="space-y-4 mb-8">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-[#00a3e0]"></span>
+              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                DANH SÁCH ĐỊA ĐIỂM ĐÃ LÊN LỊCH ({placesList.length})
+              </h2>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            {placesList.map((place, idx) => (
+              <div
+                key={idx}
+                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row gap-5 shadow-xs hover:border-sky-200 dark:hover:border-slate-700 transition-all items-start sm:items-center"
+              >
+                {/* Place Thumbnail */}
+                <div className="w-full sm:w-52 h-44 sm:h-36 rounded-xl overflow-hidden flex-shrink-0 relative bg-slate-100 dark:bg-slate-800">
+                  <img
+                    alt={place.name}
+                    className="w-full h-full object-cover"
+                    src={place.image || "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=400&q=80"}
+                    loading="lazy"
+                  />
+                  <span className="absolute top-2.5 left-2.5 bg-[#00a3e0] text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full shadow-xs">
+                    {t("tripConfirm.placeItem.discountBadge", "Ưu đãi")}
+                  </span>
+                </div>
+
+                {/* Place Info */}
+                <div className="flex-grow min-w-0 flex flex-col justify-between space-y-2.5 w-full">
+                  <div>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white truncate">
+                            {place.name}
+                          </h3>
+                          {/* Star Rating */}
+                          <div className="flex items-center text-amber-400 text-xs">
+                            {Array.from({ length: place.rating || 5 }).map((_, i) => (
+                              <span key={i}>★</span>
+                            ))}
+                          </div>
+                        </div>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-1">
+                          <span>📍</span>
+                          <span className="truncate">{place.address}</span>
+                        </p>
+                      </div>
+
+                      {/* Score Badge */}
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <div className="text-right hidden sm:block">
+                          <span className="text-[11px] font-bold text-[#00a3e0] block">
+                            {t("tripConfirm.placeItem.excellent", "Xuất sắc")}
+                          </span>
+                          <span className="text-[10px] text-slate-400 block">
+                            {place.reviewCount || "1,000+"} đánh giá
+                          </span>
+                        </div>
+                        <span className="inline-flex items-center px-2 py-1 rounded-lg text-xs font-extrabold bg-[#e6f6fd] dark:bg-sky-950 text-[#00a3e0] border border-sky-200 dark:border-sky-800">
+                          {place.score || "4.8"}
                         </span>
                       </div>
-                      <span className="inline-flex items-center px-1.5 py-1 rounded text-xs font-bold bg-sky-100 text-sky-700 border border-sky-200 dark:bg-sky-950 dark:text-sky-300 dark:border-sky-800">
-                        {place.score || "5.0"}
-                      </span>
                     </div>
                   </div>
 
-                  {/* Address line */}
-                  <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-1">
-                    <svg className="w-3.5 h-3.5 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    <span>{place.address}</span>
-                  </p>
-                </div>
+                  {place.specs && (
+                    <p className="text-xs text-slate-600 dark:text-slate-300 font-medium">
+                      {place.specs}
+                    </p>
+                  )}
 
-                {/* Specs Line */}
-                <p className="text-xs text-slate-600 dark:text-slate-300 font-medium">
-                  {place.specs}
-                </p>
-
-                {/* Tags */}
-                <div className="flex flex-wrap gap-1.5 pt-1">
-                  {place.tags?.map((tag, tIdx) => (
-                    <span
-                      key={tIdx}
-                      className="px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700"
-                    >
-                      {tag}
-                    </span>
-                  ))}
+                  {/* Tags */}
+                  {place.tags && place.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      {place.tags.map((tag, tIdx) => (
+                        <span
+                          key={tIdx}
+                          className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#e6f6fd] dark:bg-slate-800 text-[#00a3e0] dark:text-sky-300 border border-sky-100 dark:border-slate-700"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </section>
 
-        {/* Action Button: Confirm */}
-        <div className="w-full flex justify-center pt-6 pb-8">
+        {/* Action Buttons: Back & Complete */}
+        <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-4 pt-4 pb-12">
+          <button
+            type="button"
+            onClick={() =>
+              navigate("/trip/create", {
+                state: {
+                  ...locationState,
+                  tripName,
+                  tripDates,
+                  destination,
+                  passengerCount,
+                  placesList
+                }
+              })
+            }
+            className="w-full sm:w-auto px-6 py-3.5 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 text-xs sm:text-sm font-bold hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer flex items-center justify-center gap-1.5"
+          >
+            ← Quay lại bước 2
+          </button>
+
           <button
             type="button"
             onClick={handleConfirmClick}
-            className="bg-[#002d54] hover:bg-[#001f3b] dark:bg-sky-500 dark:hover:bg-sky-600 dark:text-slate-950 text-white text-xs font-semibold py-3 px-8 rounded-xl shadow-xs transition-all flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#002d54] cursor-pointer min-w-[140px]"
+            className="w-full sm:w-auto bg-[#00a3e0] hover:bg-[#008ec4] text-white text-xs sm:text-sm font-bold py-3.5 px-10 rounded-xl shadow-lg shadow-sky-100 dark:shadow-none transition-all flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
           >
-            {t("tripConfirm.actions.confirm")}
+            <span>{t("tripConfirm.actions.confirm", "Xác nhận & Hoàn tất")}</span>
+            <span>→</span>
           </button>
         </div>
       </main>
-      {/* END: MainContent */}
 
       {/* Loading Modal Overlay */}
       {loadingStage && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in duration-200">
           <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 max-w-xs w-full text-center shadow-2xl border border-slate-200 dark:border-slate-800 animate-in zoom-in-95 duration-200">
-            {/* Blue animated spinner */}
             <div className="relative w-12 h-12 mx-auto mb-5">
-              <div className="w-12 h-12 rounded-full border-4 border-slate-100 dark:border-slate-800 border-t-[#002d54] dark:border-t-sky-400 animate-spin" />
+              <div className="w-12 h-12 rounded-full border-4 border-slate-100 dark:border-slate-800 border-t-[#00a3e0] animate-spin" />
             </div>
 
             {loadingStage === "processing" ? (
               <>
                 <h3 className="text-base font-bold text-slate-900 dark:text-white">
-                  {t("tripConfirm.modals.processingTitle")}
+                  {t("tripConfirm.modals.processingTitle", "Đang xử lý lịch trình")}
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 font-medium">
-                  {t("tripConfirm.modals.processingSubtitle")}
+                  {t("tripConfirm.modals.processingSubtitle", "Vui lòng đợi giây lát trong khi WAYVEE đồng bộ hành trình...")}
                 </p>
               </>
             ) : (
               <>
                 <h3 className="text-base font-bold text-slate-900 dark:text-white">
-                  {t("tripConfirm.modals.confirmingTitle")}
+                  {t("tripConfirm.modals.confirmingTitle", "Hoàn tất chuyến đi")}
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 font-medium">
-                  {t("tripConfirm.modals.confirmingSubtitle")}
+                  {t("tripConfirm.modals.confirmingSubtitle", "Đang lưu lịch trình vào bộ sưu tập của bạn...")}
                 </p>
               </>
             )}
           </div>
         </div>
       )}
-
     </div>
   );
 }
