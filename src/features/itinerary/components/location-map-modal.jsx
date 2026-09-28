@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { api } from "~/shared/lib/api";
 
 const LEAFLET_OVERRIDE_STYLES = `
   .pb-map-wrapper {
@@ -19,11 +20,6 @@ export function LocationMapModal({ initialQuery = "", onConfirm, onClose }) {
   const mapInstanceRef = useRef(null);
   const markerRef = useRef(null);
   const debounceTimerRef = useRef(null);
-
-  const API_BASE_URL =
-    import.meta.env.VITE_API_URL ||
-    import.meta.env.VITE_API_BASE_URL ||
-    "http://localhost:8080/wayvee";
 
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [searchResults, setSearchResults] = useState([]);
@@ -254,15 +250,7 @@ export function LocationMapModal({ initialQuery = "", onConfirm, onClose }) {
         lng: String(lng)
       });
 
-      const response = await fetch(
-        `${API_BASE_URL}/api/location/reverse?${params.toString()}`
-      );
-
-      if (!response.ok) {
-        throw new Error(`Reverse geocode HTTP ${response.status}`);
-      }
-
-      const result = await response.json();
+      const result = await api.get(`/api/location/reverse?${params.toString()}`);
       const data = result.data || result;
 
       console.log("Reverse geocode response:", data);

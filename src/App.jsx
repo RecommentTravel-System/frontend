@@ -14,6 +14,7 @@ import Favorites from './favorites/Favorites.jsx';
 import Reviews from './reviews/Reviews.jsx';
 import Settings from './settings/Settings.jsx';
 import Support from './support/Support.jsx';
+import TripRoutes from './trips/TripRoutes.jsx';
 import SearchLoading from './search/SearchLoading.jsx';
 const SearchPage = lazy(() => import('./search/SearchPage.jsx'));
 import LocationDetails from './location/LocationDetails.jsx';
@@ -74,6 +75,12 @@ function AppRoutes() {
     document.documentElement.dataset.motion = preferences.motion ? 'on' : 'off';
   }, [preferences.motion]);
   useEffect(() => {
+    if (location.pathname.startsWith('/saved-trips')) {
+      document.title = 'Lịch trình đã lưu | Wayvee';
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      container.current?.focus({ preventScroll: true });
+      return;
+    }
     const titles = { '/create-tour': 'Tạo tour', '/search': 'Tìm kiếm địa điểm', '/': 'Trang chủ', '/profile': 'Thông tin cá nhân', '/login': 'Đăng nhập', '/register': 'Đăng ký', '/payment': 'Premium', '/reviews': 'Bài đánh giá', '/settings': 'Cài đặt', '/support': 'Hỗ trợ & Phản hồi' };
     document.title = `${titles[location.pathname] || (location.pathname.startsWith('/locations/') ? 'Chi tiết địa điểm' : location.pathname.startsWith('/itineraries') ? 'Lịch trình' : location.pathname.startsWith('/favorites') ? 'Địa điểm yêu thích' : 'Không tìm thấy trang')} | Wayvee`;
     const target = location.hash && document.getElementById(location.hash.slice(1));
@@ -89,6 +96,10 @@ function AppRoutes() {
       <Route path="/register" element={<AccountPage register />} />
       <Route path="/create-tour" element={<Navigate to="/trip/info" replace />} />
       <Route element={<RequireAuth />}>
+        <Route path="/saved-trips" element={<TripRoutes mode="list" />} />
+        <Route path="/saved-trips/new" element={<TripRoutes mode="new" />} />
+        <Route path="/saved-trips/:tripId" element={<TripRoutes mode="detail" />} />
+        <Route path="/saved-trips/:tripId/edit" element={<TripRoutes mode="edit" />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/itineraries" element={<Itineraries />} />
         <Route path="/itineraries/:tripId" element={<Itineraries />} />

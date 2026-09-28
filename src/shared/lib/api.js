@@ -1,6 +1,9 @@
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/wayvee";
+const BASE_URL = import.meta.env.VITE_API_URL?.trim().replace(/\/+$/, "");
 
 export async function request(endpoint, options = {}) {
+  if (!BASE_URL) {
+    throw new Error("Chưa cấu hình VITE_API_URL. Vui lòng thêm URL backend vào môi trường build và triển khai lại frontend.");
+  }
   const url = `${BASE_URL}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
 
   const token = localStorage.getItem("wayvee_token");

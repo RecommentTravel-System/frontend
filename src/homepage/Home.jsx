@@ -36,11 +36,13 @@ function Star() {
   );
 }
 
-function Field({ label, placeholder }) {
+function Field({ label, placeholder, ...inputProps }) {
   return (
     <div className="px-4 py-3 bg-white dark:bg-slate-900">
       <p className="text-[11px] font-semibold text-gray-500 dark:text-slate-400 mb-1">{label}</p>
       <input
+        aria-label={label}
+        {...inputProps}
         placeholder={placeholder}
         className="w-full text-sm outline-none placeholder-gray-400 dark:placeholder-slate-500 bg-transparent text-slate-900 dark:text-slate-100"
       />
@@ -54,6 +56,8 @@ function Field({ label, placeholder }) {
 function Hero() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const [values, setValues] = useState({ destination: '', startDate: '', endDate: '', style: '' });
+  const fieldProps = name => ({ value: values[name], onChange: event => setValues({ ...values, [name]: event.target.value }) });
 
   return (
     <section className="home-hero-wrap max-w-6xl mx-auto px-6">
@@ -70,18 +74,22 @@ function Hero() {
           <div className="home-planner bg-white dark:bg-slate-900 rounded-2xl shadow-xl max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-5 divide-y md:divide-y-0 md:divide-x divide-gray-100 dark:divide-slate-800 overflow-hidden text-left border border-slate-100 dark:border-slate-800">
             <Field
               label={t("hero.destination", "Địa điểm")}
+              {...fieldProps('destination')}
               placeholder={t("hero.destinationPlaceholder", "Bạn đi đâu thế?")}
             />
             <Field
               label={t("hero.departDate", "Ngày đi")}
+              type="date" {...fieldProps('startDate')}
               placeholder={t("hero.departPlaceholder", "DD/MM")}
             />
             <Field
               label={t("hero.returnDate", "Ngày về")}
+              type="date" min={values.startDate} {...fieldProps('endDate')}
               placeholder={t("hero.returnPlaceholder", "DD/MM")}
             />
             <Field
               label={t("hero.tripType", "Kiểu chuyến đi mong muốn")}
+              {...fieldProps('style')}
               placeholder={t("hero.tripTypePlaceholder", "Bạn phù hợp với chuyến đi nào")}
             />
             <button
@@ -92,6 +100,9 @@ function Hero() {
               {t("hero.createButton", "Tạo lịch trình ngay")}
             </button>
           </div>
+          <button type="button" className="relative z-10 mt-3 text-white underline font-semibold" onClick={() => navigate(`/saved-trips/new?${new URLSearchParams({ ...values, title: values.destination.trim() ? `Chuyến đi ${values.destination.trim()}` : '' })}`)}>
+            Tự tạo và lưu lịch trình chi tiết
+          </button>
         </div>
       </div>
     </section>
