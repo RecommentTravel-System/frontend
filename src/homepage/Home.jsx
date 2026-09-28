@@ -57,6 +57,7 @@ function Hero() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [values, setValues] = useState({ destination: '', startDate: '', endDate: '', style: '' });
+  const [placeQuery, setPlaceQuery] = useState('');
   const fieldProps = name => ({ value: values[name], onChange: event => setValues({ ...values, [name]: event.target.value }) });
 
   return (
@@ -100,9 +101,17 @@ function Hero() {
               {t("hero.createButton", "Tạo lịch trình ngay")}
             </button>
           </div>
-          <button type="button" className="relative z-10 mt-3 text-white underline font-semibold" onClick={() => navigate(`/saved-trips/new?${new URLSearchParams({ ...values, title: values.destination.trim() ? `Chuyến đi ${values.destination.trim()}` : '' })}`)}>
-            Tự tạo và lưu lịch trình chi tiết
-          </button>
+          <form className="home-place-search" role="search" aria-label={t('hero.browsePlaces')} onSubmit={event => {
+            event.preventDefault();
+            const params = new URLSearchParams({ browse: '1' });
+            if (placeQuery.trim()) params.set('q', placeQuery.trim());
+            if (values.destination.trim()) params.set('destination', values.destination.trim());
+            navigate(`/places?${params}`);
+          }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" /><path d="m16 16 5 5" /></svg>
+            <input type="search" value={placeQuery} onChange={event => setPlaceQuery(event.target.value)} aria-label={t('hero.placeSearchPlaceholder')} placeholder={t('hero.placeSearchPlaceholder')} />
+            <button type="submit">{t('hero.browsePlaces')}</button>
+          </form>
         </div>
       </div>
     </section>

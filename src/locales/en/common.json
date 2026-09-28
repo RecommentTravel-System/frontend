@@ -31,7 +31,9 @@
     "guestsLabel": "Number of guests",
     "tripType": "Trip style",
     "tripTypePlaceholder": "Your desired trip style",
-    "createButton": "Create itinerary now"
+    "createButton": "Create itinerary now",
+    "browsePlaces": "Find places",
+    "placeSearchPlaceholder": "Search restaurants, cafés, attractions…"
   },
   "why": {
     "sectionTitle": "Why use Wayvee?",
