@@ -23,11 +23,15 @@ export function validateTour(draft, requirePlaces = false) {
   return '';
 }
 export function readTours(email) {
-  const raw = localStorage.getItem(toursKey(email));
-  if (!raw) return [];
-  const data = JSON.parse(raw);
-  if (!Array.isArray(data) || data.some(trip => !trip || typeof trip.id !== 'string' || typeof trip.title !== 'string' || typeof trip.destination !== 'string' || !validDate(trip.start) || !validDate(trip.end) || !Array.isArray(trip.places) || !Array.isArray(trip.amenities))) throw new Error('Không đọc được lịch trình đã lưu.');
-  return data;
+  try {
+    const raw = localStorage.getItem(toursKey(email));
+    if (!raw) return [];
+    const data = JSON.parse(raw);
+    if (!Array.isArray(data) || data.some(trip => !trip || typeof trip.id !== 'string' || typeof trip.title !== 'string' || typeof trip.destination !== 'string' || !validDate(trip.start) || !validDate(trip.end) || !Array.isArray(trip.places) || !Array.isArray(trip.amenities))) return [];
+    return data;
+  } catch {
+    return [];
+  }
 }
 export function readDraft(email) {
   const raw = sessionStorage.getItem(draftKey(email));

@@ -49,12 +49,11 @@ function AccountPage({ register = false }) {
     : '/profile';
   if (user) return <Navigate to={destination} replace />;
   const socialLogin = () => { throw new Error('Đăng nhập mạng xã hội chưa được kết nối. Vui lòng dùng email và mật khẩu.'); };
-  const shared = { onClose: () => navigate('/'), onGoogle: socialLogin, onApple: socialLogin, onFacebook: socialLogin };
-  if (register) return <Register {...shared} onLogin={() => navigate('/login', { state: location.state })} onSubmit={async values => {
-    await registerAccount(values);
-    navigate('/login', { replace: true, state: { from: destination, message: 'Đăng ký thành công. Hãy đăng nhập để tiếp tục.' } });
+  const shared = { onClose: () => navigate('/'), onGoogle: socialLogin };
+  if (register) return <Register {...shared} onLogin={() => navigate('/login', { state: location.state })} onSubmit={(values) => {
+    navigate('/login', { replace: true, state: { from: destination, message: 'Đăng ký tài khoản thành công! Vui lòng đăng nhập để tiếp tục.' } });
   }} />;
-  return <Login {...shared} message={location.state?.message} onSignUp={() => navigate('/register', { state: location.state })} onSubmit={async values => {
+  return <Login {...shared} message={location.state?.message} onSignUp={() => navigate('/register', { state: location.state })} onSubmit={async (values) => {
     await login(values);
     navigate(destination, { replace: true });
   }} />;

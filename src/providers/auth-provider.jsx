@@ -12,10 +12,21 @@ const AuthContext = createContext({
 });
 
 export function AuthProvider({ children }) {
-  const [token, setToken] = useState(() => localStorage.getItem("wayvee_token"));
+  const [token, setToken] = useState(() => {
+    try {
+      return localStorage.getItem("wayvee_token") || null;
+    } catch {
+      return null;
+    }
+  });
   const [user, setUser] = useState(() => {
-    const savedUser = localStorage.getItem("wayvee_user");
-    return savedUser ? JSON.parse(savedUser) : null;
+    try {
+      const savedUser = localStorage.getItem("wayvee_user");
+      if (!savedUser || savedUser === "undefined" || savedUser === "null") return null;
+      return JSON.parse(savedUser);
+    } catch {
+      return null;
+    }
   });
 
   useEffect(() => {

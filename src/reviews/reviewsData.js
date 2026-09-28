@@ -12,10 +12,14 @@ export const sampleReviews = [
 ];
 export const reviewsKey = email => `wayvee-reviews:${email}`;
 export function readReviews(email) {
-  const raw = localStorage.getItem(reviewsKey(email));
-  if (raw === null) return structuredClone(sampleReviews);
-  const data = JSON.parse(raw);
-  if (!Array.isArray(data) || data.some(item => !item || typeof item.id !== 'string' || typeof item.hotel !== 'string' || typeof item.positive !== 'string' || typeof item.negative !== 'string' || typeof item.date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(item.date) || Number.isNaN(Date.parse(item.date)) || !Object.hasOwn(reviewStatuses, item.status) || !Number.isFinite(item.score) || item.score < 1 || item.score > 10)) throw new Error('Không thể đọc bài đánh giá.');
-  return data;
+  try {
+    const raw = localStorage.getItem(reviewsKey(email));
+    if (raw === null) return structuredClone(sampleReviews);
+    const data = JSON.parse(raw);
+    if (!Array.isArray(data) || data.some(item => !item || typeof item.id !== 'string' || typeof item.hotel !== 'string' || typeof item.positive !== 'string' || typeof item.negative !== 'string' || typeof item.date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(item.date) || Number.isNaN(Date.parse(item.date)) || !Object.hasOwn(reviewStatuses, item.status) || !Number.isFinite(item.score) || item.score < 1 || item.score > 10)) return structuredClone(sampleReviews);
+    return data;
+  } catch {
+    return structuredClone(sampleReviews);
+  }
 }
 export const scoreLabel = score => score >= 9 ? 'Wonderful' : score >= 8 ? 'Very good' : score >= 7 ? 'Good' : score >= 5 ? 'Fair' : 'Poor';

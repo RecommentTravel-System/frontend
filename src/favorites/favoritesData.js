@@ -20,9 +20,13 @@ export const initialCollections = [
 ];
 export const favoritesKey = email => `wayvee-favorites:${email}`;
 export function readFavorites(email) {
-  const raw = localStorage.getItem(favoritesKey(email));
-  if (raw === null) return structuredClone(initialCollections);
-  const data = JSON.parse(raw);
-  if (!Array.isArray(data) || data.some(item => typeof item?.id !== 'string' || typeof item.name !== 'string' || !Array.isArray(item.placeIds))) throw new Error('Không đọc được bộ sưu tập đã lưu.');
-  return data.map(item => ({ ...item, placeIds: [...new Set(item.placeIds.filter(id => places.some(place => place.id === id)))] }));
+  try {
+    const raw = localStorage.getItem(favoritesKey(email));
+    if (raw === null) return structuredClone(initialCollections);
+    const data = JSON.parse(raw);
+    if (!Array.isArray(data) || data.some(item => typeof item?.id !== 'string' || typeof item.name !== 'string' || !Array.isArray(item.placeIds))) return structuredClone(initialCollections);
+    return data.map(item => ({ ...item, placeIds: [...new Set(item.placeIds.filter(id => places.some(place => place.id === id)))] }));
+  } catch {
+    return structuredClone(initialCollections);
+  }
 }
