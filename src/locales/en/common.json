@@ -226,9 +226,9 @@
       "title": "What would you like to do next?",
       "subtitle": "Choose the planning method that fits your travel habits",
       "option1Badge": "RECOMMENDED",
-      "option1Title": "Auto AI Itinerary Planner",
+      "option1Title": "Auto Itinerary Planner",
       "option1Desc": "Smart algorithm distributes {{count}} selected places across days, optimizing routes and visiting hours.",
-      "option1Link": "Open AI Itinerary Builder →",
+      "option1Link": "Open Itinerary Builder →",
       "option2Title": "Save places to waitlist only",
       "option2Desc": "Save places of interest to collection '{{tripName}}' to organize manually whenever you are ready.",
       "option2Link": "Save to waitlist →"
@@ -331,7 +331,7 @@
   "places": {
     "header": {
       "backToTrip": "Back to trip",
-      "title": "Explore places in \"{{destination}}\"",
+      "title": "Discover Places",
       "countFound": "places found matching your search",
       "searchPlaceholder": "Search by name, cuisine, vibe..."
     },
@@ -344,7 +344,13 @@
       "price": "Price Range",
       "preferences": "Preferences & Tags",
       "noPreferences": "No specific filters for this category",
-      "beta": "Beta"
+      "beta": "Beta",
+      "applyButton": "Apply Filters",
+      "searching": "Searching..."
+    },
+    "initial": {
+      "title": "Please select filter criteria & Confirm",
+      "desc": "Choose a place category (Restaurants, Cafes, Entertainment...) and adjust the distance on the left panel, then click \"Apply Filters\""
     },
     "categories": {
       "all": "All",
@@ -355,6 +361,7 @@
       "shopping": "Shopping",
       "fastFood": "Fast Food",
       "bar": "Bar / Pub",
+      "hotel": "Hotels & Stays",
       "other": "Other"
     },
     "preferences": {

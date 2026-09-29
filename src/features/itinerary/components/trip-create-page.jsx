@@ -687,7 +687,7 @@ export function TripCreatePage() {
                 </div>
                 <div className="space-y-1.5 flex-1 min-w-0">
                   <h3 className="text-base font-bold text-[#002d5b] group-hover:text-[#00a3e0] transition-colors flex items-center justify-between">
-                    <span>{t("tripCreate.actionSelector.option1Title", "Tạo lịch trình tự động bằng AI")}</span>
+                    <span>{t("tripCreate.actionSelector.option1Title", "Tạo lịch trình tự động")}</span>
                     {selectedAction === "itinerary" && (
                       <span className="text-[#00a3e0] text-sm">✓</span>
                     )}

@@ -11,6 +11,7 @@ import {
   searchNearbyPlaces,
   resolveCoordinates
 } from "../services/places-api";
+import { getAllCategoriesApi } from "~/features/categories/services/category-api";
 
 export function PlacesPage() {
   const { t } = useTranslation();
@@ -46,7 +47,6 @@ export function PlacesPage() {
     toBackendPayload
   } = usePlacesFilter({ keyword: searchParams.get('q') || '' });
 
-  // Data fetching state
   const [places, setPlaces] = useState([]);
   const [totalElements, setTotalElements] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
@@ -54,8 +54,33 @@ export function PlacesPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(() => searchParams.get('browse') === '1' || Boolean(searchParams.get('q')));
-  const [showMapModal, setShowMapModal] = useState(false);
   const [authModal, setAuthModal] = useState(null);
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    let isMounted = true;
+    getAllCategoriesApi()
+      .then((res) => {
+        if (!isMounted) return;
+        const list = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : [];
+        if (list.length > 0) {
+          setCategories(
+            list.map((c) => ({
+              categoryId: c.code || String(c.categoryId),
+              code: c.code || String(c.categoryId),
+              name: c.name || c.nameVi || c.code,
+              defaultLabel: c.name || c.code
+            }))
+          );
+        }
+      })
+      .catch((err) => {
+        console.warn("Could not load categories from backend:", err);
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     const onPromptLogin = () => setAuthModal("login");
@@ -73,6 +98,17 @@ export function PlacesPage() {
     (tripState.placesList || []).forEach((p) => map.set(p.osmId || p.id, p));
     return map;
   });
+
+  // Keep state in sync if navigating back from place detail
+  useEffect(() => {
+    if (location.state?.placesList) {
+      const list = location.state.placesList;
+      setSelectedPlaceIds(new Set(list.map((p) => p.osmId || p.id)));
+      const nextMap = new Map();
+      list.forEach((p) => nextMap.set(p.osmId || p.id, p));
+      setAddedPlacesMap(nextMap);
+    }
+  }, [location.state?.placesList]);
 
   const handleApplyFilters = () => {
     applyFilters();
@@ -201,6 +237,18 @@ export function PlacesPage() {
     });
   };
 
+  // Back to Step 2 (Trip creation)
+  const handleBackToTrip = () => {
+    const updatedList = Array.from(addedPlacesMap.values());
+    navigate(tripState.targetDayNum ? "/trip/confirm" : "/trip/create", {
+      state: {
+        ...tripState,
+        placesList: updatedList,
+        targetDayNum: tripState.targetDayNum
+      }
+    });
+  };
+
   return (
     <div className="bg-[#f8fafc] dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans min-h-screen flex flex-col antialiased">
       {/* App Header */}
@@ -214,17 +262,20 @@ export function PlacesPage() {
         {/* Top Destination Header & Controls Bar */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-5">
           <div>
-            <div className="flex items-center space-x-2 text-xs font-semibold text-sky-600 dark:text-sky-400 mb-1">
+            <div className="mb-2">
               <button
                 type="button"
-                onClick={() => navigate(-1)}
-                className="hover:underline flex items-center gap-1 cursor-pointer"
+                onClick={handleBackToTrip}
+                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 shadow-2xs hover:shadow-xs transition-all cursor-pointer"
               >
-                ← {t("places.header.backToTrip") || "Quay lại chuyến đi"}
+                <svg className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                <span>{t("places.header.backToTrip") || "Quay lại chuyến đi"}</span>
               </button>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0b2545] dark:text-white tracking-tight">
-              {t("places.header.title", { destination }) || `Khám phá địa điểm "${destination}"`}
+              {t("places.header.title") || "Khám phá địa điểm"}
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
               {totalElements} {t("places.header.countFound") || "địa điểm được tìm thấy phù hợp"}
@@ -295,27 +346,13 @@ export function PlacesPage() {
           </div>
         </div>
 
-        {/* Layout: Sidebar (Filter & Map) + Main Places Listing */}
+        {/* Layout: Sidebar (Filter) + Main Places Listing */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left Sidebar (4 columns) */}
           <aside className="lg:col-span-4 space-y-5">
-            {/* Map Preview Widget (Matching Screenshots) */}
-            <div className="relative rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-xs h-36 bg-slate-200 dark:bg-slate-800 flex items-center justify-center">
-              <div className="absolute inset-0 bg-slate-100 dark:bg-slate-800" />
-              <button
-                type="button"
-                onClick={() => setShowMapModal(true)}
-                className="absolute px-4 py-2 bg-white/90 dark:bg-slate-900/90 text-[#0b2545] dark:text-sky-400 rounded-xl text-xs font-bold shadow-md hover:bg-white dark:hover:bg-slate-900 transition-all flex items-center gap-1.5 cursor-pointer backdrop-blur-xs"
-              >
-                <svg className="w-4 h-4 text-sky-600 dark:text-sky-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                </svg>
-                <span>{t("places.map.viewOnMap") || "Xem trên bản đồ"}</span>
-              </button>
-            </div>
-
             {/* Reusable Configuration-Driven Filter Panel */}
             <FilterPanel
+              categories={categories}
               filters={pendingFilters}
               pendingFilterCount={pendingFilterCount}
               currentCategoryConfig={currentCategoryConfig}
@@ -402,6 +439,15 @@ export function PlacesPage() {
                           variant="list"
                           isAdded={isAdded}
                           onToggleAdd={handleToggleAddPlace}
+                          onNavigateDetail={() => {
+                            navigate(`/places/${placeId}`, {
+                              state: {
+                                place,
+                                tripState,
+                                placesList: Array.from(addedPlacesMap.values())
+                              }
+                            });
+                          }}
                         />
                       );
                     })}
@@ -418,6 +464,15 @@ export function PlacesPage() {
                           variant="grid"
                           isAdded={isAdded}
                           onToggleAdd={handleToggleAddPlace}
+                          onNavigateDetail={() => {
+                            navigate(`/places/${placeId}`, {
+                              state: {
+                                place,
+                                tripState,
+                                placesList: Array.from(addedPlacesMap.values())
+                              }
+                            });
+                          }}
                         />
                       );
                     })}
@@ -503,52 +558,6 @@ export function PlacesPage() {
           </button>
         </div>
       </aside>
-
-      {/* Map Modal Dialog */}
-      {showMapModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-4xl w-full p-6 shadow-2xl space-y-4 border border-slate-200 dark:border-slate-800">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-bold text-[#0b2545] dark:text-white">
-                  {t("places.map.modalTitle", { destination }) || `Bản đồ địa điểm tại ${destination}`}
-                </h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowMapModal(false)}
-                className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 hover:text-slate-900 dark:hover:text-white flex items-center justify-center text-sm font-bold cursor-pointer"
-              >
-                ✕
-              </button>
-            </div>
-
-            {/* Embedded interactive map iframe with OSM */}
-            <div className="w-full h-96 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800">
-              <iframe
-                title="Bản đồ địa điểm"
-                width="100%"
-                height="100%"
-                frameBorder="0"
-                scrolling="no"
-                marginHeight="0"
-                marginWidth="0"
-                src={`https://www.openstreetmap.org/export/embed.html?bbox=${coordinates.lng - 0.04}%2C${coordinates.lat - 0.04}%2C${coordinates.lng + 0.04}%2C${coordinates.lat + 0.04}&layer=mapnik&marker=${coordinates.lat}%2C${coordinates.lng}`}
-              />
-            </div>
-
-            <div className="flex justify-end">
-              <button
-                type="button"
-                onClick={() => setShowMapModal(false)}
-                className="px-5 py-2 bg-[#0b2545] dark:bg-sky-500 text-white dark:text-slate-950 font-bold text-xs rounded-xl"
-              >
-                {t("places.map.close") || "Đóng bản đồ"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Footer */}
       <AppFooter />

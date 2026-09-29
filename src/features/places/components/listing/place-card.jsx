@@ -11,7 +11,8 @@ export function PlaceCard({
   place,
   variant = "list",
   isAdded = false,
-  onToggleAdd
+  onToggleAdd,
+  onNavigateDetail
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -59,7 +60,13 @@ export function PlaceCard({
   }, [isAuthenticated, favLoading, isFavorite, placeOsmId, place]);
 
   const placeId = place.osmId || place.id;
-  const handleNavigateDetail = () => navigate(`/places/${placeId}`, { state: { place } });
+  const handleNavigateDetail = () => {
+    if (onNavigateDetail) {
+      onNavigateDetail(place);
+    } else {
+      navigate(`/places/${placeId}`, { state: { place } });
+    }
+  };
 
   const displayImage = place.imageUrl && !place.imageUrl.includes("No_image_available")
     ? place.imageUrl
@@ -72,16 +79,19 @@ export function PlaceCard({
   const priceIndicator = place.priceLevel || "$$";
 
   // Category label
+  const categoryCodeUpper = (place.categoryCode || "").toUpperCase();
   const categoryMap = {
     RESTAURANT: t("places.categories.restaurant") || "Quán ăn",
     CAFE: t("places.categories.cafe") || "Quán cà phê",
     FAST_FOOD: t("places.categories.fastFood") || "Thức ăn nhanh",
     BAR: t("places.categories.bar") || "Quán bar / Pub",
+    HOTEL: t("places.categories.hotel") || "Khách sạn / Lưu trú",
     ATTRACTION: t("places.categories.attraction") || "Điểm tham quan",
     SHOPPING: t("places.categories.shopping") || "Mua sắm",
+    ENTERTAINMENT: t("places.categories.entertainment") || "Khu vui chơi",
     OTHER: t("places.categories.other") || "Địa điểm khác"
   };
-  const categoryLabel = categoryMap[place.categoryCode] || place.categoryCode || "Địa điểm";
+  const categoryLabel = categoryMap[categoryCodeUpper] || place.categoryCode || t("places.categories.other", "Địa điểm");
 
   // LIST VIEW: Horizontal layout matching Screenshot 1
   if (variant === "list") {

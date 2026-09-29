@@ -94,7 +94,15 @@ export function usePlacesFilter(initialValues = {}) {
 
   // Current category config based on pendingFilters
   const currentCategoryConfig = useMemo(() => {
-    return CATEGORY_FILTER_CONFIGS[pendingFilters.category] || CATEGORY_FILTER_CONFIGS.RESTAURANT;
+    const key = pendingFilters.category;
+    if (!key) return CATEGORY_FILTER_CONFIGS.RESTAURANT;
+    const upper = String(key).toUpperCase();
+    return (
+      CATEGORY_FILTER_CONFIGS[upper] ||
+      Object.values(CATEGORY_FILTER_CONFIGS).find(
+        (c) => c.backendCategory === upper || c.categoryId === upper
+      ) || { categoryId: key, defaultLabel: key, preferences: [] }
+    );
   }, [pendingFilters.category]);
 
   /**
@@ -108,13 +116,20 @@ export function usePlacesFilter(initialValues = {}) {
 
       let categories = [];
       if (appliedFilters.category) {
-        const backendCat = CATEGORY_FILTER_CONFIGS[appliedFilters.category]?.backendCategory;
+        const backendCat =
+          CATEGORY_FILTER_CONFIGS[appliedFilters.category]?.backendCategory ||
+          appliedFilters.category;
         if (backendCat) {
           categories = [backendCat];
         }
       }
 
-      const categoryConfig = CATEGORY_FILTER_CONFIGS[appliedFilters.category] || CATEGORY_FILTER_CONFIGS.RESTAURANT;
+      const categoryConfig =
+        CATEGORY_FILTER_CONFIGS[appliedFilters.category] ||
+        Object.values(CATEGORY_FILTER_CONFIGS).find(
+          (c) => c.backendCategory === appliedFilters.category
+        ) ||
+        CATEGORY_FILTER_CONFIGS.RESTAURANT;
       const availablePrefs = categoryConfig.preferences || [];
       const selectedPrefObjects = availablePrefs.filter((p) =>
         appliedFilters.selectedPreferences.includes(p.id)

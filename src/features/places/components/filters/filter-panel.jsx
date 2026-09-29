@@ -22,9 +22,10 @@ export function FilterPanel({
   onTogglePreference,
   onApplyFilters,
   onResetFilters,
-  isLoading = false
+  isLoading = false,
+  categories: propCategories = []
 }) {
-  const { t } = useTranslation();
+  const { t, currentLanguage } = useTranslation();
   const [dbCategories, setDbCategories] = useState([]);
 
   useEffect(() => {
@@ -35,14 +36,14 @@ export function FilterPanel({
         const list = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : [];
         if (list.length > 0) {
           const mapped = list.map((c) => {
-            const codeUpper = (c.code || "").toUpperCase();
-            const matchedKey = Object.keys(CATEGORY_FILTER_CONFIGS).find(
-              (k) => k === codeUpper || CATEGORY_FILTER_CONFIGS[k].backendCategory === codeUpper
-            );
+            const code = c.code || String(c.categoryId);
             return {
-              categoryId: matchedKey || c.code || String(c.categoryId),
-              name: c.name,
-              code: c.code
+              categoryId: code,
+              code: c.code || code,
+              name: c.name || c.nameVi || c.nameEn || code,
+              nameVi: c.nameVi || c.name || code,
+              nameEn: c.nameEn || "",
+              defaultLabel: c.name || code
             };
           });
           setDbCategories(mapped);
@@ -72,8 +73,68 @@ export function FilterPanel({
   };
 
   const defaultCategories = Object.values(CATEGORY_FILTER_CONFIGS);
-  const categoriesToRender = dbCategories.length > 0 ? dbCategories : defaultCategories;
+  const rawList = propCategories.length > 0 ? propCategories : dbCategories;
+  const categoriesToRender = rawList.length > 0 ? rawList : defaultCategories;
   const preferences = currentCategoryConfig?.preferences || [];
+
+  const getCategoryLabel = (cat) => {
+    if (!cat) return "";
+
+    // 1. If cat has explicit language properties from backend/database
+    if (currentLanguage === "en" && cat.nameEn) return cat.nameEn;
+    if (currentLanguage === "vi" && cat.nameVi) return cat.nameVi;
+
+    // 2. Lookup standard translation by code or name keyword for seamless EN/VI switching
+    const codeUpper = (cat.code || cat.categoryId || "").toUpperCase();
+    const nameLower = (cat.name || cat.nameVi || "").toLowerCase().trim();
+
+    const codeToKey = {
+      RESTAURANT: "restaurant",
+      CAFE: "cafe",
+      ENTERTAINMENT: "entertainment",
+      ATTRACTION: "attraction",
+      SHOPPING: "shopping",
+      FAST_FOOD: "fastFood",
+      FASTFOOD: "fastFood",
+      BAR: "bar",
+      PUB: "bar",
+      HOTEL: "hotel",
+      OTHER: "other"
+    };
+
+    const nameToKey = {
+      "quán ăn": "restaurant",
+      "nhà hàng": "restaurant",
+      "quán cà phê": "cafe",
+      "cà phê": "cafe",
+      "khu vui chơi": "entertainment",
+      "giải trí": "entertainment",
+      "điểm tham quan": "attraction",
+      "tham quan": "attraction",
+      "mua sắm": "shopping",
+      "thức ăn nhanh": "fastFood",
+      "quán bar": "bar",
+      "quán bar / pub": "bar",
+      "khách sạn": "hotel",
+      "khác": "other"
+    };
+
+    const targetKey = codeToKey[codeUpper] || nameToKey[nameLower];
+    if (targetKey) {
+      const translated = t(`places.categories.${targetKey}`);
+      if (translated && !translated.startsWith("places.categories.")) {
+        return translated;
+      }
+    }
+
+    if (cat.labelKey) {
+      const translated = t(cat.labelKey);
+      if (translated && translated !== cat.labelKey) return translated;
+    }
+
+    if (currentLanguage === "en" && cat.nameEn) return cat.nameEn;
+    return cat.name || cat.defaultLabel || cat.code || "";
+  };
 
   return (
     <div
@@ -106,13 +167,17 @@ export function FilterPanel({
         </label>
         <div className="flex flex-wrap gap-1.5">
           {categoriesToRender.map((cat) => {
-            const isSelected = filters.category === cat.categoryId;
-            const label = cat.name || t(cat.labelKey) || cat.defaultLabel;
+            const catId = cat.code || cat.categoryId || cat.name;
+            const isSelected =
+              filters.category === catId ||
+              String(filters.category).toUpperCase() === String(catId).toUpperCase() ||
+              (cat.code && String(filters.category).toUpperCase() === String(cat.code).toUpperCase());
+            const label = getCategoryLabel(cat);
             return (
               <button
-                key={cat.categoryId}
+                key={cat.categoryId || cat.code || cat.name}
                 type="button"
-                onClick={() => onSelectCategory(cat.categoryId)}
+                onClick={() => onSelectCategory(cat.code || cat.categoryId || cat.name)}
                 className={`text-xs px-3 py-1.5 rounded-full font-medium transition-all cursor-pointer ${
                   isSelected
                     ? "bg-[#0b2545] dark:bg-sky-500 text-white dark:text-slate-950 font-semibold shadow-xs"
@@ -193,7 +258,7 @@ export function FilterPanel({
             {t("places.filter.preferences") || "Sở thích / Đặc thù"}
           </label>
           <span className="text-[10px] text-slate-400">
-            {t(currentCategoryConfig.labelKey) || currentCategoryConfig.defaultLabel}
+            {getCategoryLabel(currentCategoryConfig)}
           </span>
         </div>
 
@@ -205,7 +270,9 @@ export function FilterPanel({
           <div className="space-y-2">
             {preferences.map((pref) => {
               const isChecked = filters.selectedPreferences?.includes(pref.id);
-              const label = t(pref.labelKey) || pref.defaultLabel;
+              const label = (pref.labelKey && t(pref.labelKey) !== pref.labelKey)
+                ? t(pref.labelKey)
+                : (pref.defaultLabel || pref.id);
               return (
                 <label
                   key={pref.id}
@@ -239,10 +306,10 @@ export function FilterPanel({
           className="w-full py-2.5 px-4 bg-[#0b2545] hover:bg-[#102f58] dark:bg-sky-500 dark:hover:bg-sky-600 text-white dark:text-slate-950 font-bold text-xs rounded-xl shadow-md transition-all flex items-center justify-center space-x-2 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {isLoading ? (
-            <span>Đang tìm kiếm...</span>
+            <span>{t("places.filter.searching") || "Đang tìm kiếm..."}</span>
           ) : (
             <>
-              <span>Áp dụng bộ lọc</span>
+              <span>{t("places.filter.applyButton") || "Áp dụng bộ lọc"}</span>
               {pendingFilterCount > 0 && (
                 <span className="bg-sky-500 dark:bg-slate-950 text-white dark:text-sky-400 text-[10px] font-extrabold px-1.5 py-0.5 rounded-full">
                   {pendingFilterCount}

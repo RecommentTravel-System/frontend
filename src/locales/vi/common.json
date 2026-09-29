@@ -226,9 +226,9 @@
       "title": "Bạn muốn làm gì tiếp theo?",
       "subtitle": "Chọn phương thức lên kế hoạch phù hợp với thói quen du lịch của bạn",
       "option1Badge": "KHUYÊN DÙNG",
-      "option1Title": "Tạo lịch trình tự động bằng AI",
+      "option1Title": "Tạo lịch trình tự động",
       "option1Desc": "Thuật toán thông minh tự động phân bổ {{count}} địa điểm đã chọn theo từng ngày, tối ưu quãng đường đi và gợi ý giờ ghé thăm hợp lý nhất.",
-      "option1Link": "Mở trình sắp xếp lịch trình AI →",
+      "option1Link": "Mở trình sắp xếp lịch trình →",
       "option2Title": "Chỉ lưu địa điểm vào danh sách chờ",
       "option2Desc": "Lưu các địa điểm bạn quan tâm vào bộ sưu tập '{{tripName}}' để bạn tự sắp xếp thủ công vào thời gian rảnh.",
       "option2Link": "Lưu vào kho chờ →"
@@ -331,7 +331,7 @@
   "places": {
     "header": {
       "backToTrip": "Quay lại chuyến đi",
-      "title": "Khám phá địa điểm \"{{destination}}\"",
+      "title": "Khám phá địa điểm",
       "countFound": "địa điểm được tìm thấy phù hợp",
       "searchPlaceholder": "Tìm theo tên, món ăn, không gian..."
     },
@@ -344,7 +344,13 @@
       "price": "Mức giá",
       "preferences": "Sở thích & Đặc thù",
       "noPreferences": "Không có bộ lọc đặc thù",
-      "beta": "Gợi ý"
+      "beta": "Gợi ý",
+      "applyButton": "Áp dụng bộ lọc",
+      "searching": "Đang tìm kiếm..."
+    },
+    "initial": {
+      "title": "Vui lòng chọn tiêu chí lọc & Bấm xác nhận",
+      "desc": "Hãy chọn loại địa điểm (Quán ăn, Quán cà phê, Khu vui chơi...) và tùy chỉnh khoảng cách ở cột bên trái, sau đó nhấn nút \"Áp dụng bộ lọc\""
     },
     "categories": {
       "all": "Tất cả",
@@ -355,6 +361,7 @@
       "shopping": "Mua sắm",
       "fastFood": "Thức ăn nhanh",
       "bar": "Quán bar / Pub",
+      "hotel": "Khách sạn / Lưu trú",
       "other": "Khác"
     },
     "preferences": {

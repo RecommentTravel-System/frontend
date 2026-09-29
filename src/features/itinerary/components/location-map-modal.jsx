@@ -20,18 +20,22 @@ export function LocationMapModal({ initialQuery = "", onConfirm, onClose }) {
   const mapInstanceRef = useRef(null);
   const markerRef = useRef(null);
   const debounceTimerRef = useRef(null);
+  const autoGeocodeTimerRef = useRef(null);
+  const searchContainerRef = useRef(null);
 
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState({
     name: initialQuery || "Huế",
+    fullName: initialQuery || "Huế, Thừa Thiên Huế, Việt Nam",
     lat: 16.4637,
     lng: 107.5909
   });
   const [isLeafletReady, setIsLeafletReady] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
 
-  // Dynamic load of Leaflet CSS & JS matching address-picker-page.tsx pattern
+  // Dynamic load of Leaflet CSS & JS
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -81,6 +85,28 @@ export function LocationMapModal({ initialQuery = "", onConfirm, onClose }) {
     checkBothLoaded();
   }, []);
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(e.target)) {
+        setSearchResults([]);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Move marker & map view helper
+  const moveMapAndMarker = (lat, lng, zoom = 14) => {
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.setView([lat, lng], zoom, { animate: true });
+      setTimeout(() => mapInstanceRef.current?.invalidateSize(), 50);
+    }
+    if (markerRef.current) {
+      markerRef.current.setLatLng([lat, lng]);
+    }
+  };
+
   // Auto geocode initialQuery on mount if provided
   useEffect(() => {
     if (!isLeafletReady || !initialQuery || !initialQuery.trim()) return;
@@ -107,11 +133,7 @@ export function LocationMapModal({ initialQuery = "", onConfirm, onClose }) {
             lng
           });
 
-          if (mapInstanceRef.current && markerRef.current) {
-            mapInstanceRef.current.setView([lat, lng], 13);
-            markerRef.current.setLatLng([lat, lng]);
-            setTimeout(() => mapInstanceRef.current?.invalidateSize(), 50);
-          }
+          moveMapAndMarker(lat, lng, 14);
         }
       } catch (err) {
         console.warn("Initial query geocode failed:", err);
@@ -124,7 +146,7 @@ export function LocationMapModal({ initialQuery = "", onConfirm, onClose }) {
     };
   }, [isLeafletReady, initialQuery]);
 
-  // Initialize Leaflet Map Instance matching address-picker-page.tsx
+  // Initialize Leaflet Map Instance
   useEffect(() => {
     if (!isLeafletReady || !mapContainerRef.current || typeof window === "undefined") return;
 
@@ -164,16 +186,14 @@ export function LocationMapModal({ initialQuery = "", onConfirm, onClose }) {
       leafletEl.style.setProperty(prop, value, "important");
     });
 
-    // OpenStreetMap standard tiles
     const cartoApiKey = import.meta.env.VITE_CARTO_API_KEY;
 
     L.tileLayer(
       `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=${cartoApiKey}`,
       {
-        attribution:
-          '&copy; OpenStreetMap contributors &copy; CARTO',
+        attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
         subdomains: "abcd",
-        maxZoom: 20,
+        maxZoom: 20
       }
     ).addTo(map);
 
@@ -212,18 +232,18 @@ export function LocationMapModal({ initialQuery = "", onConfirm, onClose }) {
         clearTimeout(debounceTimerRef.current);
       }
       debounceTimerRef.current = setTimeout(() => {
-        handleReverseGeocode(lat, lng);
-      }, 1000);
+        handleReverseGeocode(lat, lng, true);
+      }, 500);
     };
 
-    // Map click event
+    // Map click event: moves marker & immediately auto-fills input
     map.on("click", (e) => {
       const { lat, lng } = e.latlng;
       marker.setLatLng([lat, lng]);
       debouncedReverseGeocode(lat, lng);
     });
 
-    // Marker drag event
+    // Marker drag event: auto-fills input upon release
     marker.on("dragend", () => {
       const pos = marker.getLatLng();
       debouncedReverseGeocode(pos.lat, pos.lng);
@@ -232,6 +252,9 @@ export function LocationMapModal({ initialQuery = "", onConfirm, onClose }) {
     return () => {
       if (debounceTimerRef.current) {
         clearTimeout(debounceTimerRef.current);
+      }
+      if (autoGeocodeTimerRef.current) {
+        clearTimeout(autoGeocodeTimerRef.current);
       }
       timers.forEach(clearTimeout);
       resizeObserver.disconnect();
@@ -242,75 +265,168 @@ export function LocationMapModal({ initialQuery = "", onConfirm, onClose }) {
     };
   }, [isLeafletReady]);
 
-  // Reverse geocode via Wayvee Spring Boot Backend
-  const handleReverseGeocode = async (lat, lng) => {
+  // Reverse geocode: converts (lat, lng) -> Address and updates search input
+  const handleReverseGeocode = async (lat, lng, updateInputField = true) => {
     try {
-      const params = new URLSearchParams({
-        lat: String(lat),
-        lng: String(lng)
-      });
+      let displayName = "";
 
-      const result = await api.get(`/api/location/reverse?${params.toString()}`);
-      const data = result.data || result;
+      // 1. Try Backend API first
+      try {
+        const params = new URLSearchParams({
+          lat: String(lat),
+          lng: String(lng)
+        });
+        const result = await api.get(`/api/location/reverse?${params.toString()}`);
+        const data = result.data || result;
+        displayName = data.display_name || data.displayName || data.name || "";
+      } catch (backendErr) {
+        console.warn("Backend reverse geocode fallback:", backendErr);
+      }
 
-      console.log("Reverse geocode response:", data);
+      // 2. Fallback to Nominatim OSM if backend does not return full address
+      if (!displayName) {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=vi`
+        );
+        const data = await res.json();
+        displayName = data.display_name || "";
+      }
 
-      const displayName = data.display_name || data.displayName || "Vị trí đã chọn";
+      if (!displayName) {
+        displayName = `Vị trí (${lat.toFixed(5)}, ${lng.toFixed(5)})`;
+      }
+
+      const shortName = displayName.split(",")[0] || displayName;
 
       setSelectedLocation({
         lat,
         lng,
-        name: displayName,
+        name: shortName,
         fullName: displayName
       });
+
+      if (updateInputField) {
+        setSearchQuery(displayName);
+      }
     } catch (error) {
       console.error("Reverse geocode failed:", error);
-
-      // Quan trọng: vẫn cho phép user chọn tọa độ
+      const fallbackName = `Vị trí (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
       setSelectedLocation({
         lat,
         lng,
-        name: "Vị trí đã chọn"
+        name: fallbackName,
+        fullName: fallbackName
       });
+      if (updateInputField) {
+        setSearchQuery(fallbackName);
+      }
     }
   };
 
-  // Search location via Nominatim
-  const handleSearch = async (query) => {
+  // Search location via Nominatim and auto-point map
+  const handleSearch = (query) => {
     setSearchQuery(query);
+
+    if (autoGeocodeTimerRef.current) {
+      clearTimeout(autoGeocodeTimerRef.current);
+    }
+
     if (!query || query.trim().length < 2) {
       setSearchResults([]);
       return;
     }
 
+    // Debounced search to show suggestions and automatically point map to top result
+    autoGeocodeTimerRef.current = setTimeout(async () => {
+      setIsSearching(true);
+      try {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+            query.trim()
+          )}&countrycodes=vn&accept-language=vi&limit=5`
+        );
+        const data = await res.json();
+        setSearchResults(data || []);
+
+        // Auto point marker & map to the best match as user types an address
+        if (data && data.length > 0) {
+          const topItem = data[0];
+          const lat = parseFloat(topItem.lat);
+          const lng = parseFloat(topItem.lon);
+          const shortName = topItem.name || topItem.display_name.split(",")[0];
+
+          setSelectedLocation({
+            name: shortName,
+            fullName: topItem.display_name,
+            lat,
+            lng
+          });
+          moveMapAndMarker(lat, lng, 13);
+        }
+      } catch (err) {
+        console.warn("Search location error:", err);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 450);
+  };
+
+  // Immediate geocode when user hits Enter or clicks search icon
+  const handleDirectSearch = async () => {
+    if (!searchQuery || !searchQuery.trim()) return;
+
+    if (autoGeocodeTimerRef.current) {
+      clearTimeout(autoGeocodeTimerRef.current);
+    }
+
+    setIsSearching(true);
     try {
       const res = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-          query
+          searchQuery.trim()
         )}&countrycodes=vn&accept-language=vi&limit=5`
       );
       const data = await res.json();
-      setSearchResults(data || []);
+
+      if (data && data.length > 0) {
+        handleSelectSearchResult(data[0]);
+      }
     } catch (err) {
-      console.warn("Search location failed:", err);
+      console.warn("Direct search failed:", err);
+    } finally {
+      setIsSearching(false);
     }
   };
 
-  // Get user geolocation
+  // Get user geolocation -> Point marker & Auto-fill address into search input
   const handleGetMyLocation = () => {
-    if (!navigator.geolocation) return;
+    if (!navigator.geolocation) {
+      alert("Trình duyệt không hỗ trợ định vị GPS.");
+      return;
+    }
+
     setIsLocating(true);
     navigator.geolocation.getCurrentPosition(
       async (pos) => {
         const { latitude, longitude } = pos.coords;
-        await handleReverseGeocode(latitude, longitude);
+
+        // 1. Point marker & fly map immediately to user's location
+        moveMapAndMarker(latitude, longitude, 15);
+
+        // 2. Reverse geocode and auto-fill address into input box
+        await handleReverseGeocode(latitude, longitude, true);
         setIsLocating(false);
       },
-      () => setIsLocating(false)
+      (err) => {
+        console.warn("Geolocation failed:", err);
+        setIsLocating(false);
+        alert("Không thể lấy vị trí hiện tại. Vui lòng cho phép quyền truy cập vị trí trên trình duyệt.");
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
     );
   };
 
-  // Handle dropdown selection
+  // Handle dropdown item click
   const handleSelectSearchResult = (item) => {
     const lat = parseFloat(item.lat);
     const lng = parseFloat(item.lon);
@@ -327,14 +443,11 @@ export function LocationMapModal({ initialQuery = "", onConfirm, onClose }) {
       lat,
       lng
     });
-    setSearchQuery(shortName);
+
+    setSearchQuery(item.display_name);
     setSearchResults([]);
 
-    if (mapInstanceRef.current && markerRef.current) {
-      mapInstanceRef.current.setView([lat, lng], 13);
-      markerRef.current.setLatLng([lat, lng]);
-      setTimeout(() => mapInstanceRef.current?.invalidateSize(), 50);
-    }
+    moveMapAndMarker(lat, lng, 14);
   };
 
   const handleConfirm = () => {
@@ -368,16 +481,43 @@ export function LocationMapModal({ initialQuery = "", onConfirm, onClose }) {
         </div>
 
         {/* Search Input & GPS Bar */}
-        <div className="flex gap-2">
+        <div className="flex gap-2" ref={searchContainerRef}>
           <div className="relative flex-1">
             <input
               type="text"
               placeholder="Gõ tìm địa điểm (ví dụ: Hà Nội, Huế, Đà Nẵng, Phú Quốc...)"
               value={searchQuery}
               onChange={(e) => handleSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-[#002d54] dark:focus:border-sky-500 text-slate-800 dark:text-slate-100"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleDirectSearch();
+                }
+              }}
+              className="w-full pl-9 pr-16 py-2.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-[#002d54] dark:focus:border-sky-500 text-slate-800 dark:text-slate-100 placeholder:text-slate-400"
             />
-            <span className="absolute left-3 top-2.5 text-xs text-slate-400">🔍</span>
+            <button
+              type="button"
+              onClick={handleDirectSearch}
+              className="absolute left-3 top-2.5 text-xs text-slate-400 hover:text-sky-600 transition-colors cursor-pointer"
+              title="Tìm kiếm vị trí"
+            >
+              🔍
+            </button>
+
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchQuery("");
+                  setSearchResults([]);
+                }}
+                className="absolute right-3 top-2.5 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                title="Xóa tìm kiếm"
+              >
+                ✕
+              </button>
+            )}
 
             {/* Search Dropdown Results */}
             {searchResults.length > 0 && (
@@ -387,7 +527,7 @@ export function LocationMapModal({ initialQuery = "", onConfirm, onClose }) {
                     key={item.place_id}
                     type="button"
                     onClick={() => handleSelectSearchResult(item)}
-                    className="w-full text-left px-3.5 py-2 text-xs hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-b border-slate-100 dark:border-slate-800/50 last:border-0 flex items-start gap-2 cursor-pointer"
+                    className="w-full text-left px-3.5 py-2 text-xs hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-b border-slate-100 dark:border-slate-800/50 last:border-0 flex items-start gap-2 cursor-pointer transition-colors"
                   >
                     <span className="text-sky-500 mt-0.5">📍</span>
                     <span className="truncate">{item.display_name}</span>
@@ -397,18 +537,21 @@ export function LocationMapModal({ initialQuery = "", onConfirm, onClose }) {
             )}
           </div>
 
+          {/* Vị trí của tôi Button */}
           <button
             type="button"
             onClick={handleGetMyLocation}
             disabled={isLocating}
-            className="flex items-center gap-1.5 px-3 py-2.5 bg-sky-50 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800 rounded-xl text-xs font-semibold hover:bg-sky-100 dark:hover:bg-sky-900/50 transition-colors cursor-pointer disabled:opacity-50"
+            className="flex items-center gap-1.5 px-3.5 py-2.5 bg-sky-50 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800 rounded-xl text-xs font-semibold hover:bg-sky-100 dark:hover:bg-sky-900/50 transition-colors cursor-pointer disabled:opacity-50 flex-shrink-0"
           >
             <span>🎯</span>
-            <span className="hidden sm:inline">{isLocating ? "Đang định vị..." : "Vị trí của tôi"}</span>
+            <span className="hidden sm:inline">
+              {isLocating ? "Đang định vị..." : "Vị trí của tôi"}
+            </span>
           </button>
         </div>
 
-        {/* Leaflet Map Area matching pb-map-wrapper pattern */}
+        {/* Leaflet Map Area */}
         <div className="pb-map-wrapper relative w-full h-72 sm:h-80 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800">
           {!isLeafletReady && (
             <div className="absolute inset-0 flex items-center justify-center text-xs text-slate-500 z-10 bg-slate-100 dark:bg-slate-800">
@@ -419,6 +562,12 @@ export function LocationMapModal({ initialQuery = "", onConfirm, onClose }) {
         </div>
 
         {/* Selected Location Summary & Actions */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+          <div className="text-xs text-slate-600 dark:text-slate-400 line-clamp-1 w-full sm:w-auto">
+            <span className="font-semibold text-slate-800 dark:text-slate-200">Đã chọn:</span>{" "}
+            {selectedLocation.fullName || selectedLocation.name || "Chưa có địa điểm"}
+          </div>
+
           <div className="flex items-center gap-2 w-full sm:w-auto">
             <button
               type="button"
@@ -437,5 +586,6 @@ export function LocationMapModal({ initialQuery = "", onConfirm, onClose }) {
           </div>
         </div>
       </div>
+    </div>
   );
 }

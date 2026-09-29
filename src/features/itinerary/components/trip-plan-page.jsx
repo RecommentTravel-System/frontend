@@ -397,7 +397,7 @@ function parseDateRange(dateStr) {
   return { start, end };
 }
 
-function generateDynamicDays(tripDatesStr, initialPlacesList) {
+function generateDynamicDays(tripDatesStr) {
   const parsed = parseDateRange(tripDatesStr);
   let totalDays = 5; // default
   let startDate = parsed.start || new Date();
@@ -435,38 +435,37 @@ function generateDynamicDays(tripDatesStr, initialPlacesList) {
     });
   }
 
-  // Pre-fill initial sample places or user-selected places into days
-  if (initialPlacesList && initialPlacesList.length > 0) {
-    initialPlacesList.forEach((p, idx) => {
-      const dayTarget = generated[idx % generated.length];
-      if (dayTarget) {
-        dayTarget.items.push({
-          id: p.id || `place-${idx}`,
-          name: p.name,
-          category: p.category || "checkin",
-          categoryVi: p.category || "Tham quan",
-          categoryEn: p.category || "Sightseeing",
-          categoryColor: "bg-sky-50 text-sky-700 border-sky-200",
-          barColor: "bg-sky-500",
-          rating: p.rating || 4.8,
-          reviewsCount: p.reviewCount || p.reviewsCount || "Được yêu thích",
-          address: p.address || "Điểm đến trung tâm",
-          tagVi: p.specs || "Điểm tham quan nổi bật",
-          tagEn: p.specs || "Top Attraction",
-          image: p.image || "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=400&q=80"
-        });
-      }
-    });
-  } else {
-    // Default fallback initial items
-    INITIAL_DAYS.forEach((initDay, idx) => {
-      if (generated[idx]) {
-        generated[idx].items = initDay.items;
-      }
-    });
-  }
-
   return generated;
+}
+
+/**
+ * Map a raw place (from /places page) into the wishlist item format used in trip-plan-page.
+ */
+function mapPlaceToWishlistItem(p, idx) {
+  const catCode = (p.categoryCode || p.category || "").toUpperCase();
+  const catColorMap = {
+    RESTAURANT: { color: "bg-emerald-50 text-emerald-700 border-emerald-200", bar: "bg-emerald-500", vi: "Ẩm thực", en: "Food" },
+    CAFE: { color: "bg-amber-50 text-amber-700 border-amber-200", bar: "bg-amber-500", vi: "Cà phê", en: "Coffee" },
+    ENTERTAINMENT: { color: "bg-purple-50 text-purple-700 border-purple-200", bar: "bg-purple-500", vi: "Giải trí", en: "Entertainment" },
+    ATTRACTION: { color: "bg-sky-50 text-sky-700 border-sky-200", bar: "bg-sky-500", vi: "Tham quan", en: "Attraction" },
+    SHOPPING: { color: "bg-rose-50 text-rose-700 border-rose-200", bar: "bg-rose-500", vi: "Mua sắm", en: "Shopping" }
+  };
+  const cat = catColorMap[catCode] || { color: "bg-sky-50 text-sky-700 border-sky-200", bar: "bg-sky-500", vi: "Tham quan", en: "Sightseeing" };
+  return {
+    id: p.osmId || p.id || `wishlist-${idx}-${Date.now()}`,
+    name: p.name || "Địa điểm",
+    category: catCode.toLowerCase() || "checkin",
+    categoryVi: cat.vi,
+    categoryEn: cat.en,
+    categoryColor: cat.color,
+    barColor: cat.bar,
+    rating: p.rating || 4.8,
+    reviewsCount: p.reviewCount || p.reviewsCount || "Được yêu thích",
+    address: p.location || p.address || "Điểm đến",
+    tagVi: "Địa điểm đã chọn",
+    tagEn: "Selected place",
+    image: p.image || p.imageUrl || null
+  };
 }
 
 export function TripPlanPage() {
@@ -490,13 +489,27 @@ export function TripPlanPage() {
   );
 
   // Days and Wishlist state
+  // - If user has already arranged their schedule (daysSchedule present), restore it.
+  // - Otherwise, generate empty day columns from the trip dates.
   const [days, setDays] = useState(() => {
     if (locationState.daysSchedule && locationState.daysSchedule.length > 0) {
       return locationState.daysSchedule;
     }
-    return generateDynamicDays(locationState.tripDates, locationState.placesList);
+    return generateDynamicDays(locationState.tripDates);
   });
-  const [wishlist, setWishlist] = useState(INITIAL_WISHLIST);
+
+  // - If returning from saved arrangement, restore saved wishlist.
+  // - If first visit with places selected from /places page, put them in the waiting area.
+  // - Otherwise, start empty (no mock data).
+  const [wishlist, setWishlist] = useState(() => {
+    if (locationState.wishlist && locationState.wishlist.length > 0) {
+      return locationState.wishlist;
+    }
+    if (!locationState.daysSchedule && locationState.placesList && locationState.placesList.length > 0) {
+      return locationState.placesList.map(mapPlaceToWishlistItem);
+    }
+    return [];
+  });
 
   // Pagination (3 days per page)
   const DAYS_PER_PAGE = 3;
@@ -826,6 +839,7 @@ export function TripPlanPage() {
           places: confirmedPlaces.map((p) => p.name),
           placesList: confirmedPlaces,
           daysSchedule: days,
+          wishlist: wishlist,
           amenities: ["WiFi", "Check-in", "Bản đồ số", "Hướng dẫn viên"]
         };
         const existingCustom = JSON.parse(localStorage.getItem("wayvee_custom_trips") || "[]");
@@ -1067,11 +1081,15 @@ export function TripPlanPage() {
 
                     <div className="flex gap-2.5">
                       <div className="w-16 h-16 rounded-lg overflow-hidden shrink-0 border border-slate-200 dark:border-slate-700">
-                        <img
-                          src={item.image || "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=400&q=80"}
-                          alt={item.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
+                        {item.image ? (
+                          <img
+                            src={item.image}
+                            alt={item.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-slate-400 text-2xl bg-slate-100 dark:bg-slate-800">📍</div>
+                        )}
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="text-xs font-bold text-[#002b49] dark:text-white truncate">
@@ -1436,7 +1454,7 @@ export function TripPlanPage() {
         <div className="flex items-center gap-3 text-xs font-medium text-slate-600">
           <button
             type="button"
-            onClick={() => navigate("/trip/create", { state: locationState })}
+            onClick={() => navigate("/trip/create", { state: { ...locationState, daysSchedule: days, wishlist } })}
             className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 transition-colors cursor-pointer"
           >
             <span className="material-symbols-outlined text-base">arrow_back</span>
