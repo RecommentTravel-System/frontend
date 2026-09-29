@@ -108,25 +108,25 @@ export default function AdminDashboardRail({ active }) {
 
   return (
     <aside
-      className="hidden md:flex flex-col w-[220px] shrink-0 border-r border-slate-200 bg-white min-h-screen"
+      className="hidden md:flex flex-col w-[220px] shrink-0 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a] min-h-screen transition-colors"
       aria-label="Admin navigation"
     >
       {/* Brand strip */}
-      <div className="flex items-center gap-2.5 px-5 py-5 border-b border-slate-100">
+      <div className="flex items-center gap-2.5 px-5 py-5 border-b border-slate-100 dark:border-slate-800/80">
         <div className="w-8 h-8 rounded-xl bg-[#00a3e0] flex items-center justify-center shadow-sm">
           <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </div>
         <div>
-          <div className="text-[13px] font-extrabold text-[#002d54] tracking-tight leading-none">WAYVEE</div>
-          <div className="text-[9px] font-semibold text-slate-400 uppercase tracking-widest mt-0.5">{t("adminNav.portalBadge", "Admin Portal")}</div>
+          <div className="text-[13px] font-extrabold text-[#002d54] dark:text-white tracking-tight leading-none">WAYVEE</div>
+          <div className="text-[9px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-0.5">{t("adminNav.portalBadge", "Admin Portal")}</div>
         </div>
       </div>
 
       {/* Section label */}
       <div className="px-5 pt-4 pb-1.5">
-        <span className="text-[9px] font-extrabold uppercase tracking-widest text-slate-400">
+        <span className="text-[9px] font-extrabold uppercase tracking-widest text-slate-400 dark:text-slate-500">
           {t("adminNav.mainMenu", "Menu chính")}
         </span>
       </div>
@@ -143,8 +143,8 @@ export default function AdminDashboardRail({ active }) {
               className={`
                 group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all
                 ${isActive
-                  ? "bg-[#e8f6fd] text-[#00a3e0] font-semibold"
-                  : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                  ? "bg-[#e8f6fd] dark:bg-sky-950/60 text-[#00a3e0] font-semibold"
+                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white"
                 }
               `}
               aria-current={isActive ? "page" : undefined}
@@ -160,7 +160,7 @@ export default function AdminDashboardRail({ active }) {
               {/* Icon */}
               <span
                 className={`shrink-0 transition-colors ${
-                  isActive ? "text-[#00a3e0]" : "text-slate-400 group-hover:text-slate-600"
+                  isActive ? "text-[#00a3e0]" : "text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300"
                 }`}
               >
                 {item.icon}
@@ -182,12 +182,12 @@ export default function AdminDashboardRail({ active }) {
       </nav>
 
       {/* Footer */}
-      <div className="px-4 py-4 border-t border-slate-100">
+      <div className="px-4 py-4 border-t border-slate-100 dark:border-slate-800/80">
         <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-full bg-[#00a3e0]/10 flex items-center justify-center text-[#00a3e0] text-xs font-bold">A</div>
+          <div className="w-7 h-7 rounded-full bg-[#00a3e0]/10 dark:bg-sky-950/60 flex items-center justify-center text-[#00a3e0] text-xs font-bold">A</div>
           <div className="flex-1 min-w-0">
-            <div className="text-[11px] font-semibold text-slate-700 truncate">Admin</div>
-            <div className="text-[10px] text-slate-400 truncate">Quản trị viên</div>
+            <div className="text-[11px] font-semibold text-slate-700 dark:text-slate-200 truncate">Admin</div>
+            <div className="text-[10px] text-slate-400 dark:text-slate-500 truncate">Quản trị viên</div>
           </div>
           <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0" title="Online" />
         </div>

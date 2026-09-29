@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { AppHeader, AppFooter } from "~/shared/components";
+import { useTranslation } from "~/providers/i18n-provider";
 import AdminDashboardRail from "./AdminDashboardRail";
 import { getAnalyticsApi } from "~/features/analytics/services/analytics-api";
 
@@ -213,26 +214,26 @@ function BarChart({ data = [], color = "#00a3e0", label = "", height = 140 }) {
 }
 
 // ─── KPI Card ─────────────────────────────────────────────────────────────────
-function KpiCard({ icon, label, value, delta, deltaLabel, color, bgColor }) {
-  const positive = delta >= 0;
+function KpiCard({ icon, label, value, delta, deltaLabel, iconBg }) {
+  const positive = typeof delta === "number" ? delta >= 0 : true;
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 hover:shadow-md transition-shadow">
+    <div className="bg-white dark:bg-[#0f172a] p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-center justify-between mb-3">
-        <span className="text-xs font-bold uppercase text-slate-500 tracking-wider">{label}</span>
-        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${bgColor}`}>{icon}</div>
+        <span className="text-xs font-bold uppercase text-slate-500 dark:text-slate-400 tracking-wider">{label}</span>
+        <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${iconBg || "bg-sky-100 dark:bg-sky-950/60 text-[#00a3e0]"}`}>{icon}</div>
       </div>
-      <div className="text-2xl font-extrabold text-slate-900 tracking-tight">{value}</div>
-      <div className="mt-1.5 flex items-center gap-1.5 text-xs font-semibold">
+      <div className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">{value}</div>
+      <div className="mt-2 flex items-center gap-1.5 text-xs font-semibold">
         <span
-          className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full ${
+          className={`inline-flex items-center gap-0.5 px-2.5 py-0.5 rounded-full font-bold ${
             positive
-              ? "bg-emerald-50 text-emerald-600"
-              : "bg-red-50 text-red-500"
+              ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300"
+              : "bg-red-50 dark:bg-red-950/60 text-red-700 dark:text-red-300"
           }`}
         >
-          {positive ? "▲" : "▼"} {Math.abs(delta)}
+          {positive ? "▲" : "▼"} {typeof delta === "number" ? Math.abs(delta) : delta}
         </span>
-        <span className="text-slate-400 font-normal">{deltaLabel}</span>
+        <span className="text-slate-500 dark:text-slate-400 font-normal">{deltaLabel}</span>
       </div>
     </div>
   );
@@ -247,6 +248,7 @@ const PERIODS = [
 
 // ─── Main AdminDashboard Component ───────────────────────────────────────────
 export default function AdminDashboard() {
+  const { t } = useTranslation();
   const [period, setPeriod] = useState("month");
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -277,7 +279,7 @@ export default function AdminDashboard() {
   const tripsData = analytics?.tripsByPeriod || [];
 
   return (
-    <div className="bg-[#f8fafc] min-h-screen text-slate-800 flex flex-col font-sans">
+    <div className="bg-[#f8fafc] dark:bg-[#070e18] min-h-screen text-slate-800 dark:text-slate-100 flex flex-col font-sans transition-colors">
       <AppHeader />
 
       <div className="flex flex-1 relative">
@@ -285,25 +287,25 @@ export default function AdminDashboard() {
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-[1550px] w-full mx-auto space-y-6">
           {/* ── Page Header ── */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-200">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-200 dark:border-slate-800">
             <div>
-              <div className="flex items-center space-x-2 text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">
-                <span>Admin Portal</span>
+              <div className="flex items-center space-x-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
+                <span>{t("adminNav.portalBadge", "Admin Portal")}</span>
                 <span className="text-slate-400">›</span>
-                <span className="text-[#00a3e0]">Dashboard Tổng quan</span>
+                <span className="text-[#00a3e0]">{t("adminNav.overview", "Tổng quan Hệ thống")}</span>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-[#002d54] tracking-tight">
-                Tổng quan Hệ thống
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-[#002d54] dark:text-white tracking-tight">
+                {t("adminNav.overview", "Tổng quan Hệ thống")}
               </h1>
-              <p className="text-xs sm:text-sm text-slate-500 mt-1">
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
                 Phân tích dữ liệu người dùng, chuyến đi và doanh thu — cập nhật theo thời gian thực từ CSDL.
               </p>
             </div>
 
             {/* Period Selector */}
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-slate-500 hidden sm:block">Xem theo:</span>
-              <div className="flex bg-white border border-slate-200 rounded-xl p-0.5 shadow-sm" role="group" aria-label="Bộ lọc khoảng thời gian">
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 hidden sm:block">Xem theo:</span>
+              <div className="flex bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-xl p-0.5 shadow-sm" role="group" aria-label="Bộ lọc khoảng thời gian">
                 {PERIODS.map((p) => (
                   <button
                     key={p.key}
@@ -313,7 +315,7 @@ export default function AdminDashboard() {
                     className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                       period === p.key
                         ? "bg-[#00a3e0] text-white shadow-sm"
-                        : "text-slate-500 hover:text-slate-800"
+                        : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
                     }`}
                   >
                     {p.label}
@@ -325,7 +327,7 @@ export default function AdminDashboard() {
                 type="button"
                 onClick={() => fetchAnalytics(period)}
                 title="Làm mới dữ liệu"
-                className="w-9 h-9 flex items-center justify-center bg-white border border-slate-200 rounded-xl text-slate-500 hover:text-[#00a3e0] hover:border-[#00a3e0] transition-all cursor-pointer shadow-sm"
+                className="w-9 h-9 flex items-center justify-center bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-xl text-slate-500 dark:text-slate-400 hover:text-[#00a3e0] hover:border-[#00a3e0] transition-all cursor-pointer shadow-sm"
               >
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
@@ -339,7 +341,7 @@ export default function AdminDashboard() {
 
           {/* ── Error Banner ── */}
           {error && (
-            <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm font-medium flex items-center gap-2">
+            <div className="p-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 rounded-xl text-red-600 dark:text-red-300 text-sm font-medium flex items-center gap-2">
               <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="12" cy="12" r="10" />
                 <line x1="12" y1="8" x2="12" y2="12" />
@@ -353,10 +355,10 @@ export default function AdminDashboard() {
           {loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
               {[...Array(4)].map((_, i) => (
-                <div key={i} className="bg-white rounded-2xl border border-slate-200 p-5 animate-pulse">
-                  <div className="h-3 bg-slate-100 rounded w-1/2 mb-4" />
-                  <div className="h-7 bg-slate-100 rounded w-2/3 mb-3" />
-                  <div className="h-3 bg-slate-100 rounded w-1/3" />
+                <div key={i} className="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200 dark:border-slate-800 p-5 animate-pulse">
+                  <div className="h-3 bg-slate-100 dark:bg-slate-800 rounded w-1/2 mb-4" />
+                  <div className="h-7 bg-slate-100 dark:bg-slate-800 rounded w-2/3 mb-3" />
+                  <div className="h-3 bg-slate-100 dark:bg-slate-800 rounded w-1/3" />
                 </div>
               ))}
             </div>
@@ -375,8 +377,7 @@ export default function AdminDashboard() {
                     <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                   </svg>
                 }
-                bgColor="bg-sky-50"
-                color="#00a3e0"
+                iconBg="bg-sky-100 dark:bg-sky-950/60 text-[#00a3e0]"
               />
               <KpiCard
                 label="Tổng chuyến đi"
@@ -384,12 +385,11 @@ export default function AdminDashboard() {
                 delta={analytics?.newTripsThisPeriod ?? 0}
                 deltaLabel={`chuyến mới ${periodLabel}`}
                 icon={
-                  <svg className="w-5 h-5 text-violet-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg className="w-5 h-5 text-violet-500 dark:text-violet-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                   </svg>
                 }
-                bgColor="bg-violet-50"
-                color="#8b5cf6"
+                iconBg="bg-violet-100 dark:bg-violet-950/60 text-violet-600 dark:text-violet-400"
               />
               <KpiCard
                 label="Doanh thu"
@@ -397,13 +397,12 @@ export default function AdminDashboard() {
                 delta={analytics?.newRevenueThisPeriod > 0 ? "+" + fmtVND(analytics?.newRevenueThisPeriod) : 0}
                 deltaLabel={`thu ${periodLabel}`}
                 icon={
-                  <svg className="w-5 h-5 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg className="w-5 h-5 text-emerald-500 dark:text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="12" y1="1" x2="12" y2="23" />
                     <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                   </svg>
                 }
-                bgColor="bg-emerald-50"
-                color="#10b981"
+                iconBg="bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400"
               />
               <KpiCard
                 label="Thuê bao đang hoạt động"
@@ -411,14 +410,13 @@ export default function AdminDashboard() {
                 delta={0}
                 deltaLabel="subscription đang hiệu lực"
                 icon={
-                  <svg className="w-5 h-5 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg className="w-5 h-5 text-amber-500 dark:text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M12 2L2 7l10 5 10-5-10-5z" />
                     <path d="M2 17l10 5 10-5" />
                     <path d="M2 12l10 5 10-5" />
                   </svg>
                 }
-                bgColor="bg-amber-50"
-                color="#f59e0b"
+                iconBg="bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400"
               />
             </div>
           )}
@@ -427,11 +425,11 @@ export default function AdminDashboard() {
           {!loading && !error && (
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
               {/* Revenue Chart */}
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+              <div className="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5">
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <h2 className="text-sm font-bold text-slate-800">Doanh thu theo thời gian</h2>
-                    <p className="text-xs text-slate-400 mt-0.5">{periodLabel} · chỉ giao dịch SUCCESS</p>
+                    <h2 className="text-sm font-bold text-slate-900 dark:text-white">Doanh thu theo thời gian</h2>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{periodLabel}</p>
                   </div>
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" title="Live" />
                 </div>
@@ -442,16 +440,16 @@ export default function AdminDashboard() {
                   height={160}
                 />
                 {revenueData.length === 0 && (
-                  <p className="text-center text-xs text-slate-400 mt-2">Không có giao dịch trong khoảng thời gian này.</p>
+                  <p className="text-center text-xs text-slate-400 dark:text-slate-500 mt-2">Không có giao dịch trong khoảng thời gian này.</p>
                 )}
               </div>
 
               {/* Users Chart */}
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+              <div className="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5">
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <h2 className="text-sm font-bold text-slate-800">Người dùng mới theo thời gian</h2>
-                    <p className="text-xs text-slate-400 mt-0.5">{periodLabel}</p>
+                    <h2 className="text-sm font-bold text-slate-900 dark:text-white">Người dùng mới theo thời gian</h2>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{periodLabel}</p>
                   </div>
                   <span className="w-2.5 h-2.5 rounded-full bg-sky-400 animate-pulse" title="Live" />
                 </div>
@@ -462,16 +460,16 @@ export default function AdminDashboard() {
                   height={160}
                 />
                 {usersData.length === 0 && (
-                  <p className="text-center text-xs text-slate-400 mt-2">Không có người dùng mới trong khoảng thời gian này.</p>
+                  <p className="text-center text-xs text-slate-400 dark:text-slate-500 mt-2">Không có người dùng mới trong khoảng thời gian này.</p>
                 )}
               </div>
 
               {/* Trips Chart */}
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+              <div className="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5">
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <h2 className="text-sm font-bold text-slate-800">Chuyến đi được tạo theo thời gian</h2>
-                    <p className="text-xs text-slate-400 mt-0.5">{periodLabel}</p>
+                    <h2 className="text-sm font-bold text-slate-900 dark:text-white">Chuyến đi được tạo theo thời gian</h2>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{periodLabel}</p>
                   </div>
                   <span className="w-2.5 h-2.5 rounded-full bg-violet-400 animate-pulse" title="Live" />
                 </div>
@@ -482,13 +480,13 @@ export default function AdminDashboard() {
                   height={160}
                 />
                 {tripsData.length === 0 && (
-                  <p className="text-center text-xs text-slate-400 mt-2">Không có chuyến đi mới trong khoảng thời gian này.</p>
+                  <p className="text-center text-xs text-slate-400 dark:text-slate-500 mt-2">Không có chuyến đi mới trong khoảng thời gian này.</p>
                 )}
               </div>
 
               {/* Quick Summary Card */}
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
-                <h2 className="text-sm font-bold text-slate-800 mb-4">Tóm tắt hoạt động</h2>
+              <div className="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-5">
+                <h2 className="text-sm font-bold text-slate-900 dark:text-white mb-4">Tóm tắt hoạt động</h2>
                 <div className="space-y-3">
                   {[
                     {
@@ -501,19 +499,19 @@ export default function AdminDashboard() {
                       icon: "🗺️",
                       label: "Tổng chuyến đi đã tạo",
                       value: fmtNum(analytics?.totalTrips),
-                      color: "text-violet-500",
+                      color: "text-violet-500 dark:text-violet-400",
                     },
                     {
                       icon: "💰",
                       label: "Tổng doanh thu ghi nhận",
                       value: fmtVND(analytics?.totalRevenue),
-                      color: "text-emerald-500",
+                      color: "text-emerald-500 dark:text-emerald-400",
                     },
                     {
                       icon: "⭐",
                       label: "Thuê bao Premium đang hoạt động",
                       value: fmtNum(analytics?.activeSubscriptions),
-                      color: "text-amber-500",
+                      color: "text-amber-500 dark:text-amber-400",
                     },
                     {
                       icon: "📈",
@@ -525,13 +523,13 @@ export default function AdminDashboard() {
                       icon: "🚀",
                       label: `Chuyến đi mới (${period === "day" ? "30 ngày" : period === "week" ? "12 tuần" : "12 tháng"})`,
                       value: fmtNum(analytics?.newTripsThisPeriod),
-                      color: "text-violet-500",
+                      color: "text-violet-500 dark:text-violet-400",
                     },
                   ].map((item, i) => (
-                    <div key={i} className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0">
+                    <div key={i} className="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800 last:border-0">
                       <div className="flex items-center gap-2.5">
                         <span className="text-base">{item.icon}</span>
-                        <span className="text-xs text-slate-600 font-medium">{item.label}</span>
+                        <span className="text-xs text-slate-600 dark:text-slate-300 font-medium">{item.label}</span>
                       </div>
                       <span className={`text-sm font-extrabold ${item.color}`}>{item.value}</span>
                     </div>
@@ -545,10 +543,10 @@ export default function AdminDashboard() {
           {loading && (
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
               {[...Array(4)].map((_, i) => (
-                <div key={i} className="bg-white rounded-2xl border border-slate-200 p-5 animate-pulse">
-                  <div className="h-3 bg-slate-100 rounded w-1/3 mb-2" />
-                  <div className="h-2 bg-slate-100 rounded w-1/4 mb-6" />
-                  <div className="h-36 bg-slate-50 rounded-xl" />
+                <div key={i} className="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200 dark:border-slate-800 p-5 animate-pulse">
+                  <div className="h-3 bg-slate-100 dark:bg-slate-800 rounded w-1/3 mb-2" />
+                  <div className="h-2 bg-slate-100 dark:bg-slate-800 rounded w-1/4 mb-6" />
+                  <div className="h-36 bg-slate-50 dark:bg-slate-900 rounded-xl" />
                 </div>
               ))}
             </div>

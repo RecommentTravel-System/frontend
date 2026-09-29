@@ -100,8 +100,40 @@ function AppRoutes() {
       container.current?.focus({ preventScroll: true });
       return;
     }
-    const titles = { '/create-tour': 'Tạo tour', '/search': 'Tìm kiếm địa điểm', '/': 'Trang chủ', '/profile': 'Thông tin cá nhân', '/login': 'Đăng nhập', '/register': 'Đăng ký', '/payment': 'Premium', '/reviews': 'Bài đánh giá', '/settings': 'Cài đặt', '/support': 'Hỗ trợ & Phản hồi' };
-    document.title = `${titles[location.pathname] || (location.pathname.startsWith('/locations/') ? 'Chi tiết địa điểm' : location.pathname.startsWith('/itineraries') ? 'Lịch trình' : location.pathname.startsWith('/favorites') ? 'Địa điểm yêu thích' : 'Không tìm thấy trang')} | Wayvee`;
+    const titles = {
+      '/': 'Trang chủ',
+      '/login': 'Đăng nhập',
+      '/register': 'Đăng ký',
+      '/profile': 'Thông tin cá nhân',
+      '/payment': 'Premium',
+      '/reviews': 'Bài đánh giá',
+      '/settings': 'Cài đặt',
+      '/support': 'Hỗ trợ & Phản hồi',
+      '/create-tour': 'Tạo tour',
+      '/search': 'Tìm kiếm địa điểm',
+      '/places': 'Khám phá địa điểm',
+      '/trip/info': 'Khởi tạo lịch trình',
+      '/trip/create': 'Tạo lịch trình',
+      '/trip/plan': 'Lên kế hoạch',
+      '/trip/confirm': 'Xác nhận lịch trình',
+      '/trip/success': 'Hoàn tất lịch trình',
+      '/admin': 'Quản trị viên',
+      '/admin/dashboard': 'Dashboard - Quản trị',
+      '/admin/categories': 'Danh mục - Quản trị',
+      '/admin/reviews': 'Đánh giá - Quản trị',
+      '/admin/users': 'Người dùng - Quản trị',
+    };
+    const path = location.pathname;
+    const pageTitle =
+      titles[path] ||
+      (path.startsWith('/locations/') ? 'Chi tiết địa điểm' :
+       path.startsWith('/places/') ? 'Chi tiết địa điểm' :
+       path.startsWith('/itineraries') ? 'Lịch trình' :
+       path.startsWith('/favorites') ? 'Địa điểm yêu thích' :
+       path.startsWith('/trip/') ? 'Lịch trình' :
+       path.startsWith('/admin/') ? 'Quản trị viên' :
+       'Không tìm thấy trang');
+    document.title = `${pageTitle} | Wayvee`;
     const target = location.hash && document.getElementById(location.hash.slice(1));
     if (target) target.scrollIntoView({ behavior: document.documentElement.dataset.motion === 'off' || window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
     else window.scrollTo({ top: 0, behavior: 'instant' });
