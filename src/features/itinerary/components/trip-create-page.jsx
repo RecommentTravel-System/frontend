@@ -533,20 +533,6 @@ export function TripCreatePage() {
                   })}
                 </div>
               </div>
-
-              {/* Quick Add Location to List Action */}
-              <div className="pt-2">
-                <button
-                  className="w-full py-3 bg-[#002d5b] text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 hover:bg-[#1e4069] transition-all shadow-xs active:scale-[0.99] cursor-pointer"
-                  onClick={handleAddDestinationPlace}
-                  type="button"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                  </svg>
-                  {t("tripCreate.locationDetails.addCurrentLocation", "Thêm địa điểm này vào danh sách chọn")}
-                </button>
-              </div>
             </div>
           </div>
 
@@ -658,18 +644,7 @@ export function TripCreatePage() {
                     </div>
                   ))
                 )}
-              </div>
-
-              {/* Total Route Estimation Banner */}
-              <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-                <span className="flex items-center gap-1">
-                  <span className="material-symbols-outlined text-base text-[#00a3e0]">route</span>
-                  Ước tính di chuyển liên tuyến:
-                </span>
-                <span className="font-semibold text-[#00a3e0]">
-                  ~{(Math.max(1, placesList.length) * 4.2).toFixed(1)} km ({placesList.length} điểm)
-                </span>
-              </div>
+              </div>              
             </div>
           </div>
         </div>

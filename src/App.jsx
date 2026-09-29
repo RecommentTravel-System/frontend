@@ -45,18 +45,38 @@ function AccountPage({ register = false }) {
   const navigate = useNavigate();
   const location = useLocation();
   const requestedDestination = location.state?.from;
-  const destination = typeof requestedDestination === 'string' && requestedDestination.startsWith('/') && !requestedDestination.startsWith('//')
-    ? requestedDestination
-    : '/profile';
-  if (user) return <Navigate to={destination} replace />;
+
+  // Helper: kiểm tra role admin
+  const isAdminUser = (u) => {
+    if (!u) return false;
+    const role = u.role || (Array.isArray(u.roles) ? u.roles[0] : null);
+    return Boolean(role) && (String(role).toUpperCase() === 'ADMIN' || String(role).toUpperCase() === 'ROLE_ADMIN');
+  };
+
+  const getDestination = (u) => {
+    if (isAdminUser(u)) return '/admin/dashboard';
+    return typeof requestedDestination === 'string' && requestedDestination.startsWith('/') && !requestedDestination.startsWith('//')
+      ? requestedDestination
+      : '/profile';
+  };
+
+  // Nếu đã đăng nhập, redirect ngay
+  if (user) return <Navigate to={getDestination(user)} replace />;
+
   const socialLogin = () => { throw new Error('Đăng nhập mạng xã hội chưa được kết nối. Vui lòng dùng email và mật khẩu.'); };
   const shared = { onClose: () => navigate('/'), onGoogle: socialLogin };
+
   if (register) return <Register {...shared} onLogin={() => navigate('/login', { state: location.state })} onSubmit={(values) => {
-    navigate('/login', { replace: true, state: { from: destination, message: 'Đăng ký tài khoản thành công! Vui lòng đăng nhập để tiếp tục.' } });
+    const dest = typeof requestedDestination === 'string' && requestedDestination.startsWith('/') && !requestedDestination.startsWith('//')
+      ? requestedDestination : '/profile';
+    navigate('/login', { replace: true, state: { from: dest, message: 'Đăng ký tài khoản thành công! Vui lòng đăng nhập để tiếp tục.' } });
   }} />;
+
   return <Login {...shared} message={location.state?.message} onSignUp={() => navigate('/register', { state: location.state })} onSubmit={async (values) => {
-    await login(values);
-    navigate(destination, { replace: true });
+    const response = await login(values);
+    // Lấy userResponse từ response để check role ngay
+    const loggedUser = response?.data?.userResponse || null;
+    navigate(getDestination(loggedUser), { replace: true });
   }} />;
 }
 

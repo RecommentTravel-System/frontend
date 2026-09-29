@@ -209,15 +209,13 @@
       "memberPrefix": "Members:",
       "travelStyleLabel": "Trip style & preferences",
       "travelStylePlaceholder": "Enter more preferences...",
-      "selectedCount": "Selected",
-      "addCurrentLocation": "Add this place to selection"
+      "selectedCount": "Selected"
     },
     "selectedPlaces": {
       "title": "SAVED PLACES",
       "emptyTitle": "No places selected yet",
       "emptyDesc": "Click \"Quick add places\" above to select nearby places!",
       "addPlaceButton": "Quick add places",
-      "routeEstimate": "Estimated total route distance:",
       "points": "stops",
       "clearAll": "Clear all",
       "excellent": "Excellent",

@@ -1,0 +1,314 @@
+/* ====================================================
+   Saved Trips Layout — đồng bộ với Profile page
+   ==================================================== */
+
+.saved-trips-page {
+  min-height: 100vh;
+  background: #f8f9fb;             /* giống .profile-page */
+  font-family: Inter, 'Segoe UI', sans-serif;
+  font-size: 13px;
+  color: #626b79;
+  display: flex;
+  flex-direction: column;
+}
+
+.saved-trips-page button {
+  cursor: pointer;
+  font: inherit;
+}
+
+.saved-trips-layout {
+  align-items: start;
+  padding-top: 24px;
+  padding-bottom: 60px;
+  flex: 1;
+}
+
+/* Wrapper bên phải — stack các card dọc giống profile-content */
+.saved-trips-content {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ====================================================
+   Inner content (Profile list & TripDetails)
+   ==================================================== */
+.saved-trips-inner {
+  overflow-wrap: anywhere;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Card header — giống .profile-summary */
+.saved-trips-summary-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 24px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.saved-trips-summary-card h1 {
+  margin: 0 0 5px;
+  font-size: 23px;
+  font-weight: 600;
+  color: #636c7a;
+}
+
+.saved-trips-summary-card p {
+  margin: 0;
+  font-size: 13px;
+  color: #a2abba;
+}
+
+/* Section heading row (count + button) */
+.saved-trips-section-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 18px 22px;
+}
+
+.saved-trips-section-row h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #636c7a;
+}
+
+/* Primary button — đồng bộ profile-form-actions */
+.saved-trips-btn-primary {
+  padding: 9px 18px;
+  background: #07365b;
+  color: white;
+  border: none;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.saved-trips-btn-primary:hover {
+  background: #0a4575;
+}
+
+/* Secondary / outline button */
+.saved-trips-btn-secondary {
+  padding: 8px 16px;
+  background: white;
+  color: #636c7a;
+  border: 1px solid #d1d9e3;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.15s;
+}
+
+.saved-trips-btn-secondary:hover {
+  background: #f4f8fc;
+}
+
+/* Success / error notices */
+.saved-trips-success {
+  background: #e1f4eb;
+  color: #155b40;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+}
+
+.saved-trips-error {
+  background: #fff0ed;
+  color: #9a321d;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 13px;
+}
+
+/* ====================================================
+   Empty state card
+   ==================================================== */
+.saved-trips-empty-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 52px 32px;
+  text-align: center;
+  border: 1px solid #eaeff5;
+}
+
+.saved-trips-empty-card h2 {
+  margin: 0 0 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #49586a;
+}
+
+.saved-trips-empty-card p {
+  margin: 0 auto 24px;
+  max-width: 360px;
+  font-size: 13px;
+  color: #a2abba;
+  line-height: 1.6;
+}
+
+/* ====================================================
+   Trip cards grid
+   ==================================================== */
+.saved-trips-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.saved-trips-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 20px 20px 18px;
+  border: 1px solid #eaeff5;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: box-shadow 0.15s, border-color 0.15s;
+}
+
+.saved-trips-card:hover {
+  box-shadow: 0 4px 16px #0b254512;
+  border-color: #c8d9e8;
+}
+
+.saved-trips-card-tag {
+  display: inline-block;
+  background: #eaf2fa;
+  color: #2c6da4;
+  border-radius: 6px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  width: fit-content;
+}
+
+.saved-trips-card h2 {
+  margin: 2px 0 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #3a4a5c;
+}
+
+.saved-trips-card p {
+  margin: 0;
+  font-size: 12px;
+  color: #a2abba;
+}
+
+/* ====================================================
+   Detail view
+   ==================================================== */
+.saved-trips-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.saved-trips-detail-title {
+  background: #fff;
+  border-radius: 14px;
+  padding: 20px 22px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #3a4a5c;
+  margin: 0;
+}
+
+/* Detail info card */
+.saved-trips-info-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 20px 22px;
+  border: 1px solid #eaeff5;
+}
+
+.saved-trips-info-card h2 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #3a4a5c;
+  margin: 0 0 10px;
+}
+
+.saved-trips-info-card p {
+  margin: 4px 0;
+  font-size: 13px;
+  color: #636c7a;
+}
+
+.saved-trips-preline {
+  white-space: pre-wrap;
+  margin-top: 10px;
+  color: #a2abba;
+  font-size: 12px;
+}
+
+/* Day timeline */
+.saved-trips-day-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 20px 22px;
+  border: 1px solid #eaeff5;
+}
+
+.saved-trips-day-card h2 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #49586a;
+  margin: 0 0 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f0f3f7;
+}
+
+.saved-trips-activity {
+  border-left: 3px solid #b9d7eb;
+  padding: 6px 0 6px 16px;
+  margin-top: 14px;
+}
+
+.saved-trips-activity h3 {
+  font-size: 13px;
+  font-weight: 600;
+  color: #3a4a5c;
+  margin: 0 0 4px;
+}
+
+.saved-trips-activity p {
+  margin: 2px 0;
+  font-size: 12px;
+  color: #a2abba;
+}
+
+@media (max-width: 760px) {
+  .saved-trips-layout {
+    padding-top: 16px;
+    padding-bottom: 40px;
+  }
+
+  .saved-trips-summary-card {
+    padding: 18px 16px;
+  }
+
+  .saved-trips-summary-card h1 {
+    font-size: 18px;
+  }
+
+  .saved-trips-grid {
+    grid-template-columns: 1fr;
+  }
+}

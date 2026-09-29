@@ -82,18 +82,90 @@ export function Profile({ onHome, onCreate, onOpen, saved, storage }) {
     try { return { trips: readTrips(storage), error: '' }; }
     catch { return { trips: [], error: 'Không thể đọc lịch trình đã lưu. Hãy kiểm tra quyền lưu trữ của trình duyệt và tải lại trang.' }; }
   });
-  return <Shell title="Lịch trình đã lưu của bạn" onHome={onHome}>
-    <p className="manual-trip-muted">Lịch trình của tài khoản hiện tại trên trình duyệt này · Chưa đồng bộ giữa các thiết bị.</p>
-    {saved && <p className="manual-trip-success" role="status">Đã lưu lịch trình thành công. Bạn có thể xem lại chi tiết bên dưới.</p>}
-    <div className="manual-trip-section-heading"><h2>Lịch trình đã lưu ({result.trips.length})</h2><button className="manual-trip-primary" onClick={onCreate}>+ Tạo lịch trình</button></div>
-    {result.error ? <p className="manual-trip-error" role="alert">{result.error}</p> : result.trips.length === 0 ? <section className="manual-trip-panel manual-trip-empty"><h2>Bắt đầu chuyến đi đầu tiên</h2><p>Bạn chưa lưu lịch trình nào. Tạo chuyến đi và lưu những kế hoạch của mình tại đây.</p><button className="manual-trip-primary" onClick={onCreate}>Tạo lịch trình ngay</button></section> : <div className="manual-trip-grid">{result.trips.map(trip => <article key={trip.id} className="manual-trip-panel"><span className="manual-trip-tag">{trip.destination}</span><h2>{trip.title}</h2><p>{formatDate(trip.startDate)} – {formatDate(trip.endDate)}</p><p className="manual-trip-muted">{trip.days.length} ngày · {trip.travelers} người</p><button className="manual-trip-secondary" onClick={() => onOpen(trip)}>Xem chi tiết</button></article>)}</div>}
-  </Shell>;
+  return (
+    <div className="saved-trips-inner">
+      {/* Header card */}
+      <div className="saved-trips-summary-card">
+        <div>
+          <h1>Lịch trình đã lưu của bạn</h1>
+          <p>Lịch trình của tài khoản hiện tại trên trình duyệt này · Chưa đồng bộ giữa các thiết bị.</p>
+        </div>
+      </div>
+
+      {saved && <p className="saved-trips-success" role="status">Đã lưu lịch trình thành công. Bạn có thể xem lại chi tiết bên dưới.</p>}
+      {result.error && <p className="saved-trips-error" role="alert">{result.error}</p>}
+
+      {/* Count + create button */}
+      <div className="saved-trips-section-row">
+        <h2>Lịch trình đã lưu ({result.trips.length})</h2>
+        <button className="saved-trips-btn-primary" onClick={onCreate}>+ Tạo lịch trình</button>
+      </div>
+
+      {/* Empty state */}
+      {!result.error && result.trips.length === 0 && (
+        <section className="saved-trips-empty-card">
+          <h2>Bắt đầu chuyến đi đầu tiên</h2>
+          <p>Bạn chưa lưu lịch trình nào. Tạo chuyến đi và lưu những kế hoạch của mình tại đây.</p>
+          <button className="saved-trips-btn-primary" onClick={onCreate}>Tạo lịch trình ngay</button>
+        </section>
+      )}
+
+      {/* Trip cards grid */}
+      {result.trips.length > 0 && (
+        <div className="saved-trips-grid">
+          {result.trips.map(trip => (
+            <article key={trip.id} className="saved-trips-card">
+              <span className="saved-trips-card-tag">{trip.destination}</span>
+              <h2>{trip.title}</h2>
+              <p>{formatDate(trip.startDate)} – {formatDate(trip.endDate)}</p>
+              <p>{trip.days.length} ngày · {trip.travelers} người</p>
+              <button className="saved-trips-btn-secondary" style={{ marginTop: 8 }} onClick={() => onOpen(trip)}>Xem chi tiết →</button>
+            </article>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }
 
 export function TripDetails({ trip, onHome, onProfile, onEdit }) {
-  return <Shell title={trip.title} onHome={onHome}>
-    <div className="manual-trip-actions"><button className="manual-trip-secondary" onClick={onProfile}>← Profile</button><button className="manual-trip-primary" onClick={() => onEdit(trip)}>Chỉnh sửa lịch trình</button></div>
-    <section className="manual-trip-panel"><h2>{trip.destination}</h2><p>{formatDate(trip.startDate)} – {formatDate(trip.endDate)} · {trip.travelers} người</p><p>Phong cách: {trip.style || 'Chưa chọn'}</p><p>Ngân sách: {trip.budget === '' ? 'Chưa đặt' : `${Number(trip.budget).toLocaleString('vi-VN')} VNĐ`}</p>{trip.notes && <p className="manual-trip-preline">{trip.notes}</p>}</section>
-    {trip.days.map((day, i) => <section className="manual-trip-panel" key={day.date}><h2>Ngày {i + 1} · {formatDate(day.date)}</h2>{day.activities.map(activity => <article className="manual-trip-timeline" key={activity.id}><span className="manual-trip-tag">{activity.time || 'Chưa đặt giờ'}</span><h3>{activity.title}</h3>{activity.location && <p>Địa điểm: {activity.location}</p>}{activity.notes && <p className="manual-trip-preline manual-trip-muted">{activity.notes}</p>}</article>)}</section>)}
-  </Shell>;
+  return (
+    <div className="saved-trips-inner">
+      {/* Navigation + action buttons */}
+      <div className="saved-trips-detail-header">
+        <button className="saved-trips-btn-secondary" onClick={onProfile}>← Lịch trình đã lưu</button>
+        <button className="saved-trips-btn-primary" onClick={() => onEdit(trip)}>Chỉnh sửa lịch trình</button>
+      </div>
+
+      {/* Title card */}
+      <div className="saved-trips-summary-card" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 6 }}>
+        <h1>{trip.title}</h1>
+        <p>{trip.destination}</p>
+      </div>
+
+      {/* Info card */}
+      <section className="saved-trips-info-card">
+        <h2>Thông tin chuyến đi</h2>
+        <p>📅 {formatDate(trip.startDate)} – {formatDate(trip.endDate)} · {trip.travelers} người</p>
+        <p>🎯 Phong cách: {trip.style || 'Chưa chọn'}</p>
+        <p>💰 Ngân sách: {trip.budget === '' ? 'Chưa đặt' : `${Number(trip.budget).toLocaleString('vi-VN')} VNĐ`}</p>
+        {trip.notes && <p className="saved-trips-preline">{trip.notes}</p>}
+      </section>
+
+      {/* Day cards */}
+      {trip.days.map((day, i) => (
+        <section className="saved-trips-day-card" key={day.date}>
+          <h2>Ngày {i + 1} · {formatDate(day.date)}</h2>
+          {day.activities.map(activity => (
+            <div className="saved-trips-activity" key={activity.id}>
+              <span className="saved-trips-card-tag" style={{ marginBottom: 6 }}>{activity.time || 'Chưa đặt giờ'}</span>
+              <h3>{activity.title}</h3>
+              {activity.location && <p>📍 {activity.location}</p>}
+              {activity.notes && <p className="saved-trips-preline">{activity.notes}</p>}
+            </div>
+          ))}
+        </section>
+      ))}
+    </div>
+  );
 }

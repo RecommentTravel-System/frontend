@@ -209,15 +209,13 @@
       "memberPrefix": "Thành viên:",
       "travelStyleLabel": "Phong cách & Sở thích chuyến đi",
       "travelStylePlaceholder": "Nhập thêm sở thích khác...",
-      "selectedCount": "Đã chọn",
-      "addCurrentLocation": "Thêm địa điểm này vào danh sách chọn"
+      "selectedCount": "Đã chọn"
     },
     "selectedPlaces": {
       "title": "DANH SÁCH ĐỊA ĐIỂM",
       "emptyTitle": "Chưa có địa điểm nào",
       "emptyDesc": "Bấm nút \"Thêm địa điểm nhanh\" bên trên để chọn địa điểm xung quanh!",
       "addPlaceButton": "Thêm địa điểm nhanh",
-      "routeEstimate": "Ước tính di chuyển liên tuyến:",
       "points": "điểm",
       "clearAll": "Xóa tất cả",
       "excellent": "Xuất sắc",
