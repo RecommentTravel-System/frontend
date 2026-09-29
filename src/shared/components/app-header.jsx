@@ -86,7 +86,36 @@ export function AppHeader({ onLogin, onRegister }) {
     };
   }, []);
 
+  const role = user?.role || (Array.isArray(user?.roles) ? user?.roles[0] : null);
+  const isAdmin =
+    isAuthenticated &&
+    Boolean(role) &&
+    (String(role).toUpperCase() === "ADMIN" ||
+     String(role).toUpperCase() === "ROLE_ADMIN" ||
+     String(role).toUpperCase() === "SUPERADMIN");
+
   const menuItems = [
+    ...(isAdmin
+      ? [
+          {
+            id: "adminDashboard",
+            label: t("userMenu.adminDashboard", "Trang Quản Trị (Admin)"),
+            icon: (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 flex-shrink-0 text-[#00a3e0]">
+                <rect x="3" y="3" width="7" height="7" rx="1.5" />
+                <rect x="14" y="3" width="7" height="7" rx="1.5" />
+                <rect x="3" y="14" width="7" height="7" rx="1.5" />
+                <rect x="14" y="14" width="7" height="7" rx="1.5" />
+              </svg>
+            ),
+            isAdminOption: true,
+            onClick: () => {
+              setMenuOpen(false);
+              navigate("/admin");
+            }
+          }
+        ]
+      : []),
     {
       id: "personalData",
       label: t("userMenu.personalData"),
@@ -263,13 +292,24 @@ export function AppHeader({ onLogin, onRegister }) {
                       key={item.id}
                       type="button"
                       onClick={item.onClick}
-                      className="w-full flex items-center gap-4 px-4 py-3 rounded-2xl text-slate-800 dark:text-slate-100 font-semibold text-sm hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors text-left cursor-pointer"
+                      className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-semibold transition-colors text-left cursor-pointer ${
+                        item.isAdminOption
+                          ? "bg-sky-50/80 dark:bg-sky-950/40 text-[#00a3e0] hover:bg-sky-100/90 dark:hover:bg-sky-900/50 mb-1 border border-sky-100 dark:border-sky-900/60"
+                          : "text-slate-800 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800/80"
+                      }`}
                       role="menuitem"
                     >
-                      <span className="text-slate-700 dark:text-slate-300">
-                        {item.icon}
-                      </span>
-                      <span className="truncate">{item.label}</span>
+                      <div className="flex items-center gap-4 min-w-0">
+                        <span className={item.isAdminOption ? "text-[#00a3e0]" : "text-slate-700 dark:text-slate-300"}>
+                          {item.icon}
+                        </span>
+                        <span className="truncate">{item.label}</span>
+                      </div>
+                      {item.isAdminOption && (
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase tracking-wider bg-[#00a3e0] text-white shrink-0 shadow-2xs">
+                          ADMIN
+                        </span>
+                      )}
                     </button>
                   ))}
                 </div>

@@ -6,6 +6,7 @@
   "support": "Hỗ trợ",
   "settings": "Cài đặt",
   "userMenu": {
+    "adminDashboard": "Trang Quản Trị",
     "personalData": "Dữ liệu cá nhân",
     "payment": "Thanh toán",
     "trips": "Chuyến đi",
@@ -514,12 +515,13 @@
   "adminNav": {
     "portal": "Cổng Quản Trị",
     "portalBadge": "Admin Portal",
+    "mainMenu": "Menu chính",
+    "roleAdmin": "Quản trị viên",
     "overview": "Dashboard Tổng quan",
     "users": "Quản lý Người dùng",
     "categories": "Quản lý Danh mục",
     "reviews": "Kiểm duyệt Đánh giá",
     "revenue": "Báo cáo & Doanh thu",
-    "places": "Quản lý Địa điểm",
     "itineraries": "Lịch trình",
     "explore": "Khám phá",
     "budget": "Ngân sách",

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { AppHeader, AppFooter } from "~/shared/components";
+import { AppHeader } from "~/shared/components";
 import { useTranslation } from "~/providers/i18n-provider";
 import AdminDashboardRail from "./AdminDashboardRail";
 import { getAnalyticsApi } from "~/features/analytics/services/analytics-api";
@@ -279,13 +279,13 @@ export default function AdminDashboard() {
   const tripsData = analytics?.tripsByPeriod || [];
 
   return (
-    <div className="bg-[#f8fafc] dark:bg-[#070e18] min-h-screen text-slate-800 dark:text-slate-100 flex flex-col font-sans transition-colors">
+    <div className="bg-[#f8fafc] dark:bg-[#070e18] h-screen flex flex-col overflow-hidden text-slate-800 dark:text-slate-100 font-sans transition-colors">
       <AppHeader />
 
-      <div className="flex flex-1 relative">
+      <div className="flex flex-1 min-h-0 overflow-hidden relative">
         <AdminDashboardRail active="overview" />
 
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-[1550px] w-full mx-auto space-y-6">
+        <main className="flex-1 h-full overflow-y-auto p-4 sm:p-6 lg:p-8 max-w-[1550px] w-full mx-auto space-y-6">
           {/* ── Page Header ── */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-200 dark:border-slate-800">
             <div>
@@ -298,7 +298,7 @@ export default function AdminDashboard() {
                 {t("adminNav.overview", "Tổng quan Hệ thống")}
               </h1>
               <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
-                Phân tích dữ liệu người dùng, chuyến đi và doanh thu — cập nhật theo thời gian thực từ CSDL.
+                Phân tích dữ liệu người dùng, chuyến đi và doanh thu
               </p>
             </div>
 
@@ -553,8 +553,6 @@ export default function AdminDashboard() {
           )}
         </main>
       </div>
-
-      <AppFooter />
     </div>
   );
 }

@@ -289,7 +289,7 @@ export default function AdminUsers() {
   };
 
   return (
-    <div className="bg-[#f8fafc] dark:bg-[#070e18] min-h-screen text-slate-800 dark:text-slate-100 flex flex-col font-sans transition-colors">
+    <div className="bg-[#f8fafc] dark:bg-[#070e18] h-screen flex flex-col overflow-hidden text-slate-800 dark:text-slate-100 font-sans transition-colors">
       {/* Shared App Header */}
       <AppHeader />
 
@@ -301,12 +301,12 @@ export default function AdminUsers() {
         </div>
       )}
 
-      <div className="flex flex-1 relative">
+      <div className="flex flex-1 min-h-0 overflow-hidden relative">
         {/* Left Side Navigation Rail */}
         <AdminDashboardRail active="users" />
 
         {/* Content Canvas */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-[1550px] w-full mx-auto space-y-6">
+        <main className="flex-1 h-full overflow-y-auto p-4 sm:p-6 lg:p-8 max-w-[1550px] w-full mx-auto space-y-6">
           {/* HEADER ZONE */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-200 dark:border-slate-800">
             <div>

@@ -37,6 +37,7 @@ const navItems = [
   },
   {
     id: "categories",
+    labelKey: "adminNav.categories",
     label: "Quản lý Danh mục",
     path: "/admin/categories",
     badge: null,
@@ -51,6 +52,7 @@ const navItems = [
   },
   {
     id: "reviews",
+    labelKey: "adminNav.reviews",
     label: "Kiểm duyệt Đánh giá",
     path: "/admin/reviews",
     badge: null,
@@ -65,6 +67,7 @@ const navItems = [
   },
   {
     id: "revenue",
+    labelKey: "adminNav.revenue",
     label: "Báo cáo & Doanh thu",
     path: "/admin",
     badge: null,
@@ -75,20 +78,6 @@ const navItems = [
         <line x1="12" y1="20" x2="12" y2="4" />
         <line x1="6" y1="20" x2="6" y2="14" />
         <polyline points="3 8 9 2 15 8 21 2" />
-      </svg>
-    ),
-  },
-  {
-    id: "places",
-    label: "Quản lý Địa điểm",
-    path: "/places",
-    badge: null,
-    trailingDot: true,
-    icon: (
-      <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" />
-        <line x1="8" y1="2" x2="8" y2="18" />
-        <line x1="16" y1="6" x2="16" y2="22" />
       </svg>
     ),
   },
@@ -108,11 +97,11 @@ export default function AdminDashboardRail({ active }) {
 
   return (
     <aside
-      className="hidden md:flex flex-col w-[220px] shrink-0 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a] min-h-screen transition-colors"
+      className="hidden md:flex flex-col w-[220px] shrink-0 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a] h-full overflow-hidden transition-colors select-none group/rail"
       aria-label="Admin navigation"
     >
       {/* Brand strip */}
-      <div className="flex items-center gap-2.5 px-5 py-5 border-b border-slate-100 dark:border-slate-800/80">
+      <div className="shrink-0 flex items-center gap-2.5 px-5 py-5 border-b border-slate-100 dark:border-slate-800/80">
         <div className="w-8 h-8 rounded-xl bg-[#00a3e0] flex items-center justify-center shadow-sm">
           <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="white" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
@@ -125,14 +114,14 @@ export default function AdminDashboardRail({ active }) {
       </div>
 
       {/* Section label */}
-      <div className="px-5 pt-4 pb-1.5">
+      <div className="shrink-0 px-5 pt-4 pb-1.5">
         <span className="text-[9px] font-extrabold uppercase tracking-widest text-slate-400 dark:text-slate-500">
           {t("adminNav.mainMenu", "Menu chính")}
         </span>
       </div>
 
-      {/* Nav items */}
-      <nav className="flex flex-col gap-0.5 px-2.5 pb-4 flex-1">
+      {/* Nav items container with hover-only scrollbar */}
+      <nav className="flex-1 overflow-y-auto px-2.5 pb-4 space-y-0.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-transparent group-hover/rail:[&::-webkit-scrollbar-thumb]:bg-slate-300 dark:group-hover/rail:[&::-webkit-scrollbar-thumb]:bg-slate-700 group-hover/rail:[scrollbar-width:thin] [&::-webkit-scrollbar-thumb]:rounded-full transition-all">
         {navItems.map((item) => {
           const isActive = resolveActive(item);
           return (
@@ -181,13 +170,13 @@ export default function AdminDashboardRail({ active }) {
         })}
       </nav>
 
-      {/* Footer */}
-      <div className="px-4 py-4 border-t border-slate-100 dark:border-slate-800/80">
+      {/* Footer User Info */}
+      <div className="shrink-0 px-4 py-4 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-900/50">
         <div className="flex items-center gap-2.5">
           <div className="w-7 h-7 rounded-full bg-[#00a3e0]/10 dark:bg-sky-950/60 flex items-center justify-center text-[#00a3e0] text-xs font-bold">A</div>
           <div className="flex-1 min-w-0">
             <div className="text-[11px] font-semibold text-slate-700 dark:text-slate-200 truncate">Admin</div>
-            <div className="text-[10px] text-slate-400 dark:text-slate-500 truncate">Quản trị viên</div>
+            <div className="text-[10px] text-slate-400 dark:text-slate-500 truncate">{t("adminNav.roleAdmin", "Quản trị viên")}</div>
           </div>
           <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0" title="Online" />
         </div>

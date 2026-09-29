@@ -6,6 +6,7 @@
   "support": "Support",
   "settings": "Settings",
   "userMenu": {
+    "adminDashboard": "Admin Dashboard",
     "personalData": "Personal Data",
     "payment": "Payment",
     "trips": "Trips",
@@ -514,12 +515,13 @@
   "adminNav": {
     "portal": "Admin Portal",
     "portalBadge": "Admin Portal",
+    "mainMenu": "Main Menu",
+    "roleAdmin": "Administrator",
     "overview": "Overview Dashboard",
     "users": "User Management",
     "categories": "Category Management",
     "reviews": "Review Moderation",
     "revenue": "Revenue & Reports",
-    "places": "Place Management",
     "itineraries": "Itineraries",
     "explore": "Explore",
     "budget": "Budget",
