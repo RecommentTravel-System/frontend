@@ -1,80 +1,209 @@
-import { useState } from 'react';
+import { lazy, Suspense, useEffect, useLayoutEffect, useRef } from 'react';
+import { Link, Navigate, Outlet, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
+import { AppProviders } from '~/providers/app-providers';
+import { useAuth } from './auth/useAuth.js';
+import { registerAccount } from './auth/authService.js';
 import Login from './login/Login.jsx';
 import Register from './register/Register.jsx';
 import Home from './homepage/Home.jsx';
 import Payment from './payment/Payment.jsx';
+import Profile from './profile/Profile.jsx';
+import Itineraries from './itineraries/Itineraries.jsx';
+import Favorites from './favorites/Favorites.jsx';
+import Reviews from './reviews/Reviews.jsx';
+import Settings from './settings/Settings.jsx';
+import Support from './support/Support.jsx';
+import TripRoutes from './trips/TripRoutes.jsx';
+import SearchLoading from './search/SearchLoading.jsx';
+const SearchPage = lazy(() => import('./search/SearchPage.jsx'));
+import LocationDetails from './location/LocationDetails.jsx';
+import { usePreferences } from './settings/preferences.js';
 
-export default function App() {
-  const [screen, setScreen] = useState('home');
+// Routes bổ sung từ nhánh HEAD (chưa có bản tương đương ở nhánh Duc)
+import PlacesRoute from '~/routes/places';
+import PlaceDetailRoute from '~/routes/place-detail';
+import TripInfoRoute from '~/routes/trip-info';
+import TripCreateRoute from '~/routes/trip-create';
+import TripPlanRoute from '~/routes/trip-plan';
+import TripConfirmRoute from '~/routes/trip-confirm';
+import TripSuccessRoute from '~/routes/trip-success';
+import AdminDashboardRoute from '~/routes/admin-dashboard';
+import AdminReviewsRoute from '~/routes/admin-reviews';
+import AdminCategoriesRoute from '~/routes/admin-categories';
+import AdminUsersRoute from '~/routes/admin-users';
+import AdminGuard from '~/routes/admin-guard';
 
-  const handleSubmit = (values) => {
-    console.log(
-      `${screen === 'login' ? 'Login' : 'Register'} form submitted:`,
-      values
-    );
-    setScreen('home');
+function RequireAuth() {
+  const { user } = useAuth();
+  const location = useLocation();
+  return user ? <Outlet /> : <Navigate to="/login" replace state={{ from: location.pathname + location.search }} />;
+}
+
+function AccountPage({ register = false }) {
+  const { user, login } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const requestedDestination = location.state?.from;
+
+  // Helper: kiểm tra role admin
+  const isAdminUser = (u) => {
+    if (!u) return false;
+    const role = u.role || (Array.isArray(u.roles) ? u.roles[0] : null);
+    return Boolean(role) && (String(role).toUpperCase() === 'ADMIN' || String(role).toUpperCase() === 'ROLE_ADMIN');
   };
 
-  // PAYMENT
-  if (screen === 'payment') {
-    return (
-      <Payment
-        onBack={() => setScreen('home')}
+  const getDestination = (u) => {
+    if (isAdminUser(u)) return '/admin/dashboard';
+    return typeof requestedDestination === 'string' && requestedDestination.startsWith('/') && !requestedDestination.startsWith('//')
+      ? requestedDestination
+      : '/profile';
+  };
+
+  // Nếu đã đăng nhập, redirect ngay
+  if (user) return <Navigate to={getDestination(user)} replace />;
+
+  const socialLogin = () => { throw new Error('Đăng nhập mạng xã hội chưa được kết nối. Vui lòng dùng email và mật khẩu.'); };
+  const shared = { onClose: () => navigate('/'), onGoogle: socialLogin };
+
+  if (register) return <Register {...shared} onLogin={() => navigate('/login', { state: location.state })} onSubmit={(values) => {
+    const dest = typeof requestedDestination === 'string' && requestedDestination.startsWith('/') && !requestedDestination.startsWith('//')
+      ? requestedDestination : '/profile';
+    navigate('/login', { replace: true, state: { from: dest, message: 'Đăng ký tài khoản thành công! Vui lòng đăng nhập để tiếp tục.' } });
+  }} />;
+
+  return <Login {...shared} message={location.state?.message} onSignUp={() => navigate('/register', { state: location.state })} onSubmit={async (values) => {
+    const response = await login(values);
+    // Lấy userResponse từ response để check role ngay
+    const loggedUser = response?.data?.userResponse || null;
+    navigate(getDestination(loggedUser), { replace: true });
+  }} />;
+}
+
+function ProfilePage() {
+  const { user } = useAuth();
+  return <Profile key={user.email} user={user} />;
+}
+
+function AppRoutes() {
+  const location = useLocation();
+  const container = useRef(null);
+  const { user } = useAuth();
+  const [preferences] = usePreferences(user?.email);
+  useLayoutEffect(() => {
+    document.documentElement.dataset.motion = preferences.motion ? 'on' : 'off';
+  }, [preferences.motion]);
+  useEffect(() => {
+    if (location.pathname.startsWith('/saved-trips')) {
+      document.title = 'Lịch trình đã lưu | Wayvee';
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      container.current?.focus({ preventScroll: true });
+      return;
+    }
+    const titles = {
+      '/': 'Trang chủ',
+      '/login': 'Đăng nhập',
+      '/register': 'Đăng ký',
+      '/profile': 'Thông tin cá nhân',
+      '/payment': 'Premium',
+      '/reviews': 'Bài đánh giá',
+      '/settings': 'Cài đặt',
+      '/support': 'Hỗ trợ & Phản hồi',
+      '/create-tour': 'Tạo tour',
+      '/search': 'Tìm kiếm địa điểm',
+      '/places': 'Khám phá địa điểm',
+      '/trip/info': 'Khởi tạo lịch trình',
+      '/trip/create': 'Tạo lịch trình',
+      '/trip/plan': 'Lên kế hoạch',
+      '/trip/confirm': 'Xác nhận lịch trình',
+      '/trip/success': 'Hoàn tất lịch trình',
+      '/admin': 'Quản trị viên',
+      '/admin/dashboard': 'Dashboard - Quản trị',
+      '/admin/categories': 'Danh mục - Quản trị',
+      '/admin/reviews': 'Đánh giá - Quản trị',
+      '/admin/users': 'Người dùng - Quản trị',
+    };
+    const path = location.pathname;
+    const pageTitle =
+      titles[path] ||
+      (path.startsWith('/locations/') ? 'Chi tiết địa điểm' :
+       path.startsWith('/places/') ? 'Chi tiết địa điểm' :
+       path.startsWith('/itineraries') ? 'Lịch trình' :
+       path.startsWith('/favorites') ? 'Địa điểm yêu thích' :
+       path.startsWith('/trip/') ? 'Lịch trình' :
+       path.startsWith('/admin/') ? 'Quản trị viên' :
+       'Không tìm thấy trang');
+    document.title = `${pageTitle} | Wayvee`;
+    const target = location.hash && document.getElementById(location.hash.slice(1));
+    if (target) target.scrollIntoView({ behavior: document.documentElement.dataset.motion === 'off' || window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
+    else window.scrollTo({ top: 0, behavior: 'instant' });
+    container.current?.focus({ preventScroll: true });
+  }, [location.pathname, location.hash]);
+
+  return <div key={location.pathname} className="route-page" ref={container} tabIndex={-1}>
+    <Routes>
+      <Route path="/" element={<><Home /><Link to="/payment" className="premium-shortcut">WAYVEE Premium</Link></>} />
+      <Route path="/login" element={<AccountPage />} />
+      <Route path="/register" element={<AccountPage register />} />
+      <Route path="/create-tour" element={<Navigate to="/trip/info" replace />} />
+      <Route element={<RequireAuth />}>
+        <Route path="/saved-trips" element={<TripRoutes mode="list" />} />
+        <Route path="/saved-trips/new" element={<TripRoutes mode="new" />} />
+        <Route path="/saved-trips/:tripId" element={<TripRoutes mode="detail" />} />
+        <Route path="/saved-trips/:tripId/edit" element={<TripRoutes mode="edit" />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/itineraries" element={<Itineraries />} />
+        <Route path="/itineraries/:tripId" element={<Itineraries />} />
+        <Route path="/favorites" element={<Favorites />} />
+        <Route path="/favorites/:collectionId" element={<Favorites />} />
+        <Route path="/reviews" element={<Reviews />} />
+        <Route path="/settings" element={<Settings />} />
+      </Route>
+      <Route path="/payment" element={<Payment />} />
+      <Route path="/locations/:locationId" element={<LocationDetails />} />
+      <Route path="/search" element={<Suspense fallback={<SearchLoading />}><SearchPage /></Suspense>} />
+      <Route path="/support" element={<Support />} />
+
+      {/* Routes bổ sung từ nhánh HEAD */}
+      <Route path="/places" element={<PlacesRoute />} />
+      <Route path="/places/:id" element={<PlaceDetailRoute />} />
+      <Route path="/trip/info" element={<TripInfoRoute />} />
+      <Route path="/trip/create" element={<TripCreateRoute />} />
+      <Route path="/trip/plan" element={<TripPlanRoute />} />
+      <Route path="/trip/confirm" element={<TripConfirmRoute />} />
+      <Route path="/trip/success" element={<TripSuccessRoute />} />
+      <Route
+        path="/admin"
+        element={<AdminGuard><AdminDashboardRoute /></AdminGuard>}
       />
-    );
-  }
-
-  // HOME
-  if (screen === 'home') {
-    return (
-      <div>
-        <Home onLogin={() => setScreen('login')} />
-
-        <button
-          onClick={() => setScreen('payment')}
-          style={{
-            position: 'fixed',
-            bottom: '30px',
-            right: '30px',
-            padding: '14px 24px',
-            borderRadius: '10px',
-            border: 'none',
-            background: '#111827',
-            color: 'white',
-            cursor: 'pointer',
-            fontWeight: '600',
-            fontSize: '15px',
-          }}
-        >
-          WAYVEE Premium
-        </button>
-      </div>
-    );
-  }
-
-  // REGISTER
-  if (screen === 'register') {
-    return (
-      <Register
-        onClose={() => setScreen('login')}
-        onSubmit={handleSubmit}
-        onGoogle={() => setScreen('home')}
-        onApple={() => setScreen('home')}
-        onFacebook={() => setScreen('home')}
-        onLogin={() => setScreen('login')}
+      <Route
+        path="/admin/dashboard"
+        element={<AdminGuard><AdminDashboardRoute /></AdminGuard>}
       />
-    );
-  }
+      <Route
+        path="/admin/categories"
+        element={<AdminGuard><AdminCategoriesRoute /></AdminGuard>}
+      />
+      <Route
+        path="/admin/reviews"
+        element={<AdminGuard><AdminReviewsRoute /></AdminGuard>}
+      />
+      <Route
+        path="/admin/users"
+        element={<AdminGuard><AdminUsersRoute /></AdminGuard>}
+      />
 
-  // LOGIN
+      <Route path="*" element={<main className="route-not-found"><h1>Không tìm thấy trang</h1><Link to="/">Quay về trang chủ</Link></main>} />
+    </Routes>
+  </div>;
+}
+
+export default function App() {
   return (
-    <Login
-      onClose={() => console.log('Close login modal')}
-      onSubmit={handleSubmit}
-      onGoogle={() => setScreen('home')}
-      onApple={() => setScreen('home')}
-      onFacebook={() => setScreen('home')}
-      onSignUp={() => setScreen('register')}
-    />
+    <AppProviders>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </AppProviders>
   );
 }

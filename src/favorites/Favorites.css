@@ -1,0 +1,77 @@
+.favorites-page { min-height: 100vh; background: #f8f9fb; color: #626b79; font: 13px/1.5 Inter, 'Segoe UI', sans-serif; }
+.favorites-layout { min-height: 740px; }
+.favorites-content { display: flex; flex-direction: column; min-width: 0; }
+.favorites-panel { flex: 1; min-height: 700px; padding: 22px; border-radius: 14px; background: white; }
+.favorites-panel-empty { display: flex; flex-direction: column; justify-content: center; }
+.favorites-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; margin-bottom: 45px; }
+.favorites-heading h1 { margin: 0 0 5px; font-size: 21px; font-weight: 700; color: #636f80; }
+.favorites-heading p { margin: 0; color: #a4aebd; font-size: 12px; }
+.favorites-page button { cursor: pointer; font-family: inherit; }
+.favorites-outline-button { display: inline-flex; align-items: center; justify-content: center; gap: 5px; padding: 7px 11px; border: 1px solid #a2abb8; border-radius: 7px; background: white; color: #657180; text-decoration: none; font-size: 13px; white-space: nowrap; }
+.favorites-outline-button:hover { background: #f0f6fc; }
+.favorites-outline-button > span { font-size: 20px; line-height: 1; }
+.favorites-collections { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.favorites-collection { min-width: 0; color: inherit; text-decoration: none; }
+.favorites-cover { display: grid; aspect-ratio: 1; overflow: hidden; border-radius: 12px; background: #e8f0f5; }
+.favorites-cover-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 4px; }
+.favorites-cover img, .favorite-place-photo img { width: 100%; height: 100%; min-height: 0; object-fit: cover; transition: transform 180ms ease; }
+.favorites-collection:hover img { transform: scale(1.035); }
+.favorites-collection h2 { margin: 13px 0 4px; color: #4d5662; font-size: 14px; font-weight: 600; overflow-wrap: anywhere; }
+.favorites-collection p { margin: 0; font-size: 11px; }
+.favorite-photo-fallback { display: grid; width: 100%; height: 100%; place-items: center; background: #e8f0f5; color: #9aaec0; }
+.favorites-demo-note { margin: 28px 0 0; font-size: 10px; color: #a7b0bc; }
+.favorites-empty { min-height: 480px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 35px 10px; }
+.favorites-empty > svg { margin-bottom: 28px; }
+.favorites-empty h2 { margin: 22px 0 12px; font-size: 16px; font-weight: 600; color: #677181; }
+.favorites-empty p { margin: 0; font-size: 12px; color: #a3aec0; line-height: 1.7; }
+.favorites-text-button { padding: 7px 0; border: 0; background: transparent; color: #557792; font-size: 12px; }
+.favorites-text-button:hover { text-decoration: underline; }
+.favorites-empty .favorites-text-button { margin-top: 16px; }
+.favorites-back { display: inline-flex; align-items: center; gap: 9px; align-self: flex-start; padding: 0 10px 15px; color: #727e8e; text-decoration: none; font-size: 21px; }
+.favorites-back span { font-size: 11px; }
+.favorites-detail-heading { display: flex; justify-content: space-between; align-items: center; gap: 15px; margin-bottom: 18px; }
+.favorites-detail-heading h1 { margin: 0; font-size: 15px; font-weight: 600; overflow-wrap: anywhere; }
+.favorites-share { display: grid; place-items: center; width: 30px; height: 30px; padding: 0; border: 0; background: transparent; color: #8b96a5; }
+.favorites-places { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.favorite-place { min-width: 0; overflow: hidden; border: 1px solid #e4e9ef; border-radius: 12px; }
+.favorite-place-photo { position: relative; height: 170px; background: #e8f0f5; }
+.favorite-heart { position: absolute; top: 10px; right: 10px; display: grid; place-items: center; width: 27px; height: 27px; padding: 5px; border: 0; border-radius: 50%; background: white; color: #ff5587; box-shadow: 0 2px 6px #00000014; }
+.favorite-heart svg { width: 17px; height: 17px; fill: currentColor; }
+.favorite-heart:hover { background: #fff0f5; }
+.favorite-place-info { padding: 12px 10px 16px; }
+.favorite-rating { display: flex; align-items: center; gap: 7px; margin: 0 0 9px; font-size: 9px; color: #64b6d7; }
+.favorite-rating strong { border-radius: 3px; background: #e5f7fe; padding: 1px 4px; }
+.favorite-rating small { color: #b5bdc8; font-size: 8px; }
+.favorite-place-info h2 { margin: 0 0 9px; color: #536375; font-size: 13px; font-weight: 600; }
+.favorite-place-info > a { display: flex; align-items: flex-start; gap: 7px; text-decoration: none; color: #61839d; font-size: 10px; line-height: 1.6; }
+.favorite-place-info > a:hover { text-decoration: underline; }
+.favorite-place-info > a span, .favorite-place-note span { font-size: 15px; line-height: 1.1; }
+.favorite-place-note { display: flex; gap: 7px; margin: 12px 0 0; font-size: 10px; color: #a4afbf; }
+.favorites-detail-actions { display: flex; justify-content: space-between; gap: 20px; margin-top: 25px; }
+.favorites-delete { border: 0; background: transparent; color: #ac7373; font-size: 11px; }
+.favorites-notice { margin: 20px 0 0; color: #53768e; font-size: 12px; }
+.favorites-share-text { display: block; margin-top: 20px; font-size: 12px; }
+.favorites-share-text textarea { display: block; width: 100%; min-height: 130px; margin-top: 7px; border: 1px solid #d8e1eb; border-radius: 7px; padding: 12px; font: inherit; }
+.favorites-editor { width: min(480px, calc(100% - 28px)); max-height: calc(100dvh - 40px); margin: auto; padding: 26px; border: 0; border-radius: 18px; background: white; color: #626b79; overflow-y: auto; }
+.favorites-editor::backdrop { background: #05132f80; }
+.favorites-editor-heading { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-bottom: 20px; }
+.favorites-editor-heading h2 { margin: 0; font-size: 18px; font-weight: 600; }
+.favorites-editor-heading button { border: 0; background: transparent; color: #8c97a5; font-size: 25px; cursor: pointer; }
+.favorites-name-label { display: block; margin-bottom: 7px; font-size: 12px; }
+.favorites-editor #collection-name { width: 100%; border: 1px solid #d5dee8; padding: 10px 12px; border-radius: 7px; font: inherit; }
+.favorites-editor fieldset { min-width: 0; margin: 20px 0 0; padding: 0; border: 0; }
+.favorites-editor legend { font-size: 13px; font-weight: 600; }
+.favorites-editor .favorites-demo-note { margin: 5px 0 12px; }
+.favorites-place-option { display: flex; gap: 10px; align-items: center; padding: 9px 0; border-bottom: 1px solid #edf0f4; font-size: 12px; cursor: pointer; }
+.favorites-place-option small { display: block; margin-top: 3px; font-size: 10px; color: #98a4b4; }
+.favorites-place-option input { accent-color: #426e8e; }
+.favorites-error { font-size: 12px; color: #b14c4c; }
+.favorites-error:empty { display: none; }
+.favorites-editor-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+.favorites-editor-actions button { border: 1px solid #a5b7c6; border-radius: 7px; padding: 9px 15px; background: white; color: #52708a; cursor: pointer; font: inherit; font-size: 12px; }
+.favorites-editor-actions button[type='submit'] { background: #315e7e; color: white; border-color: #315e7e; }
+.favorites-page button:focus-visible, .favorites-page a:focus-visible, .favorites-editor input:focus-visible { outline: 2px solid #6193ba; outline-offset: 3px; }
+@media (max-width: 1050px) { .favorites-collections, .favorites-places { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; } .favorites-heading { flex-wrap: wrap; gap: 15px; margin-bottom: 28px; } }
+@media (max-width: 760px) { .favorites-layout { min-height: 0; } .favorites-panel { min-height: 540px; } }
+@media (max-width: 460px) { .favorites-panel { padding: 20px 15px; } .favorites-heading h1 { font-size: 19px; } .favorites-places { grid-template-columns: 1fr; } .favorite-place-photo { height: 210px; } .favorites-collections { gap: 18px 12px; } .favorites-collection h2 { font-size: 12px; } .favorites-collection p { font-size: 10px; } .favorites-empty { min-height: 420px; } .favorites-empty h2 { font-size: 14px; } .favorites-empty p br { display: none; } }
+@media (prefers-reduced-motion: reduce) { .favorites-cover img { transition: none; } }
