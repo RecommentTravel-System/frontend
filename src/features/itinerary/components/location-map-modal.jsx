@@ -465,7 +465,7 @@ export function LocationMapModal({ initialQuery = "", onConfirm, onClose }) {
         <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
           <div>
             <h3 className="text-base font-bold text-[#002d54] dark:text-white flex items-center gap-2">
-              <span>📍</span> Chọn vị trí địa điểm trên bản đồ Leaflet
+              <span>📍</span> Chọn vị trí địa điểm trên bản đồ
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
               Gõ tên tìm kiếm hoặc ghim vị trí trực tiếp trên bản đồ bên dưới
