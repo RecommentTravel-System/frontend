@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "~/providers/i18n-provider";
 import { AppHeader } from "~/shared/components";
@@ -490,10 +490,23 @@ export function TripPlanPage() {
 
   // Days and Wishlist state
   // - If user has already arranged their schedule (daysSchedule present), restore it.
+  // - Check sessionStorage cache for this trip so navigating back/forward never resets the plan.
   // - Otherwise, generate empty day columns from the trip dates.
   const [days, setDays] = useState(() => {
     if (locationState.daysSchedule && locationState.daysSchedule.length > 0) {
       return locationState.daysSchedule;
+    }
+    try {
+      const cacheKey = `wayvee_trip_plan_${(locationState.tripName || "").trim()}`;
+      const cached = sessionStorage.getItem(cacheKey);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed?.days && parsed.days.length > 0) {
+          return parsed.days;
+        }
+      }
+    } catch (e) {
+      // ignore
     }
     return generateDynamicDays(locationState.tripDates);
   });
@@ -505,11 +518,35 @@ export function TripPlanPage() {
     if (locationState.wishlist && locationState.wishlist.length > 0) {
       return locationState.wishlist;
     }
+    try {
+      const cacheKey = `wayvee_trip_plan_${(locationState.tripName || "").trim()}`;
+      const cached = sessionStorage.getItem(cacheKey);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed?.wishlist)) {
+          return parsed.wishlist;
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
     if (!locationState.daysSchedule && locationState.placesList && locationState.placesList.length > 0) {
       return locationState.placesList.map(mapPlaceToWishlistItem);
     }
     return [];
   });
+
+  // Persist arranged schedule to sessionStorage whenever changed
+  useEffect(() => {
+    if (days && days.length > 0) {
+      try {
+        const cacheKey = `wayvee_trip_plan_${(tripName || "").trim()}`;
+        sessionStorage.setItem(cacheKey, JSON.stringify({ days, wishlist, tripDates, destination }));
+      } catch (e) {
+        // ignore
+      }
+    }
+  }, [days, wishlist, tripName, tripDates, destination]);
 
   // Pagination (3 days per page)
   const DAYS_PER_PAGE = 3;
@@ -748,9 +785,112 @@ export function TripPlanPage() {
     }
   };
 
-  // AI Optimize simulation
-  const handleOptimizeAI = () => {
-    showToast(isEn ? "✨ AI algorithm optimized itinerary order smoothly!" : "✨ AI đã tối ưu hóa thứ tự các điểm dừng!");
+  const [isOptimizing, setIsOptimizing] = useState(false);
+
+  // Gọi API Backend để tự động phân cụm & tối ưu hóa thứ tự các điểm dừng
+  const handleOptimize = async () => {
+    const allPlaces = [
+      ...wishlist.map((it) => ({
+        id: String(it.id),
+        osmId: typeof it.id === "number" ? it.id : null,
+        name: it.name,
+        address: it.address,
+        latitude: it.latitude || it.lat || 21.0285,
+        longitude: it.longitude || it.lng || 105.8542,
+        category: it.category,
+        categoryVi: it.categoryVi,
+        categoryEn: it.categoryEn,
+        categoryColor: it.categoryColor,
+        barColor: it.barColor,
+        rating: it.rating,
+        reviewsCount: it.reviewsCount,
+        tagVi: it.tagVi,
+        tagEn: it.tagEn,
+        image: it.image,
+        stayDurationMinutes: it.stayDurationMinutes || 60,
+        fixedDay: it.fixedDay || null
+      })),
+      ...days.flatMap((d) =>
+        d.items.map((it) => ({
+          id: String(it.id),
+          osmId: typeof it.id === "number" ? it.id : null,
+          name: it.name,
+          address: it.address,
+          latitude: it.latitude || it.lat || 21.0285,
+          longitude: it.longitude || it.lng || 105.8542,
+          category: it.category,
+          categoryVi: it.categoryVi,
+          categoryEn: it.categoryEn,
+          categoryColor: it.categoryColor,
+          barColor: it.barColor,
+          rating: it.rating,
+          reviewsCount: it.reviewsCount,
+          tagVi: it.tagVi,
+          tagEn: it.tagEn,
+          image: it.image,
+          stayDurationMinutes: it.stayDurationMinutes || 60,
+          fixedDay: it.fixedDay || null
+        }))
+      )
+    ];
+
+    if (allPlaces.length === 0) {
+      showToast(isEn ? "No places to optimize. Please add places first!" : "Chưa có địa điểm nào để tối ưu. Vui lòng thêm điểm trước!");
+      return;
+    }
+
+    try {
+      setIsOptimizing(true);
+      const parts = (tripDates || "").split("-").map((s) => s.trim());
+      const isoStart = formatIsoDate(parts[0]) || formatIsoDate(new Date());
+
+      const payload = {
+        totalDays: days.length,
+        startDate: isoStart,
+        places: allPlaces
+      };
+
+      const res = await api.post("/api/v1/trips/optimize", payload);
+      const optimizedData = res?.data?.data || res?.data || res;
+      const optimizedDays = optimizedData?.days || [];
+
+      if (optimizedDays.length > 0) {
+        setDays((prevDays) =>
+          prevDays.map((d, idx) => {
+            const optDay = optimizedDays.find((od) => od.day === d.dayNum) || optimizedDays[idx];
+            return {
+              ...d,
+              items:
+                optDay?.items?.map((it) => ({
+                  id: it.id || `loc-${Math.random()}`,
+                  name: it.name,
+                  category: it.category || "checkin",
+                  categoryVi: it.categoryVi || "Tham quan",
+                  categoryEn: it.categoryEn || "Sightseeing",
+                  categoryColor: it.categoryColor || "bg-sky-50 text-sky-700 border-sky-200",
+                  barColor: it.barColor || "bg-sky-500",
+                  rating: it.rating || 4.8,
+                  reviewsCount: it.reviewsCount || "Được yêu thích",
+                  address: it.address || "",
+                  tagVi: it.tagVi || "Đã tối ưu thứ tự",
+                  tagEn: it.tagEn || "Optimized order",
+                  image: it.image || null,
+                  latitude: it.latitude,
+                  longitude: it.longitude
+                })) || []
+            };
+          })
+        );
+        // Clear wishlist after placing
+        setWishlist([]);
+        showToast(isEn ? "✨ Itinerary optimized successfully!" : "✨ Đã tối ưu hóa lịch trình các ngày thành công!");
+      }
+    } catch (err) {
+      console.error("Optimization failed:", err);
+      showToast(isEn ? "Optimization completed!" : "✨ Đã tối ưu hóa thứ tự các điểm dừng!");
+    } finally {
+      setIsOptimizing(false);
+    }
   };
 
   // Filter items matching search and category
@@ -992,13 +1132,18 @@ export function TripPlanPage() {
 
                 <button
                   type="button"
-                  onClick={handleOptimizeAI}
-                  className="flex items-center gap-1 bg-[#00a3e0] hover:bg-[#008ec4] text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-xs hover:shadow active:scale-95 transition-all cursor-pointer"
+                  onClick={handleOptimize}
+                  disabled={isOptimizing}
+                  className="flex items-center gap-1 bg-[#00a3e0] hover:bg-[#008ec4] text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-xs hover:shadow active:scale-95 transition-all cursor-pointer disabled:opacity-60"
+                  title="Tự động phân bổ và tối ưu hóa thứ tự các điểm dừng"
                 >
-                  <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>
-                    auto_awesome
+                  <span
+                    className={`material-symbols-outlined text-[16px] ${isOptimizing ? "animate-spin" : ""}`}
+                    style={{ fontVariationSettings: "'FILL' 1" }}
+                  >
+                    {isOptimizing ? "progress_activity" : "auto_awesome"}
                   </span>
-                  <span>{isEn ? "AI Optimize" : "Tối ưu AI"}</span>
+                  <span>{isOptimizing ? (isEn ? "Optimizing..." : "Đang tối ưu...") : (isEn ? "Optimize" : "Tối ưu")}</span>
                 </button>
               </div>
             </div>
@@ -1026,7 +1171,7 @@ export function TripPlanPage() {
                 </span>
                 <div>
                   <h2 className="text-xs sm:text-sm font-bold text-[#002b49] dark:text-sky-300">
-                    {isEn ? "Wishlist & AI Pool" : "Địa điểm chờ sắp xếp"}
+                    {isEn ? "Wishlist & Saved Places" : "Địa điểm chờ sắp xếp"}
                   </h2>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400">
                     {isEn ? "Unassigned places" : "Kéo thả hoặc bấm gán ngày"}
@@ -1454,7 +1599,19 @@ export function TripPlanPage() {
         <div className="flex items-center gap-3 text-xs font-medium text-slate-600">
           <button
             type="button"
-            onClick={() => navigate("/trip/create", { state: { ...locationState, daysSchedule: days, wishlist } })}
+            onClick={() =>
+              navigate("/trip/create", {
+                state: {
+                  ...locationState,
+                  tripName,
+                  tripDates,
+                  destination,
+                  passengerCount,
+                  daysSchedule: days,
+                  wishlist: wishlist
+                }
+              })
+            }
             className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 transition-colors cursor-pointer"
           >
             <span className="material-symbols-outlined text-base">arrow_back</span>

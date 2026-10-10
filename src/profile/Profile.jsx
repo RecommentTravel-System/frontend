@@ -233,14 +233,8 @@ export default function Profile({ user: propUser }) {
             )}
           </section>
 
-          <section className="rounded-xl border border-slate-200 p-5 my-5" aria-labelledby="saved-trips-heading">
-            <h2 id="saved-trips-heading" className="font-bold text-lg">Lịch trình đã lưu</h2>
-            <p className="my-2">Xem lại và chỉnh sửa kế hoạch từng ngày của bạn trên trình duyệt này.</p>
-            <div className="flex flex-wrap gap-4">
-              <Link className="font-semibold underline" to="/saved-trips">Xem lịch trình đã lưu</Link>
-              <Link className="font-semibold underline" to="/saved-trips/new">+ Tạo lịch trình chi tiết</Link>
-            </div>
-          </section>
+
+
 
           <form className="profile-form" onSubmit={save}>
             <div className="profile-fields">

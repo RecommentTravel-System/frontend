@@ -129,6 +129,9 @@ export function TripCreatePage() {
     return [];
   });
 
+  const [daysSchedule, setDaysSchedule] = useState(locationState.daysSchedule || null);
+  const [wishlist, setWishlist] = useState(locationState.wishlist || null);
+
   const toggleStyle = (styleId) => {
     setSelectedStyles((prev) =>
       prev.includes(styleId)
@@ -156,34 +159,42 @@ export function TripCreatePage() {
 
   const handleClearAll = () => {
     setPlacesList([]);
+    setDaysSchedule(null);
+    setWishlist(null);
   };
 
   const handleQuickAdd = () => {
     navigate("/places", {
       state: {
+        ...locationState,
         tripName,
         tripDates,
         destination: destinationInput,
         companions,
         passengerCount: memberCount,
         selectedStyles,
-        placesList
+        placesList,
+        daysSchedule: daysSchedule || locationState.daysSchedule,
+        wishlist: wishlist || locationState.wishlist
       }
     });
   };
 
-  // Option 1 Click: Sắp xếp lịch trình -> Chuyển ngay sang trang Timeline/Kanban Planner
+  // Option 1 Click: Sắp xếp lịch trình -> Chuyển sang trang Timeline/Kanban Planner
   const handleSelectItineraryPlan = () => {
     setSelectedAction("itinerary");
     navigate("/trip/plan", {
       state: {
+        ...locationState,
         tripName,
         tripDates,
         destination: destinationInput,
         companions,
         passengerCount: memberCount,
         selectedStyles,
-        placesList
+        placesList,
+        daysSchedule: daysSchedule || locationState.daysSchedule,
+        wishlist: wishlist || locationState.wishlist
       }
     });
   };
@@ -198,25 +209,31 @@ export function TripCreatePage() {
     if (selectedAction === "itinerary") {
       navigate("/trip/plan", {
         state: {
+          ...locationState,
           tripName,
           tripDates,
           destination: destinationInput,
           companions,
           passengerCount: memberCount,
           selectedStyles,
-          placesList
+          placesList,
+          daysSchedule: daysSchedule || locationState.daysSchedule,
+          wishlist: wishlist || locationState.wishlist
         }
       });
     } else {
       navigate("/trip/confirm", {
         state: {
+          ...locationState,
           tripName,
           tripDates,
           destination: destinationInput,
           companions,
           passengerCount: memberCount,
           selectedStyles,
-          placesList
+          placesList,
+          daysSchedule: daysSchedule || locationState.daysSchedule,
+          wishlist: wishlist || locationState.wishlist
         }
       });
     }
@@ -278,7 +295,7 @@ export function TripCreatePage() {
         </section>
 
         {/* 2 Column Master Layout (Left: Trip Info + Form | Right: Selected List) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
           {/* LEFT COLUMN: Thông tin chuyến đi & Form nhập liệu (7 Cols) */}
           <div className="lg:col-span-7 space-y-6">
             {/* Card 1: Thông tin chuyến đi */}
@@ -537,10 +554,10 @@ export function TripCreatePage() {
           </div>
 
           {/* RIGHT COLUMN: Danh sách địa điểm đã chọn (5 Cols) */}
-          <div className="lg:col-span-5 space-y-4">
-            <div className="bg-white rounded-2xl p-5 shadow-xs border border-slate-200">
+          <div className="lg:col-span-5">
+            <div className="bg-white rounded-2xl p-5 shadow-xs border border-slate-200 flex flex-col">
               {/* List Header */}
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 shrink-0">
                 <div>
                   <div className="flex items-center gap-2">
                     <h3 className="text-base font-bold text-slate-900">
@@ -570,7 +587,7 @@ export function TripCreatePage() {
 
               {/* Add Quick Location Button */}
               <button
-                className="w-full my-3 py-2.5 px-4 border-2 border-dashed border-sky-300 hover:border-[#00a3e0] text-[#00a3e0] bg-sky-50/50 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all hover:bg-sky-50 cursor-pointer"
+                className="w-full my-3 py-2.5 px-4 border-2 border-dashed border-sky-300 hover:border-[#00a3e0] text-[#00a3e0] bg-sky-50/50 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all hover:bg-sky-50 cursor-pointer shrink-0"
                 onClick={handleQuickAdd}
                 type="button"
               >
@@ -581,7 +598,7 @@ export function TripCreatePage() {
               </button>
 
               {/* Interactive Destination Cards List */}
-              <div className="space-y-3 mt-2 max-h-[580px] overflow-y-auto pr-1">
+              <div className="space-y-3 mt-1 overflow-y-auto pr-1 max-h-[322px]">
                 {placesList.length === 0 ? (
                   <div className="py-8 text-center text-slate-400 text-xs">
                     <p className="font-semibold">{t("tripCreate.selectedPlaces.emptyTitle", "Chưa có địa điểm nào")}</p>
@@ -644,7 +661,7 @@ export function TripCreatePage() {
                     </div>
                   ))
                 )}
-              </div>              
+              </div>
             </div>
           </div>
         </div>
@@ -670,11 +687,10 @@ export function TripCreatePage() {
             {/* Choice 1: Sắp xếp lịch trình / AI Planner (Recommended) */}
             <div
               onClick={handleSelectItineraryPlan}
-              className={`group relative rounded-xl p-5 border-2 transition-all cursor-pointer ${
-                selectedAction === "itinerary"
-                  ? "border-[#00a3e0] bg-[#e6f6fd]/50 ring-2 ring-[#00a3e0]/20"
-                  : "border-slate-200 bg-white hover:border-[#00a3e0]/60"
-              }`}
+              className={`group relative rounded-xl p-5 border-2 transition-all cursor-pointer ${selectedAction === "itinerary"
+                ? "border-[#00a3e0] bg-[#e6f6fd]/50 ring-2 ring-[#00a3e0]/20"
+                : "border-slate-200 bg-white hover:border-[#00a3e0]/60"
+                }`}
             >
               <span className="absolute -top-3 right-4 px-2.5 py-0.5 bg-[#002d5b] text-white text-[11px] font-bold rounded-full shadow-xs flex items-center gap-1">
                 ✨ {t("tripCreate.actionSelector.option1Badge", "KHUYÊN DÙNG")}
@@ -693,7 +709,7 @@ export function TripCreatePage() {
                     )}
                   </h3>
                   <p className="text-xs text-slate-500 leading-relaxed break-words">
-                    {t("tripCreate.actionSelector.option1Desc", {count: placesList.length}, `Thuật toán thông minh tự động phân bổ ${placesList.length} địa điểm đã chọn theo từng ngày, tối ưu quãng đường đi và gợi ý giờ ghé thăm hợp lý nhất.`)}
+                    {t("tripCreate.actionSelector.option1Desc", { count: placesList.length }, `Thuật toán thông minh tự động phân bổ ${placesList.length} địa điểm đã chọn theo từng ngày, tối ưu quãng đường đi và gợi ý giờ ghé thăm hợp lý nhất.`)}
                   </p>
                   <div className="pt-1.5">
                     <span className="inline-flex items-center gap-1 text-xs font-bold text-[#00a3e0] group-hover:translate-x-1 transition-transform">
@@ -707,11 +723,10 @@ export function TripCreatePage() {
             {/* Choice 2: Lưu danh sách chờ */}
             <div
               onClick={handleSelectSavedOnly}
-              className={`group relative rounded-xl p-5 border-2 transition-all cursor-pointer ${
-                selectedAction === "saved_only"
-                  ? "border-[#002d5b] bg-sky-50/50 ring-2 ring-[#002d5b]/20"
-                  : "border-slate-200 bg-white hover:border-slate-400"
-              }`}
+              className={`group relative rounded-xl p-5 border-2 transition-all cursor-pointer ${selectedAction === "saved_only"
+                ? "border-[#002d5b] bg-sky-50/50 ring-2 ring-[#002d5b]/20"
+                : "border-slate-200 bg-white hover:border-slate-400"
+                }`}
             >
               <div className="flex items-start gap-3.5">
                 <div className="w-11 h-11 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
@@ -727,7 +742,7 @@ export function TripCreatePage() {
                     )}
                   </h3>
                   <p className="text-xs text-slate-500 leading-relaxed break-words">
-                    {t("tripCreate.actionSelector.option2Desc", {tripName}, `Lưu các địa điểm bạn quan tâm vào bộ sưu tập '${tripName}' để bạn tự sắp xếp thủ công vào thời gian rảnh.`)}
+                    {t("tripCreate.actionSelector.option2Desc", { tripName }, `Lưu các địa điểm bạn quan tâm vào bộ sưu tập '${tripName}' để bạn tự sắp xếp thủ công vào thời gian rảnh.`)}
                   </p>
                   <div className="pt-1.5">
                     <span className="inline-flex items-center gap-1 text-xs font-bold text-slate-600 group-hover:translate-x-1 transition-transform">

@@ -1,0 +1,519 @@
+/* Wayvee Travel Loader Styles */
+.wayvee-travel-loader-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 28px 20px 24px;
+  max-width: 520px;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Travel Scene Box */
+.travel-scene {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+/* Radar Pulse Rings */
+.radar-pulse-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 2px solid rgba(0, 180, 248, 0.4);
+  pointer-events: none;
+}
+
+.ring-1 {
+  width: 140px;
+  height: 140px;
+  animation: pulseRipple 3s cubic-bezier(0.2, 0.8, 0.4, 1) infinite;
+}
+
+.ring-2 {
+  width: 180px;
+  height: 180px;
+  animation: pulseRipple 3s cubic-bezier(0.2, 0.8, 0.4, 1) infinite 1s;
+}
+
+.ring-3 {
+  width: 220px;
+  height: 220px;
+  animation: pulseRipple 3s cubic-bezier(0.2, 0.8, 0.4, 1) infinite 2s;
+}
+
+@keyframes pulseRipple {
+  0% {
+    transform: translate(-50%, -50%) scale(0.6);
+    opacity: 0.8;
+  }
+  70% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 0;
+  }
+}
+
+/* Floating Clouds */
+.cloud {
+  position: absolute;
+  background: rgba(230, 246, 255, 0.85);
+  border-radius: 20px;
+  pointer-events: none;
+  filter: blur(0.5px);
+}
+
+.cloud::before,
+.cloud::after {
+  content: '';
+  position: absolute;
+  background: inherit;
+  border-radius: 50%;
+}
+
+.cloud-1 {
+  width: 54px;
+  height: 18px;
+  top: 25px;
+  left: -20px;
+  animation: floatCloud1 9s linear infinite;
+  opacity: 0.7;
+}
+.cloud-1::before {
+  width: 22px;
+  height: 22px;
+  top: -10px;
+  left: 10px;
+}
+.cloud-1::after {
+  width: 16px;
+  height: 16px;
+  top: -7px;
+  right: 8px;
+}
+
+.cloud-2 {
+  width: 44px;
+  height: 15px;
+  bottom: 35px;
+  right: -25px;
+  animation: floatCloud2 12s linear infinite;
+  opacity: 0.6;
+}
+.cloud-2::before {
+  width: 18px;
+  height: 18px;
+  top: -8px;
+  left: 8px;
+}
+
+.cloud-3 {
+  width: 36px;
+  height: 12px;
+  top: 60px;
+  right: -10px;
+  animation: floatCloud3 14s linear infinite;
+  opacity: 0.5;
+}
+.cloud-3::before {
+  width: 14px;
+  height: 14px;
+  top: -6px;
+  left: 6px;
+}
+
+@keyframes floatCloud1 {
+  0% { transform: translateX(0); opacity: 0; }
+  15% { opacity: 0.75; }
+  85% { opacity: 0.75; }
+  100% { transform: translateX(250px); opacity: 0; }
+}
+
+@keyframes floatCloud2 {
+  0% { transform: translateX(0); opacity: 0; }
+  20% { opacity: 0.65; }
+  80% { opacity: 0.65; }
+  100% { transform: translateX(-260px); opacity: 0; }
+}
+
+@keyframes floatCloud3 {
+  0% { transform: translateX(0); opacity: 0; }
+  20% { opacity: 0.55; }
+  80% { opacity: 0.55; }
+  100% { transform: translateX(-240px); opacity: 0; }
+}
+
+/* Logo Wrapper */
+.travel-logo-wrapper {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wayvee-pin-logo {
+  filter: drop-shadow(0 12px 24px rgba(0, 163, 255, 0.28));
+  animation: floatPin 3.6s ease-in-out infinite alternate;
+}
+
+@keyframes floatPin {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    transform: translateY(-6px) scale(1.02);
+  }
+}
+
+/* Orbiting Plane */
+.plane-orbit-track {
+  position: absolute;
+  width: 190px;
+  height: 190px;
+  top: 50%;
+  left: 50%;
+  margin-top: -95px;
+  margin-left: -95px;
+  border-radius: 50%;
+  animation: planeOrbit 5.5s linear infinite;
+  pointer-events: none;
+}
+
+.orbiting-airplane {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%) rotate(90deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 2px 6px rgba(0, 144, 231, 0.5));
+}
+
+.plane-icon {
+  animation: planeHover 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes planeOrbit {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes planeHover {
+  0% { transform: translateY(0px) rotate(0deg); }
+  100% { transform: translateY(-2px) rotate(2deg); }
+}
+
+/* Contrail tail */
+.contrail-tail {
+  position: absolute;
+  left: -20px;
+  top: 50%;
+  width: 22px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(0, 163, 255, 0.6));
+  border-radius: 2px;
+}
+
+/* Info Section */
+.loader-info {
+  width: 100%;
+  margin-top: 4px;
+}
+
+.status-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #e6f6ff;
+  color: #0077b6;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  padding: 5px 14px;
+  border-radius: 20px;
+  border: 1px solid #bde4fc;
+  margin-bottom: 12px;
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  background: #00a8ff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 0 rgba(0, 168, 255, 0.7);
+  animation: livePulse 1.6s infinite;
+}
+
+@keyframes livePulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(0, 168, 255, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 7px rgba(0, 168, 255, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(0, 168, 255, 0);
+  }
+}
+
+.loader-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #0c2340;
+  margin: 0 0 6px;
+}
+
+.loader-subtitle {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0 0 16px;
+  line-height: 1.5;
+}
+
+/* Travel Message Box */
+.travel-message-box {
+  background: #f0f9ff;
+  border: 1px dashed #7dd3fc;
+  border-radius: 12px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+  margin-bottom: 16px;
+}
+
+.message-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.animated-travel-message {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #0369a1;
+  animation: fadeInUp 0.4s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* PayOS QR section */
+.payment-qr-section {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  margin-top: 8px;
+}
+
+.qr-order-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #475569;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 12px;
+}
+
+.qr-amount {
+  color: #0284c7;
+  font-size: 15px;
+}
+
+.qr-box {
+  background: #f8fafc;
+  padding: 12px;
+  border-radius: 12px;
+  display: inline-block;
+  margin-bottom: 14px;
+}
+
+.qr-img-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.payos-qr-image {
+  width: 190px;
+  height: 190px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  display: block;
+  margin: 0 auto;
+}
+
+.qr-box-placeholder {
+  min-width: 190px;
+  min-height: 190px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.qr-loading-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid #e2e8f0;
+  border-top-color: #0090e7;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 40px auto;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.qr-hint {
+  font-size: 12px;
+  color: #64748b;
+  margin: 8px 0 0;
+}
+
+.loader-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.btn-open-payos {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #0090e7 0%, #00b4f8 100%);
+  color: #fff;
+  padding: 11px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.15s, filter 0.15s;
+  border: none;
+}
+
+.btn-open-payos:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+.btn-copy-link {
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.btn-copy-link:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.btn-cancel-pay {
+  background: transparent;
+  color: #94a3b8;
+  font-size: 13px;
+  border: none;
+  cursor: pointer;
+  padding: 6px 12px;
+  transition: color 0.15s;
+}
+
+.btn-cancel-pay:hover {
+  color: #ef4444;
+}
+
+/* Dark Mode */
+.dark .btn-copy-link {
+  background: #1e293b;
+  color: #cbd5e1;
+  border-color: #334155;
+}
+
+.dark .btn-copy-link:hover {
+  background: #334155;
+  color: #f8fafc;
+}
+.dark .wayvee-travel-loader-container {
+  color: #e2e8f0;
+}
+
+.dark .loader-title {
+  color: #f1f5f9;
+}
+
+.dark .loader-subtitle {
+  color: #94a3b8;
+}
+
+.dark .status-live-badge {
+  background: #0f2744;
+  color: #38bdf8;
+  border-color: #1e4976;
+}
+
+.dark .travel-message-box {
+  background: #0b1e33;
+  border-color: #1e40af;
+}
+
+.dark .animated-travel-message {
+  color: #7dd3fc;
+}
+
+.dark .payment-qr-section {
+  background: #132238;
+  border-color: #233752;
+}
+
+.dark .qr-order-info {
+  border-color: #1e334f;
+  color: #cbd5e1;
+}
+
+.dark .qr-box {
+  background: #0d1a2d;
+}
