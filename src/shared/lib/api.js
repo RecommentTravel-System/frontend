@@ -1,3 +1,5 @@
+import { getLocalizedErrorMessage, getCurrentLanguage } from "./error-codes";
+
 const BASE_URL = import.meta.env.VITE_API_URL?.trim().replace(/\/+$/, "");
 
 export async function request(endpoint, options = {}) {
@@ -7,11 +9,13 @@ export async function request(endpoint, options = {}) {
   const url = `${BASE_URL}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
 
   const token = localStorage.getItem("wayvee_token");
+  const lang = getCurrentLanguage();
   const isFormData = typeof FormData !== "undefined" && options.body instanceof FormData;
 
   const headers = {
     ...(isFormData ? {} : { "Content-Type": "application/json" }),
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    "Accept-Language": lang,
     ...options.headers
   };
 
@@ -69,20 +73,47 @@ export async function request(endpoint, options = {}) {
       }
 
       const errorMessage =
-        result.message || "Phiên đăng nhập đã hết hạn. Hệ thống đã tự động đăng xuất.";
+        getLocalizedErrorMessage(result, lang) ||
+        result.message ||
+        (lang === "en"
+          ? "Your session has expired. You have been logged out."
+          : "Phiên đăng nhập đã hết hạn. Hệ thống đã tự động đăng xuất.");
       const error = new Error(errorMessage);
       error.status = response.status;
       error.code = result.code;
+      error.errorCode = result.errorCode;
       error.response = result;
       error.isUnauthorized = true;
       throw error;
     }
 
+    const isLoginEndpoint = endpoint.includes("/auth/login");
+    const isEn = (lang || "").toLowerCase().startsWith("en");
+
     if (!response.ok || (result.code && result.code !== 1000 && result.code !== 200)) {
-      const errorMessage = result.message || `Request failed with status ${response.status}`;
+      let errorMessage = null;
+      if (
+        isLoginEndpoint &&
+        (result.code === 1006 ||
+          result.code === 1005 ||
+          result.code === 1015 ||
+          result.errorCode === "UNAUTHENTICATED" ||
+          result.errorCode === "USER_NOT_EXISTED" ||
+          result.errorCode === "PASSWORD_INCORRECT")
+      ) {
+        errorMessage = isEn
+          ? "Incorrect username or password."
+          : "Tên đăng nhập hoặc mật khẩu không chính xác.";
+      } else {
+        errorMessage =
+          getLocalizedErrorMessage(result, lang) ||
+          result.message ||
+          `Request failed with status ${response.status}`;
+      }
       const error = new Error(errorMessage);
       error.status = response.status;
       error.code = result.code;
+      error.errorCode = result.errorCode;
       error.response = result;
       throw error;
     }
@@ -90,7 +121,12 @@ export async function request(endpoint, options = {}) {
     return result;
   } catch (err) {
     if (err.name === "TypeError" && err.message === "Failed to fetch") {
-      throw new Error("Không thể kết nối đến máy chủ. Vui lòng kiểm tra lại backend.");
+      const isEn = (getCurrentLanguage() || "").startsWith("en");
+      throw new Error(
+        isEn
+          ? "Unable to connect to the server. Please check your network or backend."
+          : "Không thể kết nối đến máy chủ. Vui lòng kiểm tra lại backend."
+      );
     }
     throw err;
   }

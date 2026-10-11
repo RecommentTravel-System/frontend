@@ -1,6 +1,6 @@
 .settings-page { min-height: 100vh; background: #f8f9fb; color: #697485; font: 13px/1.5 Inter, 'Segoe UI', sans-serif; }
 .settings-layout { min-height: 740px; }
-.settings-panel { min-width: 0; background: white; border-radius: 14px; padding: 24px; }
+.settings-panel { flex: 1; min-width: 0; padding: 24px 32px 64px; max-width: 1400px; width: 100%; margin: 0 auto; box-sizing: border-box; background: white; border-radius: 14px; }
 .settings-panel > h1, .settings-security > h2 { margin: 0; padding-bottom: 17px; border-bottom: 1px solid #e5e9ef; font-size: 21px; font-weight: 600; color: #626e80; }
 .settings-row { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 20px 0 12px; }
 .settings-row h2, .settings-security-item h3 { margin: 0 0 6px; font-size: 14px; font-weight: 600; }

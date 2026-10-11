@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useAuth } from "~/providers/auth-provider";
 import { useTranslation } from "~/providers/i18n-provider";
 import { resendOtpApi } from "~/features/auth/services/auth-api";
+import { getLocalizedErrorMessage } from "~/shared/lib/error-codes";
 
 export function RegisterCard({ onClose, onSubmit, onLogin }) {
   const { t } = useTranslation();
@@ -81,10 +82,10 @@ export function RegisterCard({ onClose, onSubmit, onLogin }) {
     } catch (err) {
       setLoading(false);
       setError(
+        getLocalizedErrorMessage(err) ||
         err?.response?.message ||
         err?.message ||
-        t("auth.registerFailed") ||
-        "Đăng ký thất bại. Vui lòng kiểm tra lại thông tin."
+        t("auth.registerFailed")
       );
     }
   };
@@ -164,10 +165,10 @@ export function RegisterCard({ onClose, onSubmit, onLogin }) {
     } catch (err) {
       setLoading(false);
       setError(
+        getLocalizedErrorMessage(err) ||
         err?.response?.message ||
         err?.message ||
-        t("auth.otpInvalid") ||
-        "Mã OTP không chính xác hoặc đã hết hạn."
+        t("auth.otpInvalid")
       );
     }
   };
@@ -180,7 +181,12 @@ export function RegisterCard({ onClose, onSubmit, onLogin }) {
       setResendCooldown(60);
       setInfoMessage(t("auth.otpResent") || "Đã gửi lại mã OTP tới email của bạn.");
     } catch (err) {
-      setError(err?.response?.message || err?.message || t("auth.otpResendFailed") || "Không thể gửi lại mã OTP.");
+      setError(
+        getLocalizedErrorMessage(err) ||
+        err?.response?.message ||
+        err?.message ||
+        t("auth.otpResendFailed")
+      );
     }
   };
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import SiteHeader from '../components/SiteHeader.jsx';
+import SiteFooter from '../components/SiteFooter.jsx';
 import AccountSidebar from '../components/AccountSidebar.jsx';
 import { plans, formatPrice } from './plans.js';
 import { paymentService } from './paymentService.js';
@@ -200,6 +201,7 @@ export default function Payment() {
           </section>
         </section>
       </main>
+      <SiteFooter />
     </div>
   );
 }

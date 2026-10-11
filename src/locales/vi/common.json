@@ -803,7 +803,6 @@
     "activePlan": "Đang hoạt động",
     "perTime": "lần",
     "perPackage": "gói",
-
     "checkout": {
       "title": "Hoàn tất giao dịch mua",
       "processingTitle": "Đang thực hiện thanh toán",
@@ -822,7 +821,6 @@
       "genericError": "Có lỗi xảy ra khi kết nối cổng thanh toán. Vui lòng thử lại.",
       "cancelledOrFailed": "Giao dịch đã bị hủy hoặc không thành công."
     },
-
     "loader": {
       "badgeLabel": "ĐANG CHỜ THANH TOÁN (WEBHOOK)",
       "title": "Đang chờ xác nhận thanh toán",
@@ -839,7 +837,6 @@
       "openPayos": "Mở trang thanh toán PayOS",
       "cancelTx": "Hủy giao dịch"
     },
-
     "success": {
       "badge": "Giao dịch thành công",
       "title": "Thanh toán hoàn tất!",

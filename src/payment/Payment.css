@@ -1,7 +1,7 @@
-.payment-page { min-height: 100vh; background: #f8f9fb; color: #596170; font-family: Inter, 'Segoe UI', sans-serif; }
+.payment-page { min-height: 100vh; background: #f8f9fb; color: #596170; font-family: Inter, 'Segoe UI', sans-serif; display: flex; flex-direction: column; }
 .payment-page .site-header { background: #fff; box-shadow: 0 2px 6px #172b4010; }
-.payment-layout { min-height: calc(100vh - 76px); }
-.payment-content { min-width: 0; border-radius: 16px; background: #fff; padding: 24px 22px 40px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04); }
+.payment-layout { min-height: calc(100vh - 76px); flex: 1 0 auto; }
+.payment-content { flex: 1; min-width: 0; padding: 24px 32px 64px; max-width: 1400px; width: 100%; margin: 0 auto; box-sizing: border-box; border-radius: 16px; background: #fff; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04); }
 .payment-summary { display: flex; align-items: center; justify-content: space-between; gap: 20px; border-bottom: 1px solid #e5e8ed; padding-bottom: 20px; }
 .payment-summary h1 { margin: 0; font-size: 23px; font-weight: 700; letter-spacing: -.6px; }
 .payment-summary p { margin: 6px 0 0; font-size: 14px; color: #9ba5b6; }

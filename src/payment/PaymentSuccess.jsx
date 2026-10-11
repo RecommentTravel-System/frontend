@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import SiteHeader from '../components/SiteHeader.jsx';
+import SiteFooter from '../components/SiteFooter.jsx';
 import { formatPrice } from './plans.js';
 import { useTranslation } from '../providers/i18n-provider.jsx';
+import '../components/SiteLayout.css';
 import './PaymentSuccess.css';
 
 export default function PaymentSuccess({ paymentInfo = null }) {
@@ -175,6 +177,7 @@ export default function PaymentSuccess({ paymentInfo = null }) {
           </div>
         </div>
       </main>
+      <SiteFooter />
     </div>
   );
 }

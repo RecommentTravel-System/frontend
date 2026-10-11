@@ -1,6 +1,6 @@
 .reviews-page { min-height: 100vh; background: #f8f9fb; color: #626b79; font: 13px/1.5 Inter, 'Segoe UI', sans-serif; }
 .reviews-layout { min-height: 740px; }
-.reviews-content { min-width: 0; display: flex; flex-direction: column; }
+.reviews-content { flex: 1; min-width: 0; padding: 24px 32px 64px; display: flex; flex-direction: column; gap: 20px; max-width: 1400px; width: 100%; margin: 0 auto; box-sizing: border-box; }
 .reviews-list { display: flex; flex-direction: column; gap: 18px; }
 .review-card { display: flex; align-items: flex-start; gap: 18px; padding: 20px; border-radius: 12px; background: white; }
 .review-photo { width: 154px; height: 154px; flex-shrink: 0; display: grid; place-items: center; overflow: hidden; border-radius: 11px; background: #e7f0f5; color: #8ca2b4; }

@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import './Register.css';
 import BrandLogo from '../components/BrandLogo.jsx';
 import { signupApi, verifyEmailApi, resendOtpApi } from '~/features/auth/services/auth-api';
+import { getLocalizedErrorMessage } from '~/shared/lib/error-codes';
+import { useTranslation } from '~/providers/i18n-provider';
 
 export default function Register({
   onClose,
@@ -9,7 +11,11 @@ export default function Register({
   onGoogle,
   onLogin,
 }) {
+  const { t } = useTranslation();
   const [step, setStep] = useState('register'); // 'register' | 'otp'
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -47,22 +53,30 @@ export default function Register({
     const nextErrors = {};
     const trimmedEmail = email.trim();
 
+    if (!firstName.trim()) {
+      nextErrors.firstName = t('auth.firstNameRequired', 'Vui lòng nhập tên');
+    }
+
+    if (!lastName.trim()) {
+      nextErrors.lastName = t('auth.lastNameRequired', 'Vui lòng nhập họ');
+    }
+
     if (!trimmedEmail) {
-      nextErrors.email = 'Vui lòng nhập địa chỉ email';
+      nextErrors.email = t('auth.emailRequired', 'Vui lòng nhập địa chỉ email');
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
-      nextErrors.email = 'Địa chỉ email không đúng định dạng';
+      nextErrors.email = t('auth.emailInvalid', 'Địa chỉ email không đúng định dạng');
     }
 
     if (!password) {
-      nextErrors.password = 'Vui lòng nhập mật khẩu';
+      nextErrors.password = t('auth.passwordRequired', 'Vui lòng nhập mật khẩu');
     } else if (password.length < 6) {
-      nextErrors.password = 'Mật khẩu phải có ít nhất 6 ký tự';
+      nextErrors.password = t('auth.passwordTooShort', 'Mật khẩu phải có ít nhất 6 ký tự');
     }
 
     if (!confirmPassword) {
-      nextErrors.confirmPassword = 'Vui lòng xác nhận mật khẩu';
+      nextErrors.confirmPassword = t('auth.confirmPasswordRequired', 'Vui lòng xác nhận mật khẩu');
     } else if (confirmPassword !== password) {
-      nextErrors.confirmPassword = 'Mật khẩu xác nhận không khớp';
+      nextErrors.confirmPassword = t('auth.passwordMismatch', 'Mật khẩu xác nhận không khớp');
     }
 
     setErrors(nextErrors);
@@ -80,20 +94,26 @@ export default function Register({
 
     try {
       const normalizedEmail = email.trim().toLowerCase();
+      const fullName = `${firstName.trim()} ${lastName.trim()}`.trim();
       await signupApi({
         email: normalizedEmail,
         password,
+        fullName,
+        phone: phone.trim(),
       });
 
       setStep('otp');
       setOtp(['', '', '', '', '', '']);
       setResendCooldown(60);
-      setInfoMessage(`Mã xác thực 6 chữ số đã được gửi tới ${normalizedEmail}`);
+      setInfoMessage(
+        t('auth.otpSentTo', { email: normalizedEmail }) ||
+        `Mã xác thực 6 chữ số đã được gửi tới ${normalizedEmail}`
+      );
     } catch (err) {
       setError(
+        getLocalizedErrorMessage(err) ||
         err?.response?.message ||
-        err?.message ||
-        'Không thể đăng ký tài khoản. Vui lòng kiểm tra lại thông tin.'
+        err?.message
       );
     } finally {
       setPending(false);
@@ -180,9 +200,9 @@ export default function Register({
       setShowSuccessModal(true);
     } catch (err) {
       setError(
+        getLocalizedErrorMessage(err) ||
         err?.response?.message ||
-        err?.message ||
-        'Mã OTP không chính xác hoặc đã hết hạn. Vui lòng thử lại.'
+        err?.message
       );
     } finally {
       setPending(false);
@@ -203,9 +223,9 @@ export default function Register({
       setInfoMessage(`Đã gửi lại mã xác thực tới ${normalizedEmail}`);
     } catch (err) {
       setError(
+        getLocalizedErrorMessage(err) ||
         err?.response?.message ||
-        err?.message ||
-        'Không thể gửi lại mã OTP. Vui lòng thử lại sau.'
+        err?.message
       );
     } finally {
       setPending(false);
@@ -225,7 +245,7 @@ export default function Register({
     <div className="login-page">
       <div className="login-card register-card">
         <div className="login-header">
-          <h2>Log in or sign up</h2>
+          <h2>{t('auth.registerTitle', 'Đăng ký tài khoản')}</h2>
           <button
             type="button"
             className="close-btn"
@@ -243,23 +263,62 @@ export default function Register({
 
         {step === 'register' ? (
           <>
-            <h1>Create your account</h1>
+            <h1>{t('auth.createAccountTitle', 'Tạo tài khoản Wayvee')}</h1>
             <p className="auth-note">
-              Đăng ký tài khoản để bắt đầu trải nghiệm và lên lịch trình du lịch cùng Wayvee.
+              {t('auth.registerNote', 'Đăng ký tài khoản để bắt đầu trải nghiệm và lên lịch trình du lịch cùng Wayvee.')}
             </p>
 
             {error && <p role="alert" className="auth-feedback auth-error">{error}</p>}
 
             <form onSubmit={handleRegisterSubmit} className="login-form" noValidate>
+              <div className="field-group-row">
+                <div className="field-group">
+                  <label htmlFor="register-first-name">{t('auth.firstNameLabel', 'Tên')}</label>
+                  <input
+                    id="register-first-name"
+                    autoComplete="given-name"
+                    type="text"
+                    value={firstName}
+                    onChange={(event) => setFirstName(event.target.value)}
+                    placeholder={t('auth.firstNamePlaceholder', 'Nhập tên')}
+                    aria-invalid={Boolean(errors.firstName)}
+                    aria-describedby={errors.firstName ? 'register-first-name-error' : undefined}
+                  />
+                  {errors.firstName && (
+                    <span id="register-first-name-error" className="field-error">
+                      {errors.firstName}
+                    </span>
+                  )}
+                </div>
+                <div className="field-group">
+                  <label htmlFor="register-last-name">{t('auth.lastNameLabel', 'Họ')}</label>
+                  <input
+                    id="register-last-name"
+                    autoComplete="family-name"
+                    type="text"
+                    value={lastName}
+                    onChange={(event) => setLastName(event.target.value)}
+                    placeholder={t('auth.lastNamePlaceholder', 'Nhập họ')}
+                    aria-invalid={Boolean(errors.lastName)}
+                    aria-describedby={errors.lastName ? 'register-last-name-error' : undefined}
+                  />
+                  {errors.lastName && (
+                    <span id="register-last-name-error" className="field-error">
+                      {errors.lastName}
+                    </span>
+                  )}
+                </div>
+              </div>
+
               <div className="field-group">
-                <label htmlFor="register-email">Email address</label>
+                <label htmlFor="register-email">{t('auth.emailLabel', 'Địa chỉ Email')}</label>
                 <input
                   id="register-email"
                   autoComplete="username"
                   type="email"
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
-                  placeholder="Enter your email address"
+                  placeholder={t('auth.emailPlaceholder', 'Nhập địa chỉ email của bạn')}
                   aria-invalid={Boolean(errors.email)}
                   aria-describedby={errors.email ? 'register-email-error' : undefined}
                 />
@@ -271,14 +330,26 @@ export default function Register({
               </div>
 
               <div className="field-group">
-                <label htmlFor="register-password">Password</label>
+                <label htmlFor="register-phone">{t('auth.phoneLabel', 'Số điện thoại (tùy chọn)')}</label>
+                <input
+                  id="register-phone"
+                  autoComplete="tel"
+                  type="tel"
+                  value={phone}
+                  onChange={(event) => setPhone(event.target.value)}
+                  placeholder={t('auth.phonePlaceholder', 'Nhập số điện thoại')}
+                />
+              </div>
+
+              <div className="field-group">
+                <label htmlFor="register-password">{t('auth.passwordLabel', 'Mật khẩu')}</label>
                 <input
                   id="register-password"
                   autoComplete="new-password"
                   type="password"
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
-                  placeholder="Create a password (min 6 characters)"
+                  placeholder={t('auth.passwordMinLength', 'Tối thiểu 6 ký tự')}
                   aria-invalid={Boolean(errors.password)}
                   aria-describedby={errors.password ? 'register-password-error' : undefined}
                 />
@@ -290,14 +361,14 @@ export default function Register({
               </div>
 
               <div className="field-group">
-                <label htmlFor="register-confirm-password">Confirm password</label>
+                <label htmlFor="register-confirm-password">{t('auth.confirmPasswordLabel', 'Xác nhận mật khẩu')}</label>
                 <input
                   id="register-confirm-password"
                   autoComplete="new-password"
                   type="password"
                   value={confirmPassword}
                   onChange={(event) => setConfirmPassword(event.target.value)}
-                  placeholder="Re-enter your password"
+                  placeholder={t('auth.confirmPasswordPlaceholder', 'Nhập lại mật khẩu')}
                   aria-invalid={Boolean(errors.confirmPassword)}
                   aria-describedby={errors.confirmPassword ? 'register-confirm-password-error' : undefined}
                 />
@@ -316,17 +387,17 @@ export default function Register({
                 {pending ? (
                   <span className="btn-loading-content">
                     <span className="spinner" />
-                    Đang tạo tài khoản…
+                    {t('auth.processing', 'Đang xử lý...')}
                   </span>
                 ) : (
-                  'Create account'
+                  t('auth.createAccountButton', 'Tạo tài khoản')
                 )}
               </button>
             </form>
 
             <div className="social-divider">
               <span className="line" />
-              <span className="text">or sign up with</span>
+              <span className="text">{t('auth.or', 'hoặc')}</span>
               <span className="line" />
             </div>
 
@@ -336,13 +407,13 @@ export default function Register({
                   if (onGoogle) onGoogle();
                 }}
                 icon={<GoogleIcon />}
-                label="Continue with Google"
+                label={t('auth.continueWithGoogle', 'Tiếp tục với Google')}
               />
             </div>
 
-            <p className="signup-text">Already have an account?</p>
+            <p className="signup-text">{t('auth.alreadyHaveAccount', 'Đã có tài khoản?')}</p>
             <button type="button" className="link-btn" onClick={onLogin}>
-              Log in
+              {t('auth.logIn', 'Đăng nhập')}
             </button>
           </>
         ) : (
@@ -418,9 +489,9 @@ export default function Register({
               </div>
             </form>
 
-            <p className="signup-text">Already have an account?</p>
+            <p className="signup-text">{t('auth.alreadyHaveAccount', 'Đã có tài khoản?')}</p>
             <button type="button" className="link-btn" onClick={onLogin}>
-              Log in
+              {t('auth.logIn', 'Đăng nhập')}
             </button>
           </>
         )}

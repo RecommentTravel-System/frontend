@@ -804,7 +804,6 @@
     "activePlan": "Active",
     "perTime": "trip",
     "perPackage": "pack",
-
     "checkout": {
       "title": "Complete Your Purchase",
       "processingTitle": "Processing Payment",
@@ -823,7 +822,6 @@
       "genericError": "An error occurred while connecting to the payment gateway. Please try again.",
       "cancelledOrFailed": "Transaction was cancelled or failed."
     },
-
     "loader": {
       "badgeLabel": "AWAITING PAYMENT (WEBHOOK)",
       "title": "Waiting for Payment Confirmation",
@@ -840,7 +838,6 @@
       "openPayos": "Open PayOS Payment Page",
       "cancelTx": "Cancel Transaction"
     },
-
     "success": {
       "badge": "Transaction Successful",
       "title": "Payment Completed!",
@@ -868,4 +865,3 @@
     }
   }
 }
-

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import SiteHeader from '../components/SiteHeader.jsx';
+import SiteFooter from '../components/SiteFooter.jsx';
 import WayveeTravelLoader from './WayveeTravelLoader.jsx';
 import logo from '../assets/Icon.jpg';
 import { plans, formatPrice } from './plans.js';
@@ -428,6 +429,7 @@ export default function PaymentCheckout() {
           )}
         </div>
       </main>
+      <SiteFooter />
     </div>
   );
 }
