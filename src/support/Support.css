@@ -1,6 +1,6 @@
 .support-page { min-height: 100vh; background: #f8f9fb; color: #697586; font: 13px/1.5 Inter, 'Segoe UI', sans-serif; }
 .support-layout { min-height: 740px; }
-.support-panel { min-width: 0; padding: 24px; background: white; border-radius: 14px; }
+.support-panel { flex: 1; min-width: 0; padding: 24px 32px 64px; max-width: 1400px; width: 100%; margin: 0 auto; box-sizing: border-box; background: white; border-radius: 14px; }
 .support-heading h1 { margin: 0 0 6px; font-size: 21px; font-weight: 600; color: #647084; }
 .support-heading p { margin: 0; color: #a4afbf; font-size: 12px; }
 .support-options { display: flex; flex-direction: column; gap: 18px; margin-top: 30px; }

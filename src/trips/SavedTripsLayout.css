@@ -26,10 +26,16 @@
 
 /* Wrapper bên phải — stack các card dọc giống profile-content */
 .saved-trips-content {
+  flex: 1;
   min-width: 0;
+  padding: 24px 32px 64px;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 /* ====================================================

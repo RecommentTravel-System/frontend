@@ -1,6 +1,6 @@
 .favorites-page { min-height: 100vh; background: #f8f9fb; color: #626b79; font: 13px/1.5 Inter, 'Segoe UI', sans-serif; }
 .favorites-layout { min-height: 740px; }
-.favorites-content { display: flex; flex-direction: column; min-width: 0; }
+.favorites-content { flex: 1; min-width: 0; padding: 24px 32px 64px; display: flex; flex-direction: column; gap: 20px; max-width: 1400px; width: 100%; margin: 0 auto; box-sizing: border-box; }
 .favorites-panel { flex: 1; min-height: 700px; padding: 22px; border-radius: 14px; background: white; }
 .favorites-panel-empty { display: flex; flex-direction: column; justify-content: center; }
 .favorites-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; margin-bottom: 45px; }

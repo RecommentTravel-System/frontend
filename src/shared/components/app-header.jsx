@@ -4,6 +4,7 @@ import { ThemeToggle } from "./theme-toggle";
 import { LanguageSwitcher } from "./language-switcher";
 import { useTranslation } from "~/providers/i18n-provider";
 import { useAuth } from "~/providers/auth-provider";
+import Avatar from "~/components/AccountAvatar";
 
 export function WayveeLogo({ className = "h-7 sm:h-8 w-auto text-[#0b2545] dark:text-white" }) {
   return (
@@ -85,36 +86,36 @@ export function AppHeader({ onLogin, onRegister }) {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   }, []);
-
+ 
   const role = user?.role || (Array.isArray(user?.roles) ? user?.roles[0] : null);
   const isAdmin =
     isAuthenticated &&
     Boolean(role) &&
     (String(role).toUpperCase() === "ADMIN" ||
-      String(role).toUpperCase() === "ROLE_ADMIN" ||
-      String(role).toUpperCase() === "SUPERADMIN");
+     String(role).toUpperCase() === "ROLE_ADMIN" ||
+     String(role).toUpperCase() === "SUPERADMIN");
 
   const menuItems = [
     ...(isAdmin
       ? [
-        {
-          id: "adminDashboard",
-          label: t("userMenu.adminDashboard", "Trang Quản Trị (Admin)"),
-          icon: (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 flex-shrink-0 text-[#00a3e0]">
-              <rect x="3" y="3" width="7" height="7" rx="1.5" />
-              <rect x="14" y="3" width="7" height="7" rx="1.5" />
-              <rect x="3" y="14" width="7" height="7" rx="1.5" />
-              <rect x="14" y="14" width="7" height="7" rx="1.5" />
-            </svg>
-          ),
-          isAdminOption: true,
-          onClick: () => {
-            setMenuOpen(false);
-            navigate("/admin");
+          {
+            id: "adminDashboard",
+            label: t("userMenu.adminDashboard", "Trang Quản Trị (Admin)"),
+            icon: (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 flex-shrink-0 text-[#00a3e0]">
+                <rect x="3" y="3" width="7" height="7" rx="1.5" />
+                <rect x="14" y="3" width="7" height="7" rx="1.5" />
+                <rect x="3" y="14" width="7" height="7" rx="1.5" />
+                <rect x="14" y="14" width="7" height="7" rx="1.5" />
+              </svg>
+            ),
+            isAdminOption: true,
+            onClick: () => {
+              setMenuOpen(false);
+              navigate("/admin");
+            }
           }
-        }
-      ]
+        ]
       : []),
     {
       id: "personalData",
@@ -272,11 +273,7 @@ export function AppHeader({ onLogin, onRegister }) {
               title={user?.fullName || "Tài khoản của bạn"}
               className="w-9 h-9 rounded-full overflow-hidden border-2 border-[#00a3e0] shadow-xs cursor-pointer hover:scale-105 transition-transform flex items-center justify-center relative"
             >
-              <img
-                src={user?.avatar || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80"}
-                alt="User avatar"
-                className="w-full h-full object-cover"
-              />
+              <Avatar name={user?.fullName} src={user?.avatarUrl || user?.avatar} />
               <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-white dark:ring-slate-900"></span>
             </button>
 
@@ -292,10 +289,11 @@ export function AppHeader({ onLogin, onRegister }) {
                       key={item.id}
                       type="button"
                       onClick={item.onClick}
-                      className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-semibold transition-colors text-left cursor-pointer ${item.isAdminOption
+                      className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-semibold transition-colors text-left cursor-pointer ${
+                        item.isAdminOption
                           ? "bg-sky-50/80 dark:bg-sky-950/40 text-[#00a3e0] hover:bg-sky-100/90 dark:hover:bg-sky-900/50 mb-1 border border-sky-100 dark:border-sky-900/60"
                           : "text-slate-800 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800/80"
-                        }`}
+                      }`}
                       role="menuitem"
                     >
                       <div className="flex items-center gap-4 min-w-0">

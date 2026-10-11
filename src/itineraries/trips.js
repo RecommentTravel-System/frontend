@@ -42,12 +42,61 @@ export const trips = [
   },
 ];
 
+export function getEffectiveTripStatus(trip) {
+  if (!trip) return 'ongoing';
+  if (trip.status === 'cancelled' || trip.status === 'CANCELLED') {
+    return 'cancelled';
+  }
+  if (trip.status === 'completed' || trip.status === 'COMPLETED') {
+    return 'completed';
+  }
+
+  // Tự động chuyển sang Đã hoàn thành nếu đã quá ngày kết thúc
+  if (trip.end) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const endDate = new Date(`${trip.end}T23:59:59`);
+    if (!isNaN(endDate.getTime()) && endDate < today) {
+      return 'completed';
+    }
+  }
+
+  return trip.status || 'ongoing';
+}
+
+export function cancelLocalTrip(tripId) {
+  try {
+    const cancelledIds = JSON.parse(localStorage.getItem('wayvee_cancelled_trips') || '[]');
+    const idStr = String(tripId);
+    if (!cancelledIds.includes(idStr)) {
+      localStorage.setItem('wayvee_cancelled_trips', JSON.stringify([...cancelledIds, idStr]));
+    }
+    const custom = JSON.parse(localStorage.getItem('wayvee_custom_trips') || '[]');
+    const updatedCustom = custom.map(t => String(t.id) === idStr ? { ...t, status: 'cancelled' } : t);
+    localStorage.setItem('wayvee_custom_trips', JSON.stringify(updatedCustom));
+  } catch (e) {
+    console.error('Error cancelling local trip:', e);
+  }
+}
+
 export function getAllTrips() {
   try {
     const custom = JSON.parse(localStorage.getItem('wayvee_custom_trips') || '[]');
-    return [...custom, ...trips];
+    const cancelledIds = JSON.parse(localStorage.getItem('wayvee_cancelled_trips') || '[]');
+    const combined = [...custom, ...trips].map(trip => {
+      let status = trip.status;
+      if (cancelledIds.includes(String(trip.id))) {
+        status = 'cancelled';
+      }
+      const effectiveStatus = getEffectiveTripStatus({ ...trip, status });
+      return {
+        ...trip,
+        status: effectiveStatus
+      };
+    });
+    return combined;
   } catch {
-    return trips;
+    return trips.map(t => ({ ...t, status: getEffectiveTripStatus(t) }));
   }
 }
 

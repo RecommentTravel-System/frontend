@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Link, useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import AccountSidebar from '../components/AccountSidebar.jsx';
 import SiteHeader from '../components/SiteHeader.jsx';
@@ -6,7 +6,7 @@ import SiteFooter from '../components/SiteFooter.jsx';
 import Icon from '../components/AccountIcon.jsx';
 import { useAuth } from '../auth/useAuth.js';
 import { readProfile } from '../profile/profileStorage.js';
-import { filters, getAllTrips, shortDate } from './trips.js';
+import { filters, getAllTrips, getEffectiveTripStatus, cancelLocalTrip, shortDate } from './trips.js';
 import { api } from '../shared/lib/api.js';
 import './Itineraries.css';
 import '../tours/CreateTour.css';
@@ -24,31 +24,41 @@ function TripImage({ trip }) {
   );
 }
 
-function StatusBadge({ confirmed, hasItinerary }) {
+function StatusBadge({ status, confirmed, hasItinerary }) {
+  if (status === 'cancelled' || status === 'CANCELLED') {
+    return (
+      <span className="trip-badge trip-badge-cancelled">
+        ✕ Đã hủy
+      </span>
+    );
+  }
+
+  if (status === 'completed' || status === 'COMPLETED') {
+    return (
+      <span className="trip-badge trip-badge-completed">
+        ✓ Đã hoàn thành
+      </span>
+    );
+  }
+
+  if (status === 'ongoing' || status === 'IN_PROGRESS') {
+    return (
+      <span className="trip-badge trip-badge-ongoing">
+        <span className="trip-badge-dot"></span> Đang diễn ra
+      </span>
+    );
+  }
+
   if (hasItinerary === false) {
     return (
-      <span
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '4px',
-          borderColor: '#f59e0b',
-          color: '#d97706',
-          backgroundColor: '#fffbeb',
-          padding: '2px 8px',
-          borderRadius: '6px',
-          fontSize: '10px',
-          fontWeight: 600,
-          border: '1px solid #fde68a'
-        }}
-      >
+      <span className="trip-badge trip-badge-no-itinerary">
         ⚠ Chưa có lịch trình
       </span>
     );
   }
 
   return (
-    <span className={`trip-badge${confirmed ? '' : ' trip-badge-pending'}`}>
+    <span className={`trip-badge${confirmed ? ' trip-badge-confirmed' : ' trip-badge-pending'}`}>
       {confirmed ? 'Đã xác nhận' : 'Đang chờ'}
     </span>
   );
@@ -76,8 +86,15 @@ function EmptyTrips() {
   );
 }
 
-function TripList({ filter, allTrips, onCreateItinerary }) {
-  const visibleTrips = allTrips.filter((trip) => filter.id === 'all' || trip.status === filter.id);
+function TripList({ filter, allTrips, onCreateItinerary, onCancelTrip }) {
+  const visibleTrips = allTrips.filter((trip) => {
+    if (filter.id === 'all') return true;
+    if (filter.id === 'ongoing') {
+      return trip.status === 'ongoing' || (!['completed', 'cancelled'].includes(trip.status));
+    }
+    return trip.status === filter.id;
+  });
+
   if (!visibleTrips.length) {
     return (
       <section className="trips-panel trips-empty-panel">
@@ -94,62 +111,83 @@ function TripList({ filter, allTrips, onCreateItinerary }) {
       </header>
 
       <ul className="trips-list">
-        {visibleTrips.map((trip) => (
-          <li key={trip.id} className="trip-row">
-            <TripImage trip={trip} />
-            <div className="trip-row-body">
-              <div className="trip-row-top">
-                <h2>
-                  <Link to={`/itineraries/${trip.id}?status=${filter.id}`}>{trip.title}</Link>
-                </h2>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <StatusBadge confirmed={trip.confirmed} hasItinerary={trip.hasItinerary} />
-                  {trip.hasItinerary === false && (
-                    <button
-                      type="button"
-                      onClick={() => onCreateItinerary(trip)}
-                      style={{
-                        background: '#002d54',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '6px',
-                        padding: '4px 10px',
-                        fontSize: '11px',
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '4px'
-                      }}
-                    >
-                      ✨ Tạo lịch trình
-                    </button>
-                  )}
+        {visibleTrips.map((trip) => {
+          const isCancelable = trip.status !== 'cancelled' && trip.status !== 'completed';
+          return (
+            <li key={trip.id} className="trip-row">
+              <TripImage trip={trip} />
+              <div className="trip-row-body">
+                <div className="trip-row-top">
+                  <h2>
+                    <Link to={`/itineraries/${trip.id}?status=${filter.id}`}>{trip.title}</Link>
+                  </h2>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <StatusBadge
+                      status={trip.status}
+                      confirmed={trip.confirmed}
+                      hasItinerary={trip.hasItinerary}
+                    />
+                    {trip.hasItinerary === false && trip.status !== 'cancelled' && trip.status !== 'completed' && (
+                      <button
+                        type="button"
+                        onClick={() => onCreateItinerary(trip)}
+                        style={{
+                          background: '#002d54',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '6px',
+                          padding: '4px 10px',
+                          fontSize: '11px',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px'
+                        }}
+                      >
+                        ✨ Tạo lịch trình
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                <div className="trip-row-bottom">
+                  <dl className="trip-metadata">
+                    <div>
+                      <dt>Ngày đi:</dt>
+                      <dd>{shortDate(trip.start)}</dd>
+                    </div>
+                    <div>
+                      <dt>Ngày về:</dt>
+                      <dd>{shortDate(trip.end)}</dd>
+                    </div>
+                    <div>
+                      <dt>Số người:</dt>
+                      <dd>{trip.guests}</dd>
+                    </div>
+                  </dl>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    {isCancelable && (
+                      <button
+                        type="button"
+                        className="trip-cancel-btn"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          onCancelTrip(trip);
+                        }}
+                      >
+                        Hủy lịch
+                      </button>
+                    )}
+                    <Link className="trip-detail-link" to={`/itineraries/${trip.id}?status=${filter.id}`}>
+                      Xem chi tiết<span className="trip-sr-only"> {trip.title}</span>
+                    </Link>
+                  </div>
                 </div>
               </div>
-
-              <div className="trip-row-bottom">
-                <dl className="trip-metadata">
-                  <div>
-                    <dt>Ngày đi:</dt>
-                    <dd>{shortDate(trip.start)}</dd>
-                  </div>
-                  <div>
-                    <dt>Ngày về:</dt>
-                    <dd>{shortDate(trip.end)}</dd>
-                  </div>
-                  <div>
-                    <dt>Số người:</dt>
-                    <dd>{trip.guests}</dd>
-                  </div>
-                </dl>
-                <Link className="trip-detail-link" to={`/itineraries/${trip.id}?status=${filter.id}`}>
-                  Xem chi tiết<span className="trip-sr-only"> {trip.title}</span>
-                </Link>
-              </div>
-            </div>
-          </li>
-        ))}
+            </li>
+          );
+        })}
       </ul>
       <p className="trips-demo-note">Lịch trình minh họa</p>
     </section>
@@ -157,7 +195,7 @@ function TripList({ filter, allTrips, onCreateItinerary }) {
 }
 
 function TravelDate({ label, date, time }) {
-  const [, month, day] = date.split('-');
+  const [, month, day] = (date || '2026-01-01').split('-');
   return (
     <div className="trip-date">
       <span>{label}</span>
@@ -171,7 +209,7 @@ function TravelDate({ label, date, time }) {
   );
 }
 
-function TripDetail({ trip, filter, user, onCreateItinerary }) {
+function TripDetail({ trip, filter, user, onCreateItinerary, onCancelTrip }) {
   const profile = readProfile(user);
   if (!trip) {
     return (
@@ -182,6 +220,8 @@ function TripDetail({ trip, filter, user, onCreateItinerary }) {
     );
   }
 
+  const isCancelable = trip.status !== 'cancelled' && trip.status !== 'completed';
+
   return (
     <div className="trip-detail">
       <Link className="trip-back" to={`/itineraries?status=${filter.id}`}>
@@ -189,7 +229,7 @@ function TripDetail({ trip, filter, user, onCreateItinerary }) {
       </Link>
 
       {/* Unassigned Itinerary Warning Banner */}
-      {trip.hasItinerary === false && (
+      {trip.hasItinerary === false && trip.status !== 'cancelled' && trip.status !== 'completed' && (
         <div
           style={{
             background: '#fffbeb',
@@ -210,7 +250,7 @@ function TripDetail({ trip, filter, user, onCreateItinerary }) {
                 Chưa có lịch trình chi tiết
               </strong>
               <span style={{ fontSize: '11px', color: '#b45309' }}>
-                Bạn đã lưu {trip.places.length} địa điểm cho chuyến đi này nhưng chưa chia theo ngày.
+                Bạn đã lưu {trip.places ? trip.places.length : 0} địa điểm cho chuyến đi này nhưng chưa chia theo ngày.
               </span>
             </div>
           </div>
@@ -247,7 +287,11 @@ function TripDetail({ trip, filter, user, onCreateItinerary }) {
           <TravelDate label="Bắt đầu" date={trip.start} time={trip.time} />
           <TravelDate label="Kết thúc" date={trip.end} time={trip.time} />
           <div className="trip-duration">
-            <StatusBadge confirmed={trip.confirmed} hasItinerary={trip.hasItinerary} />
+            <StatusBadge
+              status={trip.status}
+              confirmed={trip.confirmed}
+              hasItinerary={trip.hasItinerary}
+            />
             <span>Thời lượng</span>
             <strong>{trip.duration}</strong>
           </div>
@@ -263,9 +307,9 @@ function TripDetail({ trip, filter, user, onCreateItinerary }) {
 
         <div className="trip-destinations">
           <div>
-            <h2>Địa điểm đã lưu ({trip.places.length})</h2>
+            <h2>Địa điểm đã lưu ({trip.places ? trip.places.length : 0})</h2>
             <ul>
-              {trip.places.map((place) => (
+              {(trip.places || []).map((place) => (
                 <li key={place}>📍 {place}</li>
               ))}
             </ul>
@@ -298,7 +342,7 @@ function TripDetail({ trip, filter, user, onCreateItinerary }) {
         <div className="trip-amenities">
           <h2>Tiện ích / Ghi chú:</h2>
           <ul>
-            {trip.amenities.map((item, index) => (
+            {(trip.amenities || []).map((item, index) => (
               <li key={item}>
                 <span aria-hidden="true">{['♧', '◇', '⌁', '▣', '♧', '⌁'][index % 6]}</span>
                 {item}
@@ -310,7 +354,17 @@ function TripDetail({ trip, filter, user, onCreateItinerary }) {
         <div className="trip-detail-actions">
           <p className="trips-demo-note">Lịch trình và sơ đồ bản đồ minh họa</p>
           <div style={{ display: 'flex', gap: '10px' }}>
-            {trip.hasItinerary === false && (
+            {isCancelable && (
+              <button
+                type="button"
+                className="trip-cancel-btn"
+                onClick={() => onCancelTrip(trip)}
+                style={{ padding: '8px 14px', fontSize: '12px' }}
+              >
+                ✕ Hủy lịch trình
+              </button>
+            )}
+            {trip.hasItinerary === false && trip.status !== 'cancelled' && trip.status !== 'completed' && (
               <button
                 type="button"
                 className="trip-export"
@@ -338,6 +392,7 @@ export default function Itineraries() {
   const navigate = useNavigate();
 
   const [remoteTrips, setRemoteTrips] = useState([]);
+  const [localTrips, setLocalTrips] = useState(() => getAllTrips());
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -357,14 +412,22 @@ export default function Itineraries() {
               COMPLETED: 'completed',
               CANCELLED: 'cancelled'
             };
+            const rawStatus = statusMap[beTrip.status] || 'ongoing';
+            const effectiveStatus = getEffectiveTripStatus({
+              status: rawStatus,
+              start: startStr,
+              end: endStr
+            });
+
             return {
               id: String(beTrip.tripId),
               title: beTrip.tripName || 'Chuyến đi của tôi',
               destination: 'Việt Nam',
               image: 'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=500&q=80',
-              status: statusMap[beTrip.status] || 'ongoing',
+              status: effectiveStatus,
               confirmed: Boolean(beTrip.itineraryArranged),
               hasItinerary: Boolean(beTrip.itineraryArranged),
+              isUnlocked: Boolean(beTrip.isUnlocked || beTrip.itineraryArranged),
               start: startStr,
               end: endStr,
               time: '08:00 – 18:00',
@@ -373,7 +436,8 @@ export default function Itineraries() {
               summary: '2 người · Lịch trình đồng bộ từ tài khoản',
               description: `Chuyến đi ${beTrip.tripName} đã được lưu vào hệ thống của bạn.`,
               places: ['Hà Nội', 'TP. Hồ Chí Minh'],
-              amenities: ['WiFi', 'Check-in', 'Bản đồ số', 'Hướng dẫn viên']
+              amenities: ['WiFi', 'Check-in', 'Bản đồ số', 'Hướng dẫn viên'],
+              isRemote: true
             };
           });
           setRemoteTrips(mapped);
@@ -389,24 +453,50 @@ export default function Itineraries() {
   }, [user]);
 
   const allTrips = useMemo(() => {
-    const base = getAllTrips();
+    const base = localTrips;
     if (!remoteTrips.length) return base;
     const ids = new Set(remoteTrips.map((t) => t.id));
     return [...remoteTrips, ...base.filter((t) => !ids.has(t.id))];
-  }, [remoteTrips]);
+  }, [remoteTrips, localTrips]);
 
   const filter = filters.find((item) => item.id === params.get('status')) || filters[0];
+
+  const handleCancelTrip = useCallback(async (trip) => {
+    const isConfirmed = window.confirm(`Bạn có chắc chắn muốn hủy lịch trình "${trip.title}" không?`);
+    if (!isConfirmed) return;
+
+    try {
+      if (trip.isRemote || !isNaN(Number(trip.id))) {
+        await api.patch(`/api/v1/trips/${trip.id}/cancel`).catch(() => {
+          return api.put(`/api/v1/trips/${trip.id}`, { status: 'CANCELLED' });
+        });
+      }
+    } catch (err) {
+      console.warn('API cancel error, fallback to local state:', err);
+    }
+
+    cancelLocalTrip(trip.id);
+    setRemoteTrips((prev) =>
+      prev.map((t) => (String(t.id) === String(trip.id) ? { ...t, status: 'cancelled' } : t))
+    );
+    setLocalTrips((prev) =>
+      prev.map((t) => (String(t.id) === String(trip.id) ? { ...t, status: 'cancelled' } : t))
+    );
+    setNotice(`Đã hủy lịch trình "${trip.title}" thành công.`);
+  }, []);
 
   const handleCreateItinerary = (trip) => {
     navigate('/trip/create', {
       state: {
+        tripId: trip.id,
+        isUnlocked: Boolean(trip.isUnlocked || trip.confirmed || trip.hasItinerary),
         tripName: trip.title,
         tripDates: trip.duration,
         destination: trip.destination,
         passengerCount: String(trip.guests || 2),
         placesList:
           trip.placesList ||
-          trip.places.map((p, i) => ({
+          (trip.places || []).map((p, i) => ({
             id: `p-${i}`,
             name: p,
             location: trip.destination,
@@ -428,16 +518,18 @@ export default function Itineraries() {
         <div className="itineraries-content">
           {tripId ? (
             <TripDetail
-              trip={allTrips.find((trip) => trip.id === tripId)}
+              trip={allTrips.find((trip) => String(trip.id) === String(tripId))}
               filter={filter}
               user={user}
               onCreateItinerary={handleCreateItinerary}
+              onCancelTrip={handleCancelTrip}
             />
           ) : (
             <TripList
               filter={filter}
               allTrips={allTrips}
               onCreateItinerary={handleCreateItinerary}
+              onCancelTrip={handleCancelTrip}
             />
           )}
           {notice && (
@@ -450,4 +542,4 @@ export default function Itineraries() {
       <SiteFooter />
     </div>
   );
-}
+}

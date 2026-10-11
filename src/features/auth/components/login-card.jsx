@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "~/providers/auth-provider";
 import { useTranslation } from "~/providers/i18n-provider";
+import { getLocalizedErrorMessage } from "~/shared/lib/error-codes";
 
 export function LoginCard({ onClose, onSubmit, onSignUp, onRegister }) {
   const { t } = useTranslation();
@@ -43,10 +44,10 @@ export function LoginCard({ onClose, onSubmit, onSignUp, onRegister }) {
     } catch (err) {
       setLoading(false);
       setError(
-        err?.response?.data?.message ||
+        getLocalizedErrorMessage(err) ||
         err?.message ||
-        t("auth.loginFailed") ||
-        "Đăng nhập thất bại. Vui lòng kiểm tra lại email hoặc mật khẩu."
+        err?.response?.data?.message ||
+        t("auth.loginFailed")
       );
     }
   };

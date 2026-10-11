@@ -1,6 +1,7 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "~/providers/i18n-provider";
+import { useAuth } from "~/providers/auth-provider";
 import { AppHeader } from "~/shared/components";
 import { LocationMapModal } from "./location-map-modal";
 import { api } from "~/shared/lib/api";
@@ -472,44 +473,118 @@ export function TripPlanPage() {
   const { t, language } = useTranslation();
   const isEn = language === "en";
   const navigate = useNavigate();
+  const { user, isAuthenticated } = useAuth();
   const locationState = useLocation().state || {};
 
+  // Kiểm tra nếu có pending trip từ sessionStorage sau khi thanh toán gói
+  const pendingTripData = useMemo(() => {
+    try {
+      const saved = sessionStorage.getItem("wayvee_pending_optimization_trip");
+      if (saved) return JSON.parse(saved);
+    } catch (e) { }
+    return null;
+  }, []);
+
   // Trip Metadata
+  const [tripId, setTripId] = useState(() => {
+    if (locationState.tripId) return locationState.tripId;
+    if (pendingTripData?.tripId) return pendingTripData.tripId;
+    try {
+      const cacheKey = `wayvee_trip_plan_${(locationState.tripName || "").trim()}`;
+      const cached = sessionStorage.getItem(cacheKey);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed?.tripId) return parsed.tripId;
+      }
+    } catch (e) { }
+    return null;
+  });
+
+  const [isUnlocked, setIsUnlocked] = useState(() => {
+    if (locationState.isUnlocked !== undefined) return Boolean(locationState.isUnlocked);
+    if (pendingTripData?.isUnlocked !== undefined) return Boolean(pendingTripData.isUnlocked);
+    try {
+      const cacheKey = `wayvee_trip_plan_${(locationState.tripName || "").trim()}`;
+      const cached = sessionStorage.getItem(cacheKey);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed?.isUnlocked !== undefined) return Boolean(parsed.isUnlocked);
+      }
+    } catch (e) { }
+    return false;
+  });
+
   const [tripName, setTripName] = useState(
-    locationState.tripName || "Chuyến đi Hà Nội mùa thu - Khám phá"
+    locationState.tripName || pendingTripData?.tripName || "Chuyến đi Hà Nội mùa thu - Khám phá"
   );
   const [tripDates, setTripDates] = useState(
-    locationState.tripDates || "14/08/2025 - 18/08/2025"
+    locationState.tripDates || pendingTripData?.tripDates || "14/08/2025 - 18/08/2025"
   );
   const [destination] = useState(
-    locationState.destination || "Hà Nội, Việt Nam"
+    locationState.destination || pendingTripData?.destination || "Hà Nội, Việt Nam"
   );
   const [passengerCount] = useState(
-    locationState.passengerCount || locationState.memberCount || 2
+    locationState.passengerCount || locationState.memberCount || pendingTripData?.passengerCount || 2
   );
 
   // Days and Wishlist state
-  // - If user has already arranged their schedule (daysSchedule present), restore it.
-  // - Otherwise, generate empty day columns from the trip dates.
   const [days, setDays] = useState(() => {
     if (locationState.daysSchedule && locationState.daysSchedule.length > 0) {
       return locationState.daysSchedule;
     }
-    return generateDynamicDays(locationState.tripDates);
+    if (pendingTripData?.daysSchedule && pendingTripData.daysSchedule.length > 0) {
+      return pendingTripData.daysSchedule;
+    }
+    try {
+      const cacheKey = `wayvee_trip_plan_${(locationState.tripName || pendingTripData?.tripName || "").trim()}`;
+      const cached = sessionStorage.getItem(cacheKey);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed?.days && parsed.days.length > 0) {
+          return parsed.days;
+        }
+      }
+    } catch (e) { }
+    return generateDynamicDays(locationState.tripDates || pendingTripData?.tripDates);
   });
 
-  // - If returning from saved arrangement, restore saved wishlist.
-  // - If first visit with places selected from /places page, put them in the waiting area.
-  // - Otherwise, start empty (no mock data).
   const [wishlist, setWishlist] = useState(() => {
     if (locationState.wishlist && locationState.wishlist.length > 0) {
       return locationState.wishlist;
     }
+    if (pendingTripData?.wishlist && pendingTripData.wishlist.length > 0) {
+      return pendingTripData.wishlist;
+    }
+    try {
+      const cacheKey = `wayvee_trip_plan_${(locationState.tripName || pendingTripData?.tripName || "").trim()}`;
+      const cached = sessionStorage.getItem(cacheKey);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed?.wishlist)) {
+          return parsed.wishlist;
+        }
+      }
+    } catch (e) { }
     if (!locationState.daysSchedule && locationState.placesList && locationState.placesList.length > 0) {
       return locationState.placesList.map(mapPlaceToWishlistItem);
     }
     return [];
   });
+
+  // Persist arranged schedule to sessionStorage whenever changed
+  useEffect(() => {
+    if (days && days.length > 0) {
+      try {
+        const cacheKey = `wayvee_trip_plan_${(tripName || "").trim()}`;
+        sessionStorage.setItem(
+          cacheKey,
+          JSON.stringify({ tripId, isUnlocked, days, wishlist, tripDates, destination })
+        );
+      } catch (e) {
+        // ignore
+      }
+    }
+  }, [days, wishlist, tripName, tripDates, destination, tripId, isUnlocked]);
 
   // Pagination (3 days per page)
   const DAYS_PER_PAGE = 3;
@@ -748,9 +823,209 @@ export function TripPlanPage() {
     }
   };
 
-  // AI Optimize simulation
-  const handleOptimizeAI = () => {
-    showToast(isEn ? "✨ AI algorithm optimized itinerary order smoothly!" : "✨ AI đã tối ưu hóa thứ tự các điểm dừng!");
+  const [isOptimizing, setIsOptimizing] = useState(false);
+
+  // Gọi API Backend để tự động phân cụm & tối ưu hóa thứ tự các điểm dừng
+  const handleOptimize = async () => {
+    const allPlaces = [
+      ...wishlist.map((it) => ({
+        id: String(it.id),
+        osmId: typeof it.id === "number" ? it.id : null,
+        name: it.name,
+        address: it.address,
+        latitude: it.latitude || it.lat || 21.0285,
+        longitude: it.longitude || it.lng || 105.8542,
+        category: it.category,
+        categoryVi: it.categoryVi,
+        categoryEn: it.categoryEn,
+        categoryColor: it.categoryColor,
+        barColor: it.barColor,
+        rating: it.rating,
+        reviewsCount: it.reviewsCount,
+        tagVi: it.tagVi,
+        tagEn: it.tagEn,
+        image: it.image,
+        stayDurationMinutes: it.stayDurationMinutes || 60,
+        fixedDay: it.fixedDay || null
+      })),
+      ...days.flatMap((d) =>
+        d.items.map((it) => ({
+          id: String(it.id),
+          osmId: typeof it.id === "number" ? it.id : null,
+          name: it.name,
+          address: it.address,
+          latitude: it.latitude || it.lat || 21.0285,
+          longitude: it.longitude || it.lng || 105.8542,
+          category: it.category,
+          categoryVi: it.categoryVi,
+          categoryEn: it.categoryEn,
+          categoryColor: it.categoryColor,
+          barColor: it.barColor,
+          rating: it.rating,
+          reviewsCount: it.reviewsCount,
+          tagVi: it.tagVi,
+          tagEn: it.tagEn,
+          image: it.image,
+          stayDurationMinutes: it.stayDurationMinutes || 60,
+          fixedDay: it.fixedDay || null
+        }))
+      )
+    ];
+
+    if (allPlaces.length === 0) {
+      showToast(isEn ? "No places to optimize. Please add places first!" : "Chưa có địa điểm nào để tối ưu. Vui lòng thêm điểm trước!");
+      return;
+    }
+
+    // 1. Kiểm tra đăng nhập
+    if (!isAuthenticated && !user) {
+      showToast(isEn ? "Please log in to optimize your itinerary!" : "Vui lòng đăng nhập để tối ưu hóa lịch trình!");
+      setTimeout(() => {
+        navigate("/login", { state: { from: "/trip/plan" } });
+      }, 1000);
+      return;
+    }
+
+    try {
+      setIsOptimizing(true);
+      const parts = (tripDates || "").split("-").map((s) => s.trim());
+      const isoStart = formatIsoDate(parts[0]) || formatIsoDate(new Date());
+      const isoEnd = formatIsoDate(parts[1]) || isoStart;
+
+      let currentTripId = tripId;
+
+      // 2. Nếu chuyến đi chưa có tripId trong database, tạo bản ghi Trip trên server trước
+      if (!currentTripId || isNaN(Number(currentTripId))) {
+        try {
+          const createTripPayload = {
+            tripName: (tripName || "Chuyến đi mới").trim(),
+            startDate: isoStart,
+            endDate: isoEnd,
+            budget: 0,
+            status: "PLANNING",
+            itineraryArranged: false,
+            isUnlocked: false
+          };
+          const createRes = await api.post("/api/v1/trips", createTripPayload);
+          const newTripData = createRes?.data?.data || createRes?.data;
+          if (newTripData?.tripId) {
+            currentTripId = newTripData.tripId;
+            setTripId(newTripData.tripId);
+          }
+        } catch (createErr) {
+          console.warn("Could not pre-create trip on server:", createErr);
+        }
+      }
+
+      const payload = {
+        tripId: currentTripId,
+        totalDays: days.length,
+        startDate: isoStart,
+        places: allPlaces
+      };
+
+      const res = await api.post("/api/v1/trips/optimize", payload);
+      const optimizedData = res?.data?.data || res?.data || res;
+      const optimizedDays = optimizedData?.days || [];
+
+      if (optimizedDays.length > 0) {
+        setDays((prevDays) =>
+          prevDays.map((d, idx) => {
+            const optDay = optimizedDays.find((od) => od.day === d.dayNum) || optimizedDays[idx];
+            return {
+              ...d,
+              items:
+                optDay?.items?.map((it) => ({
+                  id: it.id || `loc-${Math.random()}`,
+                  name: it.name,
+                  category: it.category || "checkin",
+                  categoryVi: it.categoryVi || "Tham quan",
+                  categoryEn: it.categoryEn || "Sightseeing",
+                  categoryColor: it.categoryColor || "bg-sky-50 text-sky-700 border-sky-200",
+                  barColor: it.barColor || "bg-sky-500",
+                  rating: it.rating || 4.8,
+                  reviewsCount: it.reviewsCount || "Được yêu thích",
+                  address: it.address || "",
+                  tagVi: it.tagVi || "Đã tối ưu thứ tự",
+                  tagEn: it.tagEn || "Optimized order",
+                  image: it.image || null,
+                  latitude: it.latitude,
+                  longitude: it.longitude
+                })) || []
+            };
+          })
+        );
+        // Clear wishlist after placing
+        setWishlist([]);
+
+        // Đánh dấu chuyến đi này đã mở khóa (unlocked)
+        const wasUnlocked = Boolean(isUnlocked);
+        setIsUnlocked(true);
+
+        if (currentTripId) {
+          const cacheKey = `wayvee_trip_plan_${(tripName || "").trim()}`;
+          const currentCache = JSON.parse(sessionStorage.getItem(cacheKey) || "{}");
+          sessionStorage.setItem(
+            cacheKey,
+            JSON.stringify({ ...currentCache, tripId: currentTripId, isUnlocked: true })
+          );
+        }
+
+        if (wasUnlocked) {
+          showToast(isEn ? "✨ Itinerary re-optimized successfully! (No credits used)" : "✨ Đã tối ưu lại lịch trình! (Không trừ thêm lượt)");
+        } else {
+          showToast(isEn ? "✨ Itinerary optimized! 1 trip credit deducted." : "✨ Đã tối ưu hóa lịch trình và trừ 1 chuyến đi từ gói của bạn!");
+        }
+      }
+    } catch (err) {
+      console.error("Optimization failed:", err);
+      const errCode = err?.response?.data?.code || err?.code;
+      const httpStatus = err?.response?.status;
+      const errMsg = err?.response?.data?.message || err?.message || "";
+
+      // Kiểm tra nếu chưa mua gói hoặc hết lượt (mã 5012 hoặc HTTP 402 hoặc thông báo gói)
+      if (
+        errCode === 5012 ||
+        httpStatus === 402 ||
+        errMsg.includes("chưa được thanh toán") ||
+        errMsg.includes("hết lượt")
+      ) {
+        showToast(
+          isEn
+            ? "⚠️ Trip payment required. Redirecting to select a plan..."
+            : "⚠️ Chuyến đi chưa được thanh toán hoặc đã hết lượt. Đang chuyển hướng sang chọn gói..."
+        );
+
+        // Lưu thông tin chuyến đi đang làm dở để người dùng thanh toán xong có thể tiếp tục
+        const pendingTrip = {
+          tripId: tripId,
+          isUnlocked: false,
+          tripName,
+          tripDates,
+          destination,
+          passengerCount,
+          daysSchedule: days,
+          wishlist,
+          placesList: allPlaces
+        };
+        sessionStorage.setItem("wayvee_pending_optimization_trip", JSON.stringify(pendingTrip));
+
+        setTimeout(() => {
+          navigate("/payment", {
+            state: {
+              returnUrl: "/trip/plan",
+              tripId: tripId,
+              tripName
+            }
+          });
+        }, 1200);
+        return;
+      }
+
+      showToast(isEn ? "Optimization could not be completed." : "Không thể tối ưu hóa lịch trình. Vui lòng thử lại!");
+    } finally {
+      setIsOptimizing(false);
+    }
   };
 
   // Filter items matching search and category
@@ -800,20 +1075,31 @@ export function TripPlanPage() {
       endDate: isoEnd,
       budget: 5000000,
       status: "PLANNING",
-      itineraryArranged: true
+      itineraryArranged: true,
+      isUnlocked: Boolean(isUnlocked)
     };
 
     let savedTrip = null;
     try {
-      const res = await api.post("/api/v1/trips", tripPayload);
-      if (res && res.data && res.data.tripId) {
-        savedTrip = res.data;
+      if (tripId && !isNaN(Number(tripId))) {
+        const res = await api.put(`/api/v1/trips/${tripId}`, tripPayload);
+        savedTrip = res?.data?.data || res?.data;
+      } else {
+        const res = await api.post("/api/v1/trips", tripPayload);
+        savedTrip = res?.data?.data || res?.data;
+        if (savedTrip?.tripId) {
+          setTripId(savedTrip.tripId);
+        }
+      }
+
+      if (savedTrip?.tripId) {
         try {
-          await api.patch(`/api/v1/trips/${res.data.tripId}/itinerary/confirm`);
+          await api.patch(`/api/v1/trips/${savedTrip.tripId}/itinerary/confirm`);
         } catch (patchErr) {
           console.warn("Patch confirm note:", patchErr);
         }
       }
+      sessionStorage.removeItem("wayvee_pending_optimization_trip");
       showToast(isEn ? "🎉 Itinerary confirmed and saved successfully!" : "🎉 Lịch trình đã được lưu và xác nhận thành công!");
     } catch (err) {
       console.warn("Backend save notice:", err.message);
@@ -924,55 +1210,50 @@ export function TripPlanPage() {
                 <button
                   type="button"
                   onClick={() => setActiveCategoryFilter("all")}
-                  className={`px-2.5 py-1 rounded transition-all cursor-pointer ${
-                    activeCategoryFilter === "all"
+                  className={`px-2.5 py-1 rounded transition-all cursor-pointer ${activeCategoryFilter === "all"
                       ? "bg-white text-[#002b49] font-bold shadow-xs"
                       : "text-slate-600 hover:text-[#002b49]"
-                  }`}
+                    }`}
                 >
                   {isEn ? "All" : "Tất cả"}
                 </button>
                 <button
                   type="button"
                   onClick={() => setActiveCategoryFilter("cafe")}
-                  className={`px-2.5 py-1 rounded transition-all cursor-pointer ${
-                    activeCategoryFilter === "cafe"
+                  className={`px-2.5 py-1 rounded transition-all cursor-pointer ${activeCategoryFilter === "cafe"
                       ? "bg-white text-[#002b49] font-bold shadow-xs"
                       : "text-slate-600 hover:text-[#002b49]"
-                  }`}
+                    }`}
                 >
                   {isEn ? "Cafe" : "Cà phê"}
                 </button>
                 <button
                   type="button"
                   onClick={() => setActiveCategoryFilter("checkin")}
-                  className={`px-2.5 py-1 rounded transition-all cursor-pointer ${
-                    activeCategoryFilter === "checkin"
+                  className={`px-2.5 py-1 rounded transition-all cursor-pointer ${activeCategoryFilter === "checkin"
                       ? "bg-white text-[#002b49] font-bold shadow-xs"
                       : "text-slate-600 hover:text-[#002b49]"
-                  }`}
+                    }`}
                 >
                   Check-in
                 </button>
                 <button
                   type="button"
                   onClick={() => setActiveCategoryFilter("food")}
-                  className={`px-2.5 py-1 rounded transition-all cursor-pointer ${
-                    activeCategoryFilter === "food"
+                  className={`px-2.5 py-1 rounded transition-all cursor-pointer ${activeCategoryFilter === "food"
                       ? "bg-white text-[#002b49] font-bold shadow-xs"
                       : "text-slate-600 hover:text-[#002b49]"
-                  }`}
+                    }`}
                 >
                   {isEn ? "Food" : "Ẩm thực"}
                 </button>
                 <button
                   type="button"
                   onClick={() => setActiveCategoryFilter("culture")}
-                  className={`px-2.5 py-1 rounded transition-all cursor-pointer ${
-                    activeCategoryFilter === "culture"
+                  className={`px-2.5 py-1 rounded transition-all cursor-pointer ${activeCategoryFilter === "culture"
                       ? "bg-white text-[#002b49] font-bold shadow-xs"
                       : "text-slate-600 hover:text-[#002b49]"
-                  }`}
+                    }`}
                 >
                   {isEn ? "Culture" : "Văn hóa & Di tích"}
                 </button>
@@ -992,13 +1273,18 @@ export function TripPlanPage() {
 
                 <button
                   type="button"
-                  onClick={handleOptimizeAI}
-                  className="flex items-center gap-1 bg-[#00a3e0] hover:bg-[#008ec4] text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-xs hover:shadow active:scale-95 transition-all cursor-pointer"
+                  onClick={handleOptimize}
+                  disabled={isOptimizing}
+                  className="flex items-center gap-1 bg-[#00a3e0] hover:bg-[#008ec4] text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-xs hover:shadow active:scale-95 transition-all cursor-pointer disabled:opacity-60"
+                  title="Tự động phân bổ và tối ưu hóa thứ tự các điểm dừng"
                 >
-                  <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>
-                    auto_awesome
+                  <span
+                    className={`material-symbols-outlined text-[16px] ${isOptimizing ? "animate-spin" : ""}`}
+                    style={{ fontVariationSettings: "'FILL' 1" }}
+                  >
+                    {isOptimizing ? "progress_activity" : "auto_awesome"}
                   </span>
-                  <span>{isEn ? "AI Optimize" : "Tối ưu AI"}</span>
+                  <span>{isOptimizing ? (isEn ? "Optimizing..." : "Đang tối ưu...") : (isEn ? "Optimize" : "Tối ưu")}</span>
                 </button>
               </div>
             </div>
@@ -1012,11 +1298,10 @@ export function TripPlanPage() {
             onDragOver={(e) => handleDragOverCol(e, "wishlist")}
             onDragLeave={(e) => handleDragLeave(e, "wishlist")}
             onDrop={(e) => handleDrop(e, "wishlist", null)}
-            className={`w-full lg:w-80 lg:min-w-[320px] lg:max-w-[320px] flex flex-col bg-white rounded-2xl border shadow-xs transition-all shrink-0 ${
-              dragOverColId === "wishlist" && dragOverItemIndex === null
+            className={`w-full lg:w-80 lg:min-w-[320px] lg:max-w-[320px] flex flex-col bg-white rounded-2xl border shadow-xs transition-all shrink-0 ${dragOverColId === "wishlist" && dragOverItemIndex === null
                 ? "border-[#00a3e0] ring-2 ring-[#00a3e0]/30 bg-sky-50/50"
                 : "border-sky-200 dark:border-slate-800"
-            }`}
+              }`}
           >
             {/* Wishlist Header */}
             <div className="p-3.5 border-b border-sky-100 dark:border-slate-800 bg-sky-50/70 dark:bg-slate-800/60 flex items-center justify-between rounded-t-2xl">
@@ -1026,7 +1311,7 @@ export function TripPlanPage() {
                 </span>
                 <div>
                   <h2 className="text-xs sm:text-sm font-bold text-[#002b49] dark:text-sky-300">
-                    {isEn ? "Wishlist & AI Pool" : "Địa điểm chờ sắp xếp"}
+                    {isEn ? "Wishlist & Saved Places" : "Địa điểm chờ sắp xếp"}
                   </h2>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400">
                     {isEn ? "Unassigned places" : "Kéo thả hoặc bấm gán ngày"}
@@ -1053,11 +1338,10 @@ export function TripPlanPage() {
                     onDragStart={(e) => handleDragStart(e, item, "wishlist", itemIdx)}
                     onDragOver={(e) => handleDragOverItem(e, "wishlist", itemIdx)}
                     onDrop={(e) => handleDrop(e, "wishlist", itemIdx)}
-                    className={`group relative bg-white dark:bg-slate-900 rounded-xl border transition-all p-3 shadow-2xs cursor-grab active:cursor-grabbing hover:shadow-md ${
-                      dragOverColId === "wishlist" && dragOverItemIndex === itemIdx
+                    className={`group relative bg-white dark:bg-slate-900 rounded-xl border transition-all p-3 shadow-2xs cursor-grab active:cursor-grabbing hover:shadow-md ${dragOverColId === "wishlist" && dragOverItemIndex === itemIdx
                         ? "border-[#00a3e0] ring-2 ring-[#00a3e0]/40 -translate-y-0.5 bg-sky-50/50"
                         : "border-slate-200 dark:border-slate-800 hover:border-[#00a3e0]"
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-1.5">
@@ -1148,11 +1432,10 @@ export function TripPlanPage() {
                     key={pIdx}
                     type="button"
                     onClick={() => setDayPageIndex(pIdx)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                      dayPageIndex === pIdx
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${dayPageIndex === pIdx
                         ? "bg-[#002b49] text-white shadow-xs scale-105"
                         : "bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300"
-                    }`}
+                      }`}
                   >
                     {isEn ? `Days ${pIdx * 3 + 1}-${Math.min((pIdx + 1) * 3, days.length)}` : `Ngày ${pIdx * 3 + 1} - ${Math.min((pIdx + 1) * 3, days.length)}`}
                   </button>
@@ -1193,11 +1476,10 @@ export function TripPlanPage() {
                     onDragOver={(e) => handleDragOverCol(e, day.dayId)}
                     onDragLeave={(e) => handleDragLeave(e, day.dayId)}
                     onDrop={(e) => handleDrop(e, day.dayId, null)}
-                    className={`flex flex-col bg-[#f0f7fb] dark:bg-slate-900/90 rounded-2xl border transition-all shadow-xs w-full min-h-[520px] ${
-                      isDragOver && dragOverItemIndex === null
+                    className={`flex flex-col bg-[#f0f7fb] dark:bg-slate-900/90 rounded-2xl border transition-all shadow-xs w-full min-h-[520px] ${isDragOver && dragOverItemIndex === null
                         ? "border-[#00a3e0] ring-2 ring-[#00a3e0]/30 bg-sky-50 dark:bg-sky-950/40"
                         : "border-slate-200 dark:border-slate-800"
-                    }`}
+                      }`}
                   >
                     {/* Day Column Header */}
                     <div className="p-3.5 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-between rounded-t-2xl">
@@ -1236,11 +1518,10 @@ export function TripPlanPage() {
                             onDragStart={(e) => handleDragStart(e, item, day.dayId, itemIdx)}
                             onDragOver={(e) => handleDragOverItem(e, day.dayId, itemIdx)}
                             onDrop={(e) => handleDrop(e, day.dayId, itemIdx)}
-                            className={`group relative bg-white dark:bg-slate-800/90 rounded-xl border transition-all p-3 shadow-2xs cursor-grab active:cursor-grabbing hover:shadow-md ${
-                              dragOverColId === day.dayId && dragOverItemIndex === itemIdx
+                            className={`group relative bg-white dark:bg-slate-800/90 rounded-xl border transition-all p-3 shadow-2xs cursor-grab active:cursor-grabbing hover:shadow-md ${dragOverColId === day.dayId && dragOverItemIndex === itemIdx
                                 ? "border-[#00a3e0] ring-2 ring-[#00a3e0]/40 -translate-y-0.5 bg-sky-50/60 dark:bg-sky-950/50"
                                 : "border-slate-200 dark:border-slate-700/80 hover:border-[#00a3e0]"
-                            }`}
+                              }`}
                           >
                             {/* Colored Left Strip Indicator */}
                             <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${item.barColor || "bg-[#00a3e0]"} rounded-l-xl`} />
@@ -1322,11 +1603,11 @@ export function TripPlanPage() {
                                       prev.map((d) =>
                                         d.dayId === day.dayId
                                           ? {
-                                              ...d,
-                                              items: d.items.map((p) =>
-                                                p.id === item.id ? { ...p, tagVi: newNote, tagEn: newNote } : p
-                                              )
-                                            }
+                                            ...d,
+                                            items: d.items.map((p) =>
+                                              p.id === item.id ? { ...p, tagVi: newNote, tagEn: newNote } : p
+                                            )
+                                          }
                                           : d
                                       )
                                     );
@@ -1403,11 +1684,10 @@ export function TripPlanPage() {
                       handleAssignToDay(dateChangeMenu.item, d.dayId);
                       setDateChangeMenu(null);
                     }}
-                    className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition-all cursor-pointer ${
-                      isCurrent
+                    className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition-all cursor-pointer ${isCurrent
                         ? "bg-slate-100 dark:bg-slate-800/40 text-slate-400 border border-slate-200 dark:border-slate-800 cursor-not-allowed"
                         : "bg-slate-50 dark:bg-slate-800/70 hover:bg-[#e6f6fd] dark:hover:bg-sky-950/60 border border-slate-200 dark:border-slate-700 text-[#002b49] dark:text-slate-200 hover:text-[#00a3e0]"
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center gap-2.5 truncate">
                       <span className="w-6 h-6 rounded-lg bg-[#00a3e0] text-white flex items-center justify-center text-[10px] font-extrabold shrink-0">
@@ -1432,11 +1712,10 @@ export function TripPlanPage() {
                   handleAssignToDay(dateChangeMenu.item, "wishlist");
                   setDateChangeMenu(null);
                 }}
-                className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition-all cursor-pointer ${
-                  dateChangeMenu.currentColId === "wishlist"
+                className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition-all cursor-pointer ${dateChangeMenu.currentColId === "wishlist"
                     ? "bg-slate-100 dark:bg-slate-800/40 text-slate-400 border border-slate-200 dark:border-slate-800 cursor-not-allowed"
                     : "bg-amber-50/70 dark:bg-amber-950/30 hover:bg-amber-100 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800/40"
-                }`}
+                  }`}
               >
                 <div className="flex items-center gap-2.5">
                   <span className="material-symbols-outlined text-[16px] text-amber-600">bookmark</span>
@@ -1454,7 +1733,21 @@ export function TripPlanPage() {
         <div className="flex items-center gap-3 text-xs font-medium text-slate-600">
           <button
             type="button"
-            onClick={() => navigate("/trip/create", { state: { ...locationState, daysSchedule: days, wishlist } })}
+            onClick={() =>
+              navigate("/trip/create", {
+                state: {
+                  ...locationState,
+                  tripId,
+                  isUnlocked,
+                  tripName,
+                  tripDates,
+                  destination,
+                  passengerCount,
+                  daysSchedule: days,
+                  wishlist: wishlist
+                }
+              })
+            }
             className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 transition-colors cursor-pointer"
           >
             <span className="material-symbols-outlined text-base">arrow_back</span>

@@ -3,3 +3,16 @@
 .register-card {
   max-width: 460px;
 }
+
+.field-group-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 460px) {
+  .field-group-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}

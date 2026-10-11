@@ -2,6 +2,7 @@ import { useState } from 'react';
 import './Login.css';
 import FormCard from '../components/FormCard.jsx';
 import BrandLogo from '../components/BrandLogo.jsx';
+import { getLocalizedErrorMessage } from '../shared/lib/error-codes';
 
 export default function Login({
   onClose,
@@ -23,9 +24,9 @@ export default function Login({
       await action();
     } catch (failure) {
       setError(
+        getLocalizedErrorMessage(failure) ||
         failure?.response?.message ||
-        failure?.message ||
-        'Không thể đăng nhập. Vui lòng kiểm tra lại thông tin.'
+        failure?.message
       );
     } finally {
       setPending(false);
@@ -35,7 +36,8 @@ export default function Login({
   const handleSubmit = (event) => {
     event.preventDefault();
     if (!email.trim() || !password) {
-      setError('Vui lòng nhập đầy đủ email và mật khẩu');
+      const isEn = (localStorage.getItem('wayvee-lang') || '').startsWith('en');
+      setError(isEn ? 'Please enter both email and password.' : 'Vui lòng nhập đầy đủ email và mật khẩu.');
       return;
     }
     runAction(() => onSubmit({ email: email.trim().toLowerCase(), password }));

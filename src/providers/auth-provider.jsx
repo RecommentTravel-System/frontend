@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { loginApi, signupApi, verifyEmailApi, logoutApi } from "~/features/auth/services/auth-api";
+import { loginApi, signupApi, verifyEmailApi, logoutApi, getMyProfileApi } from "~/features/auth/services/auth-api";
 
 const AuthContext = createContext({
   user: null,
@@ -8,7 +8,9 @@ const AuthContext = createContext({
   login: async () => {},
   signup: async () => {},
   verifyEmail: async () => {},
-  logout: () => {}
+  logout: () => {},
+  updateUser: () => {},
+  refreshUser: async () => {}
 });
 
 export function AuthProvider({ children }) {
@@ -28,6 +30,38 @@ export function AuthProvider({ children }) {
       return null;
     }
   });
+
+  const updateUser = (newUser) => {
+    if (!newUser) {
+      setUser(null);
+      localStorage.removeItem("wayvee_user");
+      return;
+    }
+    const merged = typeof newUser === "function" ? newUser(user) : { ...user, ...newUser };
+    setUser(merged);
+    localStorage.setItem("wayvee_user", JSON.stringify(merged));
+  };
+
+  const refreshUser = async () => {
+    if (!token) return null;
+    try {
+      const res = await getMyProfileApi();
+      const profileData = res?.data || res;
+      if (profileData) {
+        updateUser(profileData);
+        return profileData;
+      }
+    } catch (err) {
+      console.warn("Could not sync user profile from DB:", err);
+    }
+    return null;
+  };
+
+  useEffect(() => {
+    if (token) {
+      refreshUser();
+    }
+  }, [token]);
 
   useEffect(() => {
     const handleUnauthorized = () => {
@@ -86,7 +120,9 @@ export function AuthProvider({ children }) {
         login,
         signup,
         verifyEmail,
-        logout
+        logout,
+        updateUser,
+        refreshUser
       }}
     >
       {children}
