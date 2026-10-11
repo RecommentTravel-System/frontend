@@ -827,7 +827,6 @@
       "subtitle": "Vui lòng quét mã QR ngân hàng hoặc nhấn nút bên dưới để thanh toán qua PayOS.",
       "subtitleGeneric": "Vui lòng hoàn tất thanh toán trên ứng dụng ngân hàng hoặc cổng PayOS",
       "msg1": "Đang khởi tạo cổng thanh toán an toàn...",
-      "msg2": "Đang lắng nghe xác nhận webhook từ ngân hàng...",
       "msg3": "Sắp xếp hành trang cho chuyến đi tiếp theo của bạn...",
       "msg4": "Đang mở khóa các địa điểm hấp dẫn và đặc quyền Premium...",
       "msg5": "Chỉ mất vài giây để hệ thống hoàn tất ghi nhận giao dịch...",
@@ -858,6 +857,8 @@
       "benefit3Title": "Thời tiết & Tiện ích",
       "benefit3Desc": "Cập nhật dự báo chi tiết cho từng chặng",
       "startPlanning": "Bắt đầu lên lịch trình ngay",
+      "returnToTrip": "Quay lại lịch trình của bạn",
+      "autoRedirect": "Tự động quay lại sau 3 giây...",
       "explorePlaces": "Khám phá địa điểm",
       "myProfile": "Trang cá nhân",
       "myItineraries": "Lịch trình của tôi"

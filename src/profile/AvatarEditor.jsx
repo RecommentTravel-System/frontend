@@ -44,7 +44,7 @@ export default function AvatarEditor({ name }) {
   async function save() {
     if (!file || busy) return;
     setBusy(true);
-    setNotice('Đang upload ảnh lên Cloudinary…');
+    setNotice('Đang upload ảnh lên …');
 
     try {
       const response = await uploadAvatarApi(file);
@@ -54,9 +54,9 @@ export default function AvatarEditor({ name }) {
       }
       setFile(null);
       setPreview('');
-      setNotice('Đã lưu ảnh đại diện lên Cloudinary và hệ thống thành công!');
+      setNotice('Đã lưu ảnh lên hệ thống thành công!');
     } catch (error) {
-      setNotice(error?.response?.data?.message || error.message || 'Không thể lưu ảnh đại diện.');
+      setNotice(error?.response?.data?.message || error.message || 'Không thể lưu ảnh.');
     } finally {
       setBusy(false);
     }
@@ -89,7 +89,7 @@ export default function AvatarEditor({ name }) {
       <Avatar name={name || user?.fullName} large src={preview || currentAvatarUrl} />
       <div>
         <h2>Ảnh đại diện</h2>
-        <p>JPG, PNG hoặc WebP · Tối đa 5 MB (Lưu trữ trên Cloudinary)</p>
+        <p>JPG, PNG hoặc WebP · Tối đa 5 MB</p>
         <input
           ref={input}
           type="file"

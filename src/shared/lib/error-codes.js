@@ -302,6 +302,11 @@ export const ERROR_CODE_MAP = {
     vi: 'Không tìm thấy địa điểm trong chuyến đi.',
     en: 'Trip location not found.'
   },
+  5012: {
+    key: 'TRIP_PAYMENT_REQUIRED',
+    vi: 'Chuyến đi này chưa được thanh toán hoặc gói chuyến đi đã hết lượt. Vui lòng chọn gói thanh toán để tối ưu lịch trình.',
+    en: 'This trip has not been paid for or your trip credits have run out. Please purchase a plan to optimize your itinerary.'
+  },
 
   // 6000 - 6999: Thanh toán
   6001: {

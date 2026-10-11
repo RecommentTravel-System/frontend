@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useState, useMemo, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import SiteHeader from '../components/SiteHeader.jsx';
 import SiteFooter from '../components/SiteFooter.jsx';
 import { formatPrice } from './plans.js';
@@ -9,7 +9,39 @@ import './PaymentSuccess.css';
 
 export default function PaymentSuccess({ paymentInfo = null }) {
   const location = useLocation();
+  const navigate = useNavigate();
   const { t, language } = useTranslation();
+
+  // Kiểm tra chuyến đi đang chờ tối ưu
+  const pendingTrip = useMemo(() => {
+    try {
+      const saved = sessionStorage.getItem('wayvee_pending_optimization_trip');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  }, []);
+
+  // Nếu có chuyến đi đang chờ, tự động quay lại trang sắp xếp lịch trình sau 3 giây
+  useEffect(() => {
+    if (!pendingTrip) return;
+    const timer = setTimeout(() => {
+      navigate('/trip/plan', {
+        replace: true,
+        state: {
+          tripId: pendingTrip.tripId,
+          isUnlocked: pendingTrip.isUnlocked,
+          tripName: pendingTrip.tripName,
+          tripDates: pendingTrip.tripDates,
+          destination: pendingTrip.destination,
+          passengerCount: pendingTrip.passengerCount,
+          daysSchedule: pendingTrip.daysSchedule,
+          wishlist: pendingTrip.wishlist,
+        },
+      });
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [pendingTrip, navigate]);
 
   // Get data from location state or query params or prop
   const stateData = location.state || {};
@@ -154,13 +186,41 @@ export default function PaymentSuccess({ paymentInfo = null }) {
 
           {/* Actions */}
           <div className="success-actions">
-            <Link to="/trip/info" className="btn-primary-action">
-              {t('paymentPage.success.startPlanning', 'Bắt đầu lên lịch trình ngay')}
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M5 12h14" />
-                <path d="M12 5l7 7-7 7" />
-              </svg>
-            </Link>
+            {pendingTrip ? (
+              <>
+                <Link
+                  to="/trip/plan"
+                  state={{
+                    tripId: pendingTrip.tripId,
+                    isUnlocked: pendingTrip.isUnlocked,
+                    tripName: pendingTrip.tripName,
+                    tripDates: pendingTrip.tripDates,
+                    destination: pendingTrip.destination,
+                    passengerCount: pendingTrip.passengerCount,
+                    daysSchedule: pendingTrip.daysSchedule,
+                    wishlist: pendingTrip.wishlist,
+                  }}
+                  className="btn-primary-action"
+                >
+                  {t('paymentPage.success.returnToTrip', 'Quay lại lịch trình của bạn')}
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M5 12h14" />
+                    <path d="M12 5l7 7-7 7" />
+                  </svg>
+                </Link>
+                <p className="auto-redirect-hint">
+                  {t('paymentPage.success.autoRedirect', 'Tự động quay lại sau 3 giây...')}
+                </p>
+              </>
+            ) : (
+              <Link to="/trip/info" className="btn-primary-action">
+                {t('paymentPage.success.startPlanning', 'Bắt đầu lên lịch trình ngay')}
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M5 12h14" />
+                  <path d="M12 5l7 7-7 7" />
+                </svg>
+              </Link>
+            )}
             <div className="secondary-links">
               <Link to="/places" className="btn-secondary-link">
                 {t('paymentPage.success.explorePlaces', 'Khám phá địa điểm')}

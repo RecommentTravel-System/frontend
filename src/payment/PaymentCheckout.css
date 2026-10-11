@@ -478,18 +478,27 @@
   color: #0f172a;
 }
 
-.btn-cancel-checkout {
-  background: transparent;
-  color: #94a3b8;
+.btn-cancel-checkout-red {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: #ffffff;
+  padding: 13px 20px;
+  border-radius: 12px;
   border: none;
-  padding: 8px 12px;
-  font-size: 13px;
+  font-size: 15px;
+  font-weight: 700;
   cursor: pointer;
-  transition: color 0.15s;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3);
+  transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
 }
 
-.btn-cancel-checkout:hover {
-  color: #ef4444;
+.btn-cancel-checkout-red:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(239, 68, 68, 0.4);
 }
 
 @media (max-width: 660px) {

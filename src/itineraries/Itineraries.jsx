@@ -427,6 +427,7 @@ export default function Itineraries() {
               status: effectiveStatus,
               confirmed: Boolean(beTrip.itineraryArranged),
               hasItinerary: Boolean(beTrip.itineraryArranged),
+              isUnlocked: Boolean(beTrip.isUnlocked || beTrip.itineraryArranged),
               start: startStr,
               end: endStr,
               time: '08:00 – 18:00',
@@ -487,6 +488,8 @@ export default function Itineraries() {
   const handleCreateItinerary = (trip) => {
     navigate('/trip/create', {
       state: {
+        tripId: trip.id,
+        isUnlocked: Boolean(trip.isUnlocked || trip.confirmed || trip.hasItinerary),
         tripName: trip.title,
         tripDates: trip.duration,
         destination: trip.destination,

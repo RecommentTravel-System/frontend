@@ -180,12 +180,19 @@ export function TripCreatePage() {
     });
   };
 
-  // Option 1 Click: Sắp xếp lịch trình -> Chuyển sang trang Timeline/Kanban Planner
+  // Option 1 Click: Sắp xếp lịch trình
   const handleSelectItineraryPlan = () => {
+    setSelectedAction("itinerary");
+  };
+
+  const handleOpenPlanner = (e) => {
+    if (e) e.stopPropagation();
     setSelectedAction("itinerary");
     navigate("/trip/plan", {
       state: {
         ...locationState,
+        tripId: locationState.tripId,
+        isUnlocked: locationState.isUnlocked,
         tripName,
         tripDates,
         destination: destinationInput,
@@ -210,6 +217,8 @@ export function TripCreatePage() {
       navigate("/trip/plan", {
         state: {
           ...locationState,
+          tripId: locationState.tripId,
+          isUnlocked: locationState.isUnlocked,
           tripName,
           tripDates,
           destination: destinationInput,
@@ -712,7 +721,10 @@ export function TripCreatePage() {
                     {t("tripCreate.actionSelector.option1Desc", { count: placesList.length }, `Thuật toán thông minh tự động phân bổ ${placesList.length} địa điểm đã chọn theo từng ngày, tối ưu quãng đường đi và gợi ý giờ ghé thăm hợp lý nhất.`)}
                   </p>
                   <div className="pt-1.5">
-                    <span className="inline-flex items-center gap-1 text-xs font-bold text-[#00a3e0] group-hover:translate-x-1 transition-transform">
+                    <span
+                      onClick={handleOpenPlanner}
+                      className="inline-flex items-center gap-1 text-xs font-bold text-[#00a3e0] group-hover:translate-x-1 transition-transform cursor-pointer hover:underline"
+                    >
                       {t("tripCreate.actionSelector.option1Link", "Mở trình sắp xếp lịch trình AI →")}
                     </span>
                   </div>

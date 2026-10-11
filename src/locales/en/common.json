@@ -828,7 +828,6 @@
       "subtitle": "Please scan the bank QR code or click the button below to pay via PayOS.",
       "subtitleGeneric": "Please complete the payment on your banking app or PayOS gateway",
       "msg1": "Initializing secure payment gateway...",
-      "msg2": "Listening for bank webhook confirmation...",
       "msg3": "Packing bags for your next amazing adventure...",
       "msg4": "Unlocking exciting destinations and Premium perks...",
       "msg5": "Just a few seconds to finalize your transaction...",
@@ -859,6 +858,8 @@
       "benefit3Title": "Weather & Smart Utilities",
       "benefit3Desc": "Real-time detailed forecasts for each route segment",
       "startPlanning": "Start Planning Now",
+      "returnToTrip": "Return to Your Itinerary",
+      "autoRedirect": "Automatically redirecting in 3 seconds...",
       "explorePlaces": "Explore Places",
       "myProfile": "My Profile",
       "myItineraries": "My Itineraries"

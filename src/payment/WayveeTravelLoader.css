@@ -33,19 +33,19 @@
   pointer-events: none;
 }
 
-.ring-1 {
+.radar-pulse-ring.ring-1 {
   width: 140px;
   height: 140px;
   animation: pulseRipple 3s cubic-bezier(0.2, 0.8, 0.4, 1) infinite;
 }
 
-.ring-2 {
+.radar-pulse-ring.ring-2 {
   width: 180px;
   height: 180px;
   animation: pulseRipple 3s cubic-bezier(0.2, 0.8, 0.4, 1) infinite 1s;
 }
 
-.ring-3 {
+.radar-pulse-ring.ring-3 {
   width: 220px;
   height: 220px;
   animation: pulseRipple 3s cubic-bezier(0.2, 0.8, 0.4, 1) infinite 2s;
@@ -516,4 +516,29 @@
 
 .dark .qr-box {
   background: #0d1a2d;
+}
+
+/* Red Cancel Button */
+.btn-cancel-loader-red {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: #ffffff;
+  padding: 13px 24px;
+  border-radius: 12px;
+  border: none;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3);
+  transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
+  margin-top: 8px;
+}
+
+.btn-cancel-loader-red:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(239, 68, 68, 0.4);
 }

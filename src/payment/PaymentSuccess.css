@@ -322,6 +322,18 @@
   box-shadow: 0 12px 24px rgba(0, 144, 231, 0.36);
 }
 
+.auto-redirect-hint {
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 8px;
+  animation: pulse-hint 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-hint {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
 .secondary-links {
   display: flex;
   align-items: center;

@@ -89,8 +89,6 @@ export default function PaymentCheckout() {
 
     try {
       const res = await paymentService.getPaymentStatus(paymentData.paymentId);
-      console.log('[PayOS Status Check Response]:', res);
-
       const payload = res?.data || res?.result || res;
       const status = payload?.status || res?.status;
 
@@ -227,13 +225,6 @@ export default function PaymentCheckout() {
                     ? 'Thanh toán qua PayOS'
                     : t('paymentPage.checkout.title', 'Hoàn tất giao dịch mua')}
               </h1>
-              <p className="checkout-subtitle">
-                {isWaitingWebhook
-                  ? 'Đang lắng nghe xác nhận webhook từ ngân hàng, vui lòng đợi trong giây lát...'
-                  : paymentData
-                    ? 'Quét mã VietQR hoặc nhấn mở cổng PayOS để thanh toán.'
-                    : 'Xác nhận thông tin gói dịch vụ trước khi tạo liên kết thanh toán an toàn.'}
-              </p>
             </div>
           </div>
 
@@ -252,10 +243,6 @@ export default function PaymentCheckout() {
               <div className="checkout-qr-layout">
                 {/* Left Column: QR Code */}
                 <div className="qr-container-card">
-                  <div className="qr-badge-header">
-                    <span className="live-dot" />
-                    <span>LẮNG NGHE WEBHOOK TỰ ĐỘNG</span>
-                  </div>
 
                   <div className="qr-image-box">
                     {qrImgSrc ? (
@@ -294,44 +281,8 @@ export default function PaymentCheckout() {
                     <strong className="amount-val">{formatPrice(paymentData.amount || total)}</strong>
                   </div>
 
-                  <div className="webhook-listening-status">
-                    <div className="pulse-spinner" />
-                    <span>Hệ thống đang tự động kiểm tra xác nhận thanh toán...</span>
-                  </div>
-
                   <div className="qr-action-buttons">
-                    <button
-                      type="button"
-                      className="btn-check-manual"
-                      disabled={isCheckingManual}
-                      onClick={handleManualCheck}
-                    >
-                      {isCheckingManual ? 'Đang kiểm tra...' : '✓ Tôi đã chuyển khoản - Kiểm tra ngay'}
-                    </button>
-
-                    {paymentData.checkoutUrl && (
-                      <a
-                        href={paymentData.checkoutUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="btn-payos-direct"
-                      >
-                        {t('paymentPage.loader.openPayos', 'Mở trang thanh toán PayOS')}
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                          <polyline points="15 3 21 3 21 9" />
-                          <line x1="10" y1="14" x2="21" y2="3" />
-                        </svg>
-                      </a>
-                    )}
-
-                    {paymentData.checkoutUrl && (
-                      <button type="button" className="btn-copy-checkout-url" onClick={handleCopyLink}>
-                        {copied ? '✓ Đã sao chép link' : 'Sao chép link thanh toán'}
-                      </button>
-                    )}
-
-                    <button type="button" className="btn-cancel-checkout" onClick={handleCancelPayment}>
+                    <button type="button" className="btn-cancel-checkout-red" onClick={handleCancelPayment}>
                       {t('paymentPage.loader.cancelTx', 'Hủy giao dịch / Chọn gói khác')}
                     </button>
                   </div>
