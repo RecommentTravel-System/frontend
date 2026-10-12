@@ -59,7 +59,7 @@ function AccountPage({ register = false }) {
     if (isAdminUser(u)) return '/admin/dashboard';
     return typeof requestedDestination === 'string' && requestedDestination.startsWith('/') && !requestedDestination.startsWith('//')
       ? requestedDestination
-      : '/profile';
+      : '/';
   };
 
   // Nếu đã đăng nhập, redirect ngay
@@ -70,7 +70,7 @@ function AccountPage({ register = false }) {
 
   if (register) return <Register {...shared} onLogin={() => navigate('/login', { state: location.state })} onSubmit={(values) => {
     const dest = typeof requestedDestination === 'string' && requestedDestination.startsWith('/') && !requestedDestination.startsWith('//')
-      ? requestedDestination : '/profile';
+      ? requestedDestination : '/';
     navigate('/login', { replace: true, state: { from: dest, message: 'Đăng ký tài khoản thành công! Vui lòng đăng nhập để tiếp tục.' } });
   }} />;
 
