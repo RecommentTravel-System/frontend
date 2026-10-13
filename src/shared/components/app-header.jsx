@@ -1,45 +1,46 @@
 import { useState, useRef, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { ThemeToggle } from "./theme-toggle";
 import { LanguageSwitcher } from "./language-switcher";
 import { useTranslation } from "~/providers/i18n-provider";
 import { useAuth } from "~/providers/auth-provider";
-import Avatar from "~/components/AccountAvatar";
+import Avatar from "~/components/AccountAvatar.jsx";
+import iconImg from "~/assets/icon.png";
+import textImg from "~/assets/wayvee-text.png";
+import textDarkImg from "~/assets/wayvee-text-dark.png";
 
-export function WayveeLogo({ className = "h-7 sm:h-8 w-auto text-[#0b2545] dark:text-white" }) {
+export function WayveeLogo({ className = "" }) {
   return (
-    <svg
-      viewBox="0 0 215 42"
-      className={className}
-      fill="currentColor"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-label="WAYVEE Logo"
-    >
-      {/* W */}
-      <path d="M 2 5 L 11 37 H 17 L 25 15 L 33 37 H 39 L 48 5 H 40.5 L 36 23 L 28.5 5 H 21.5 L 14 23 L 9.5 5 Z" />
+    <div className={`flex items-center gap-2.5 sm:gap-3 group ${className}`}>
+      {/* Circular logo icon */}
+      <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white shadow-sm flex items-center justify-center p-1.5 sm:p-2 border border-slate-100 dark:border-slate-800 transition-transform duration-200 group-hover:scale-105 shrink-0">
+        <img
+          src={iconImg}
+          alt="Wayvee Icon"
+          className="w-full h-full object-contain"
+        />
+      </div>
 
-      {/* A with signature arch crossbar */}
-      <path d="M 50 37 L 64.5 5 H 71.5 L 86 37 H 77.5 L 74.2 28.5 C 70.5 21 65.5 21 61.8 28.5 L 58.5 37 Z M 63.5 24 C 66.8 17.5 69.2 17.5 72.5 24 C 69.2 19 66.8 19 63.5 24 Z" />
-
-      {/* Y */}
-      <path d="M 88 5 L 97.5 20 V 37 H 104.5 V 20 L 114 5 H 105.5 L 101 14 L 96.5 5 Z" />
-
-      {/* V */}
-      <path d="M 116 5 L 125.5 37 H 132.5 L 142 5 H 133.5 L 129 25 L 124.5 5 Z" />
-
-      {/* E 1 (Futuristic E with floating top bar and connected middle-bottom) */}
-      <path d="M 144 5 H 174 V 10.5 H 144 Z" />
-      <path d="M 144 18.5 H 174 V 24 H 152 V 31.5 H 174 V 37 H 144 Z" />
-
-      {/* E 2 */}
-      <path d="M 178 5 H 208 V 10.5 H 178 Z" />
-      <path d="M 178 18.5 H 208 V 24 H 186 V 31.5 H 208 V 37 H 178 Z" />
-    </svg>
+      {/* Styled brand text matching exact proportion of the reference image */}
+      <div className="flex items-center">
+        <img
+          src={textImg}
+          alt="WAYVEE"
+          className="h-[19px] sm:h-[21px] md:h-[23px] w-auto object-contain dark:hidden select-none transition-transform duration-200 group-hover:scale-[1.02]"
+        />
+        <img
+          src={textDarkImg}
+          alt="WAYVEE"
+          className="h-[19px] sm:h-[21px] md:h-[23px] w-auto object-contain hidden dark:block select-none transition-transform duration-200 group-hover:scale-[1.02]"
+        />
+      </div>
+    </div>
   );
 }
 
 export function AppHeader({ onLogin, onRegister }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useTranslation();
   const { user, isAuthenticated, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -243,7 +244,7 @@ export function AppHeader({ onLogin, onRegister }) {
               type="button"
               onClick={() => {
                 if (onLogin) onLogin();
-                else navigate("/login");
+                else navigate("/login", { state: { from: location.pathname + location.search } });
               }}
               className="px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 hover:text-[#00a3e0] dark:hover:text-[#00a3e0] hover:bg-sky-50 dark:hover:bg-slate-800 transition-all border border-transparent hover:border-sky-200 dark:hover:border-slate-700 cursor-pointer"
             >
@@ -253,7 +254,7 @@ export function AppHeader({ onLogin, onRegister }) {
               type="button"
               onClick={() => {
                 if (onRegister) onRegister();
-                else navigate("/register");
+                else navigate("/register", { state: { from: location.pathname + location.search } });
               }}
               className="px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold text-white bg-[#00a3e0] hover:bg-[#008ec4] transition-all shadow-xs active:scale-95 cursor-pointer"
             >

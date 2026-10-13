@@ -1,11 +1,33 @@
 import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "~/providers/i18n-provider";
 import { useAuth } from "~/providers/auth-provider";
 import { checkFavorite, addFavorite, removeFavoriteByOsmId } from "~/shared/services/favorite-api";
 
 /**
- * Reusable PlaceCard supporting both 'list' (horizontal) and 'grid' (vertical) modes
+ * Category icon + gradient config — mỗi category dùng chung 1 icon + màu gradient,
+ * không cần ảnh riêng từng địa điểm.
+ */
+const CATEGORY_ICON_MAP = {
+  RESTAURANT: { icon: "🍜", gradient: "from-orange-400 to-red-500", bg: "bg-orange-50 dark:bg-orange-950/40" },
+  CAFE:       { icon: "☕", gradient: "from-amber-400 to-yellow-600", bg: "bg-amber-50 dark:bg-amber-950/40" },
+  FAST_FOOD:  { icon: "🍔", gradient: "from-yellow-400 to-orange-500", bg: "bg-yellow-50 dark:bg-yellow-950/40" },
+  BAR:        { icon: "🍸", gradient: "from-purple-400 to-indigo-600", bg: "bg-purple-50 dark:bg-purple-950/40" },
+  HOTEL:      { icon: "🏨", gradient: "from-blue-400 to-cyan-500", bg: "bg-blue-50 dark:bg-blue-950/40" },
+  ATTRACTION: { icon: "🏛️", gradient: "from-emerald-400 to-teal-600", bg: "bg-emerald-50 dark:bg-emerald-950/40" },
+  SHOPPING:   { icon: "🛍️", gradient: "from-pink-400 to-rose-500", bg: "bg-pink-50 dark:bg-pink-950/40" },
+  ENTERTAINMENT: { icon: "🎭", gradient: "from-violet-400 to-fuchsia-500", bg: "bg-violet-50 dark:bg-violet-950/40" },
+  OTHER:      { icon: "📍", gradient: "from-slate-400 to-slate-600", bg: "bg-slate-50 dark:bg-slate-800/60" }
+};
+
+function getCategoryVisual(categoryCode) {
+  const key = (categoryCode || "").toUpperCase();
+  return CATEGORY_ICON_MAP[key] || CATEGORY_ICON_MAP.OTHER;
+}
+
+/**
+ * Reusable PlaceCard supporting both 'list' (horizontal) and 'grid' (vertical) modes.
+ * Ảnh riêng từng địa điểm đã được bỏ — thay bằng icon theo category.
  */
 export function PlaceCard({
   place,
@@ -16,6 +38,7 @@ export function PlaceCard({
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const { isAuthenticated } = useAuth();
   const [isFavorite, setIsFavorite] = useState(false);
   const [favLoading, setFavLoading] = useState(false);
@@ -64,13 +87,17 @@ export function PlaceCard({
     if (onNavigateDetail) {
       onNavigateDetail(place);
     } else {
-      navigate(`/places/${placeId}`, { state: { place } });
+      navigate(`/places/${placeId}`, {
+        state: {
+          place,
+          returnUrl: `${location.pathname}${location.search}`
+        }
+      });
     }
   };
 
-  const displayImage = place.imageUrl && !place.imageUrl.includes("No_image_available")
-    ? place.imageUrl
-    : null;
+  // Category visual — icon + gradient chung cho cả category
+  const catVisual = getCategoryVisual(place.categoryCode);
 
   // Rating & score
   const ratingVal = place.rating;
@@ -93,22 +120,16 @@ export function PlaceCard({
   };
   const categoryLabel = categoryMap[categoryCodeUpper] || place.categoryCode || t("places.categories.other", "Địa điểm");
 
-  // LIST VIEW: Horizontal layout matching Screenshot 1
+  // LIST VIEW: Horizontal layout — icon category thay ảnh
   if (variant === "list") {
     return (
       <article className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-all flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-        {/* Thumbnail Image */}
-        <div className="w-full sm:w-48 h-36 rounded-xl overflow-hidden relative flex-shrink-0 border border-slate-100 dark:border-slate-800 cursor-pointer" onClick={handleNavigateDetail}>
-            {displayImage ? (
-              <img
-                src={displayImage}
-                alt={place.name}
-                className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                loading="lazy"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-slate-400 text-3xl">📍</div>
-            )}
+        {/* Category Icon Thumbnail — thay thế ảnh riêng */}
+        <div
+          className={`w-full sm:w-48 h-36 rounded-xl overflow-hidden relative flex-shrink-0 border border-slate-100 dark:border-slate-800 cursor-pointer bg-gradient-to-br ${catVisual.gradient} flex items-center justify-center`}
+          onClick={handleNavigateDetail}
+        >
+          <span className="text-5xl drop-shadow-lg select-none">{catVisual.icon}</span>
           {/* Favorite button */}
           <button
             type="button"
@@ -132,8 +153,8 @@ export function PlaceCard({
               </svg>
             )}
           </button>
-          {/* Category Pill on Image */}
-          <span className="absolute bottom-2 left-2 px-2 py-0.5 rounded-md text-[10px] font-bold bg-[#0b2545]/85 text-white backdrop-blur-xs">
+          {/* Category Pill */}
+          <span className="absolute bottom-2 left-2 px-2 py-0.5 rounded-md text-[10px] font-bold bg-black/40 text-white backdrop-blur-xs">
             {categoryLabel}
           </span>
         </div>
@@ -214,21 +235,15 @@ export function PlaceCard({
     );
   }
 
-  // GRID VIEW: Vertical 3-column layout matching Screenshot 2
+  // GRID VIEW: Vertical layout — icon category thay ảnh
   return (
     <article className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-all flex flex-col justify-between group">
-      {/* Top Image */}
-      <div className="w-full h-44 relative overflow-hidden bg-slate-100 dark:bg-slate-800 cursor-pointer" onClick={handleNavigateDetail}>
-        {displayImage ? (
-          <img
-            src={displayImage}
-            alt={place.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            loading="lazy"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-slate-400 text-3xl">📍</div>
-        )}
+      {/* Category Icon Header — thay thế ảnh */}
+      <div
+        className={`w-full h-44 relative overflow-hidden cursor-pointer bg-gradient-to-br ${catVisual.gradient} flex items-center justify-center`}
+        onClick={handleNavigateDetail}
+      >
+        <span className="text-6xl drop-shadow-lg select-none group-hover:scale-110 transition-transform duration-500">{catVisual.icon}</span>
         {/* Favorite button */}
         <button
           type="button"
@@ -253,7 +268,7 @@ export function PlaceCard({
           )}
         </button>
         {/* Category Pill */}
-        <span className="absolute bottom-2 left-2 px-2 py-0.5 rounded-md text-[10px] font-bold bg-[#0b2545]/85 text-white backdrop-blur-xs">
+        <span className="absolute bottom-2 left-2 px-2 py-0.5 rounded-md text-[10px] font-bold bg-black/40 text-white backdrop-blur-xs">
           {categoryLabel}
         </span>
         {/* Price tag */}

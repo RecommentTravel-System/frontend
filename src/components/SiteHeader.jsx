@@ -1,4 +1,4 @@
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '../auth/useAuth.js';
 import BrandLogo from './BrandLogo.jsx';
 import ThemeToggle from '../theme/ThemeToggle.jsx';
@@ -7,6 +7,7 @@ import Avatar from './AccountAvatar.jsx';
 
 export default function SiteHeader() {
   const { user } = useAuth();
+  const location = useLocation();
   return (
     <header className="site-header">
       <div className="site-header-inner">
@@ -17,7 +18,7 @@ export default function SiteHeader() {
           </Link>
           <LanguageSwitcher />
           <ThemeToggle />
-          {user ? <NavLink to="/profile" className="site-profile-link"><Avatar name={user.email} /><span>Profile</span></NavLink> : <Link to="/login" className="site-login-link">Login</Link>}
+          {user ? <NavLink to="/profile" className="site-profile-link"><Avatar name={user.email} /><span>Profile</span></NavLink> : <Link to="/login" state={{ from: location.pathname + location.search }} className="site-login-link">Login</Link>}
         </nav>
       </div>
     </header>

@@ -405,8 +405,8 @@ export default function Home() {
   return (
     <div className={`home-page bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen font-sans transition-colors duration-200${premium ? " home-premium" : ""}`}>
       <AppHeader
-        onLogin={() => navigate("/login")}
-        onRegister={() => navigate("/register")}
+        onLogin={() => navigate("/login", { state: { from: "/" } })}
+        onRegister={() => navigate("/register", { state: { from: "/" } })}
       />
 
       <div className="home-version-bar bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300">

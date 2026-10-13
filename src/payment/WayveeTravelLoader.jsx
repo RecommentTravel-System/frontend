@@ -6,6 +6,7 @@ import './WayveeTravelLoader.css';
 export default function WayveeTravelLoader({
   title,
   subtitle,
+  badgeText,
   showQR = false,
   qrCode = '',
   checkoutUrl = '',
@@ -154,7 +155,7 @@ export default function WayveeTravelLoader({
       <div className="loader-info">
         <div className="status-live-badge">
           <span className="live-dot" />
-          <span>{t('paymentPage.loader.badgeLabel', 'ĐANG CHỜ THANH TOÁN (WEBHOOK)')}</span>
+          <span>{badgeText || t('paymentPage.loader.badgeLabel', 'ĐANG CHỜ THANH TOÁN (WEBHOOK)')}</span>
         </div>
 
         <h3 className="loader-title">{displayTitle}</h3>

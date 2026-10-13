@@ -66,12 +66,17 @@ export function PlaceDetailPage() {
   };
 
   const handleGoBack = () => {
-    navigate("/places", {
-      state: {
-        ...tripState,
-        placesList: selectedPlacesList
-      }
-    });
+    if (location.state?.returnUrl) {
+      navigate(location.state.returnUrl, {
+        state: {
+          ...(location.state.returnState || {}),
+          ...tripState,
+          placesList: selectedPlacesList
+        }
+      });
+    } else {
+      navigate(-1);
+    }
   };
 
   useEffect(() => {
