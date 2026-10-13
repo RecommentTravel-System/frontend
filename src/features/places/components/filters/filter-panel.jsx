@@ -72,9 +72,8 @@ export function FilterPanel({
     onChangeDistance(newVal);
   };
 
-  const defaultCategories = Object.values(CATEGORY_FILTER_CONFIGS);
   const rawList = propCategories.length > 0 ? propCategories : dbCategories;
-  const categoriesToRender = rawList.length > 0 ? rawList : defaultCategories;
+  const categoriesToRender = rawList;
   const preferences = currentCategoryConfig?.preferences || [];
 
   const getCategoryLabel = (cat) => {
@@ -82,9 +81,18 @@ export function FilterPanel({
 
     // 1. If cat has explicit language properties from backend/database
     if (currentLanguage === "en" && cat.nameEn) return cat.nameEn;
-    if (currentLanguage === "vi" && cat.nameVi) return cat.nameVi;
+    if (currentLanguage === "vi" && cat.nameVi) {
+      if (/[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i.test(cat.nameVi)) {
+        return cat.nameVi;
+      }
+    }
 
-    // 2. Lookup standard translation by code or name keyword for seamless EN/VI switching
+    // 2. If cat.name is provided from backend database with Vietnamese diacritics (e.g. "Nhà Hàng", "Quán Cà Phê")
+    if (cat.name && /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i.test(cat.name)) {
+      if (currentLanguage === "vi") return cat.name;
+    }
+
+    // 3. Lookup standard translation by code or name keyword for seamless EN/VI switching
     const codeUpper = (cat.code || cat.categoryId || "").toUpperCase();
     const nameLower = (cat.name || cat.nameVi || "").toLowerCase().trim();
 
@@ -166,28 +174,36 @@ export function FilterPanel({
           {t("places.filter.category") || "Loại địa điểm"}
         </label>
         <div className="flex flex-wrap gap-1.5">
-          {categoriesToRender.map((cat) => {
-            const catId = cat.code || cat.categoryId || cat.name;
-            const isSelected =
-              filters.category === catId ||
-              String(filters.category).toUpperCase() === String(catId).toUpperCase() ||
-              (cat.code && String(filters.category).toUpperCase() === String(cat.code).toUpperCase());
-            const label = getCategoryLabel(cat);
-            return (
-              <button
-                key={cat.categoryId || cat.code || cat.name}
-                type="button"
-                onClick={() => onSelectCategory(cat.code || cat.categoryId || cat.name)}
-                className={`text-xs px-3 py-1.5 rounded-full font-medium transition-all cursor-pointer ${
-                  isSelected
-                    ? "bg-[#0b2545] dark:bg-sky-500 text-white dark:text-slate-950 font-semibold shadow-xs"
-                    : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
-                }`}
-              >
-                {label}
-              </button>
-            );
-          })}
+          {categoriesToRender.length === 0 ? (
+            <div className="flex items-center gap-2 py-1 text-xs text-slate-400">
+              <span className="inline-block w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-600 animate-pulse" />
+              <span>Đang tải danh mục...</span>
+            </div>
+          ) : (
+            categoriesToRender.map((cat) => {
+              const catId = cat.code || cat.categoryId || cat.name;
+              const isSelected =
+                filters.category === catId ||
+                String(filters.category).toUpperCase() === String(catId).toUpperCase() ||
+                (cat.code && String(filters.category).toUpperCase() === String(cat.code).toUpperCase()) ||
+                (cat.categoryId && String(filters.category) === String(cat.categoryId));
+              const label = getCategoryLabel(cat);
+              return (
+                <button
+                  key={cat.categoryId || cat.code || cat.name}
+                  type="button"
+                  onClick={() => onSelectCategory(cat.code || cat.categoryId || cat.name)}
+                  className={`text-xs px-3 py-1.5 rounded-full font-medium transition-all cursor-pointer ${
+                    isSelected
+                      ? "bg-[#0b2545] dark:bg-sky-500 text-white dark:text-slate-950 font-semibold shadow-xs"
+                      : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+                  }`}
+                >
+                  {label}
+                </button>
+              );
+            })
+          )}
         </div>
       </div>
 

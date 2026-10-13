@@ -66,7 +66,10 @@ function AccountPage({ register = false }) {
   if (user) return <Navigate to={getDestination(user)} replace />;
 
   const socialLogin = () => { throw new Error('Đăng nhập mạng xã hội chưa được kết nối. Vui lòng dùng email và mật khẩu.'); };
-  const shared = { onClose: () => navigate('/'), onGoogle: socialLogin };
+  const backDestination = typeof requestedDestination === 'string' && requestedDestination.startsWith('/') && !requestedDestination.startsWith('//')
+    ? requestedDestination
+    : '/';
+  const shared = { onClose: () => navigate(backDestination), onGoogle: socialLogin };
 
   if (register) return <Register {...shared} onLogin={() => navigate('/login', { state: location.state })} onSubmit={(values) => {
     const dest = typeof requestedDestination === 'string' && requestedDestination.startsWith('/') && !requestedDestination.startsWith('//')
@@ -109,6 +112,9 @@ function AppRoutes() {
       '/create-tour': 'Tạo tour',
       '/search': 'Tìm kiếm địa điểm',
       '/places': 'Khám phá địa điểm',
+      '/places/all': 'Khám phá địa điểm',
+      '/places/filters': 'Bộ lọc tìm kiếm',
+      '/places/results': 'Kết quả tìm kiếm',
       '/trip/info': 'Khởi tạo lịch trình',
       '/trip/create': 'Tạo lịch trình',
       '/trip/plan': 'Lên kế hoạch',
@@ -161,7 +167,10 @@ function AppRoutes() {
       <Route path="/support" element={<Support />} />
 
       {/* Routes bổ sung từ nhánh HEAD */}
-      <Route path="/places" element={<PlacesRoute />} />
+      <Route path="/places" element={<PlacesRoute initialMode="all" />} />
+      <Route path="/places/all" element={<PlacesRoute initialMode="all" />} />
+      <Route path="/places/filters" element={<PlacesRoute initialMode="filters" />} />
+      <Route path="/places/results" element={<PlacesRoute initialMode="results" />} />
       <Route path="/places/:id" element={<PlaceDetailRoute />} />
       <Route path="/trip/info" element={<TripInfoRoute />} />
       <Route path="/trip/create" element={<TripCreateRoute />} />

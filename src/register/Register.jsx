@@ -18,7 +18,9 @@ export default function Register({
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [errors, setErrors] = useState({});
   const [error, setError] = useState('');
@@ -343,16 +345,39 @@ export default function Register({
 
               <div className="field-group">
                 <label htmlFor="register-password">{t('auth.passwordLabel', 'Mật khẩu')}</label>
-                <input
-                  id="register-password"
-                  autoComplete="new-password"
-                  type="password"
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  placeholder={t('auth.passwordMinLength', 'Tối thiểu 6 ký tự')}
-                  aria-invalid={Boolean(errors.password)}
-                  aria-describedby={errors.password ? 'register-password-error' : undefined}
-                />
+                <div className="password-input-wrapper">
+                  <input
+                    id="register-password"
+                    autoComplete="new-password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    placeholder={t('auth.passwordMinLength', 'Tối thiểu 6 ký tự')}
+                    aria-invalid={Boolean(errors.password)}
+                    aria-describedby={errors.password ? 'register-password-error' : undefined}
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle-btn"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    title={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+                    aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+                    tabIndex="-1"
+                  >
+                    {showPassword ? (
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                        <line x1="3" y1="3" x2="21" y2="21" />
+                      </svg>
+                    ) : (
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
                 {errors.password && (
                   <span id="register-password-error" className="field-error">
                     {errors.password}
@@ -362,16 +387,39 @@ export default function Register({
 
               <div className="field-group">
                 <label htmlFor="register-confirm-password">{t('auth.confirmPasswordLabel', 'Xác nhận mật khẩu')}</label>
-                <input
-                  id="register-confirm-password"
-                  autoComplete="new-password"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(event) => setConfirmPassword(event.target.value)}
-                  placeholder={t('auth.confirmPasswordPlaceholder', 'Nhập lại mật khẩu')}
-                  aria-invalid={Boolean(errors.confirmPassword)}
-                  aria-describedby={errors.confirmPassword ? 'register-confirm-password-error' : undefined}
-                />
+                <div className="password-input-wrapper">
+                  <input
+                    id="register-confirm-password"
+                    autoComplete="new-password"
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    value={confirmPassword}
+                    onChange={(event) => setConfirmPassword(event.target.value)}
+                    placeholder={t('auth.confirmPasswordPlaceholder', 'Nhập lại mật khẩu')}
+                    aria-invalid={Boolean(errors.confirmPassword)}
+                    aria-describedby={errors.confirmPassword ? 'register-confirm-password-error' : undefined}
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle-btn"
+                    onClick={() => setShowConfirmPassword((prev) => !prev)}
+                    title={showConfirmPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+                    aria-label={showConfirmPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+                    tabIndex="-1"
+                  >
+                    {showConfirmPassword ? (
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                        <line x1="3" y1="3" x2="21" y2="21" />
+                      </svg>
+                    ) : (
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
                 {errors.confirmPassword && (
                   <span id="register-confirm-password-error" className="field-error">
                     {errors.confirmPassword}
