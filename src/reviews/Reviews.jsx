@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../auth/useAuth.js';
 import AccountSidebar from '../components/AccountSidebar.jsx';
-import SiteHeader from '../components/SiteHeader.jsx';
-import SiteFooter from '../components/SiteFooter.jsx';
+import { AppHeader, AppFooter } from '~/shared/components';
 import Icon from '../components/AccountIcon.jsx';
 import { readReviews, reviewsKey, reviewStatuses, scoreLabel } from './reviewsData.js';
 import './Reviews.css';
@@ -78,5 +77,5 @@ export default function Reviews() {
     if (!window.confirm(`Xóa bài đánh giá về ${review.hotel}?`)) return;
     setNotice(persist(reviews.filter(item => item.id !== review.id)) || 'Đã xóa bài đánh giá.');
   }
-  return <div className="reviews-page"><SiteHeader /><main className="account-layout reviews-layout"><AccountSidebar onNotice={setNotice} /><div className="reviews-content">{reviews.length ? <><h1 className="reviews-sr-only">Bài đánh giá của bạn</h1><div className="reviews-list">{reviews.map(review => <ReviewCard key={review.id} review={review} onEdit={setEditing} onDelete={remove} />)}</div><p className="reviews-demo-note">Bài đánh giá, trạng thái duyệt, lượt hữu ích và phản hồi minh họa.</p></> : <EmptyReviews />}{notice && <p className="reviews-notice" role="status">{notice}</p>}</div></main><SiteFooter />{editing && <ReviewEditor review={editing} onSave={save} onClose={() => setEditing(null)} />}</div>;
+  return <div className="reviews-page"><AppHeader /><main className="account-layout reviews-layout"><AccountSidebar onNotice={setNotice} /><div className="reviews-content">{reviews.length ? <><h1 className="reviews-sr-only">Bài đánh giá của bạn</h1><div className="reviews-list">{reviews.map(review => <ReviewCard key={review.id} review={review} onEdit={setEditing} onDelete={remove} />)}</div><p className="reviews-demo-note">Bài đánh giá, trạng thái duyệt, lượt hữu ích và phản hồi minh họa.</p></> : <EmptyReviews />}{notice && <p className="reviews-notice" role="status">{notice}</p>}</div></main><AppFooter />{editing && <ReviewEditor review={editing} onSave={save} onClose={() => setEditing(null)} />}</div>;
 }

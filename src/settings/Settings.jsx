@@ -2,8 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/useAuth.js';
 import { changeAccountPassword, deleteLocalAccount } from '../auth/authService.js';
-import SiteHeader from '../components/SiteHeader.jsx';
-import SiteFooter from '../components/SiteFooter.jsx';
+import { AppHeader, AppFooter } from '~/shared/components';
 import AccountSidebar from '../components/AccountSidebar.jsx';
 import { usePreferences } from './preferences.js';
 import './Settings.css';
@@ -52,11 +51,11 @@ export default function Settings() {
     try { update(key, !preferences[key]); setNotice(key === 'notifications' ? 'Đã lưu lựa chọn thông báo. Dịch vụ gửi thông báo chưa được kết nối.' : 'Đã cập nhật hiệu ứng chuyển động.'); }
     catch { setNotice('Không thể lưu cài đặt. Vui lòng kiểm tra quyền lưu trữ của trình duyệt.'); }
   }
-  return <div className="settings-page"><SiteHeader /><main className="account-layout settings-layout"><AccountSidebar onNotice={setNotice} /><section className="settings-panel" aria-labelledby="settings-heading">
+  return <div className="settings-page"><AppHeader /><main className="account-layout settings-layout"><AccountSidebar onNotice={setNotice} /><section className="settings-panel" aria-labelledby="settings-heading">
     <h1 id="settings-heading">Cài đặt</h1>
     <div className="settings-row"><div><h2 id="settings-motion-label">Hiệu ứng chuyển động</h2><p id="settings-motion-description">Bật hiệu ứng mượt khi chuyển trang và tương tác.</p></div><button type="button" className="settings-switch" role="switch" aria-checked={preferences.motion} aria-labelledby="settings-motion-label" aria-describedby="settings-motion-description" onClick={() => toggle('motion')}><span /></button></div>
     <div className="settings-row"><div><h2 id="settings-notifications-label">Thông báo</h2><p id="settings-notifications-description">Nhận thông báo về địa điểm mới và xu hướng du lịch.</p></div><button type="button" className="settings-switch" role="switch" aria-checked={preferences.notifications} aria-labelledby="settings-notifications-label" aria-describedby="settings-notifications-description" onClick={() => toggle('notifications')}><span /></button></div>
     <section className="settings-security" aria-labelledby="settings-security-heading"><h2 id="settings-security-heading">Bảo mật</h2><div className="settings-security-item"><h3>Mật khẩu</h3><p>Cập nhật để bảo vệ tài khoản.</p><button type="button" className="settings-primary" onClick={() => setDialog('password')}>Đổi mật khẩu</button></div><div className="settings-security-item"><h3>Xóa tài khoản</h3><p>Xóa dữ liệu tài khoản trên trình duyệt này.</p><button type="button" className="settings-danger" onClick={() => setDialog('delete')}>Xóa tài khoản</button></div></section>
     <p className="settings-notice" role="status">{notice}</p>
-  </section></main><SiteFooter />{dialog && <SecurityDialog mode={dialog} user={user} onClose={() => setDialog(null)} onSaved={setNotice} onDeleted={() => { logout(); navigate('/login', { replace: true }); }} />}</div>;
+  </section></main><AppFooter />{dialog && <SecurityDialog mode={dialog} user={user} onClose={() => setDialog(null)} onSaved={setNotice} onDeleted={() => { logout(); navigate('/login', { replace: true }); }} />}</div>;
 }
