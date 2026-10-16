@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import SiteHeader from '../components/SiteHeader.jsx';
-import SiteFooter from '../components/SiteFooter.jsx';
+import { AppHeader, AppFooter } from '~/shared/components';
 import AccountSidebar from '../components/AccountSidebar.jsx';
 import { plans, formatPrice } from './plans.js';
 import { paymentService } from './paymentService.js';
@@ -62,7 +61,7 @@ export default function Payment() {
 
   return (
     <div className="payment-page">
-      <SiteHeader />
+      <AppHeader />
       <main className="account-layout payment-layout">
         <AccountSidebar onNotice={setNotice} />
         <section className="payment-content" aria-labelledby="payment-title">
@@ -201,7 +200,7 @@ export default function Payment() {
           </section>
         </section>
       </main>
-      <SiteFooter />
+      <AppFooter />
     </div>
   );
 }

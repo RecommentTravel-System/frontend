@@ -1,8 +1,7 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Link, useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import AccountSidebar from '../components/AccountSidebar.jsx';
-import SiteHeader from '../components/SiteHeader.jsx';
-import SiteFooter from '../components/SiteFooter.jsx';
+import { AppHeader, AppFooter } from '~/shared/components';
 import Icon from '../components/AccountIcon.jsx';
 import { useAuth } from '../auth/useAuth.js';
 import { readProfile } from '../profile/profileStorage.js';
@@ -512,7 +511,7 @@ export default function Itineraries() {
 
   return (
     <div className="itineraries-page">
-      <SiteHeader />
+      <AppHeader />
       <main className="account-layout itineraries-layout">
         <AccountSidebar onNotice={setNotice} />
         <div className="itineraries-content">
@@ -539,7 +538,7 @@ export default function Itineraries() {
           )}
         </div>
       </main>
-      <SiteFooter />
+      <AppFooter />
     </div>
   );
 }

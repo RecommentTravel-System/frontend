@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
-import SiteHeader from '../components/SiteHeader.jsx';
-import SiteFooter from '../components/SiteFooter.jsx';
+import { AppHeader, AppFooter } from '~/shared/components';
 import WayveeTravelLoader from './WayveeTravelLoader.jsx';
 import logo from '../assets/Icon.jpg';
 import { plans, formatPrice } from './plans.js';
@@ -200,7 +199,7 @@ export default function PaymentCheckout() {
 
   return (
     <div className="payment-checkout-page">
-      <SiteHeader />
+      <AppHeader />
 
       <main className="checkout-page-container">
         {/* Navigation Breadcrumb */}
@@ -380,7 +379,7 @@ export default function PaymentCheckout() {
           )}
         </div>
       </main>
-      <SiteFooter />
+      <AppFooter />
     </div>
   );
 }

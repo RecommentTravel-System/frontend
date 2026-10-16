@@ -1,7 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import SiteHeader from '../components/SiteHeader.jsx';
-import SiteFooter from '../components/SiteFooter.jsx';
+import { AppHeader, AppFooter } from '~/shared/components';
 import { formatPrice } from './plans.js';
 import { useTranslation } from '../providers/i18n-provider.jsx';
 import '../components/SiteLayout.css';
@@ -71,7 +70,7 @@ export default function PaymentSuccess({ paymentInfo = null }) {
 
   return (
     <div className="payment-success-page">
-      <SiteHeader />
+      <AppHeader />
 
       {/* Confetti Animation Background */}
       <div className="confetti-container" aria-hidden="true">
@@ -163,7 +162,7 @@ export default function PaymentSuccess({ paymentInfo = null }) {
               <div className="benefit-item">
                 <span className="benefit-icon">✨</span>
                 <div>
-                  <strong>{t('paymentPage.success.benefit1Title', 'Gợi ý AI thông minh')}</strong>
+                  <strong>{t('paymentPage.success.benefit1Title', 'Gợi ý thông minh')}</strong>
                   <p>{t('paymentPage.success.benefit1Desc', 'Khám phá các điểm đến độc đáo phù hợp sở thích')}</p>
                 </div>
               </div>
@@ -237,7 +236,7 @@ export default function PaymentSuccess({ paymentInfo = null }) {
           </div>
         </div>
       </main>
-      <SiteFooter />
+      <AppFooter />
     </div>
   );
 }
