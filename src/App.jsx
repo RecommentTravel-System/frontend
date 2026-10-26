@@ -1,9 +1,8 @@
-import { lazy, Suspense, useEffect, useLayoutEffect, useRef } from 'react';
+import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useMemo } from 'react';
 import { Link, Navigate, Outlet, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { AppProviders } from '~/providers/app-providers';
 import { useAuth } from './auth/useAuth.js';
-import { registerAccount } from './auth/authService.js';
 import Login from './login/Login.jsx';
 import Register from './register/Register.jsx';
 import Home from './homepage/Home.jsx';
@@ -34,6 +33,7 @@ import AdminDashboardRoute from '~/routes/admin-dashboard';
 import AdminReviewsRoute from '~/routes/admin-reviews';
 import AdminCategoriesRoute from '~/routes/admin-categories';
 import AdminUsersRoute from '~/routes/admin-users';
+import AdminRevenueRoute from '~/routes/admin-revenue';
 import AdminGuard from '~/routes/admin-guard';
 
 function RequireAuth() {
@@ -46,7 +46,21 @@ function AccountPage({ register = false }) {
   const { user, login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const requestedDestination = location.state?.from;
+
+  const requestedDestination = useMemo(() => {
+    const fromState = location.state?.from;
+    if (typeof fromState === 'string' && fromState.startsWith('/') && !fromState.startsWith('//') && fromState !== '/login' && fromState !== '/register') {
+      try { sessionStorage.setItem('wayvee_return_to', fromState); } catch {}
+      return fromState;
+    }
+    try {
+      const saved = sessionStorage.getItem('wayvee_return_to');
+      if (typeof saved === 'string' && saved.startsWith('/') && !saved.startsWith('//') && saved !== '/login' && saved !== '/register') {
+        return saved;
+      }
+    } catch {}
+    return null;
+  }, [location.state?.from]);
 
   // Helper: kiểm tra role admin
   const isAdminUser = (u) => {
@@ -57,23 +71,20 @@ function AccountPage({ register = false }) {
 
   const getDestination = (u) => {
     if (isAdminUser(u)) return '/admin/dashboard';
-    return typeof requestedDestination === 'string' && requestedDestination.startsWith('/') && !requestedDestination.startsWith('//')
-      ? requestedDestination
-      : '/';
+    const dest = requestedDestination || '/';
+    try { sessionStorage.removeItem('wayvee_return_to'); } catch {}
+    return dest;
   };
 
   // Nếu đã đăng nhập, redirect ngay
   if (user) return <Navigate to={getDestination(user)} replace />;
 
   const socialLogin = () => { throw new Error('Đăng nhập mạng xã hội chưa được kết nối. Vui lòng dùng email và mật khẩu.'); };
-  const backDestination = typeof requestedDestination === 'string' && requestedDestination.startsWith('/') && !requestedDestination.startsWith('//')
-    ? requestedDestination
-    : '/';
+  const backDestination = requestedDestination || '/';
   const shared = { onClose: () => navigate(backDestination), onGoogle: socialLogin };
 
   if (register) return <Register {...shared} onLogin={() => navigate('/login', { state: location.state })} onSubmit={(values) => {
-    const dest = typeof requestedDestination === 'string' && requestedDestination.startsWith('/') && !requestedDestination.startsWith('//')
-      ? requestedDestination : '/';
+    const dest = requestedDestination || '/';
     navigate('/login', { replace: true, state: { from: dest, message: 'Đăng ký tài khoản thành công! Vui lòng đăng nhập để tiếp tục.' } });
   }} />;
 
@@ -125,6 +136,7 @@ function AppRoutes() {
       '/admin/categories': 'Danh mục - Quản trị',
       '/admin/reviews': 'Đánh giá - Quản trị',
       '/admin/users': 'Người dùng - Quản trị',
+      '/admin/revenue': 'Báo cáo & Doanh thu - Quản trị',
     };
     const path = location.pathname;
     const pageTitle =
@@ -196,6 +208,10 @@ function AppRoutes() {
       <Route
         path="/admin/users"
         element={<AdminGuard><AdminUsersRoute /></AdminGuard>}
+      />
+      <Route
+        path="/admin/revenue"
+        element={<AdminGuard><AdminRevenueRoute /></AdminGuard>}
       />
 
       <Route path="*" element={<main className="route-not-found"><h1>Không tìm thấy trang</h1><Link to="/">Quay về trang chủ</Link></main>} />

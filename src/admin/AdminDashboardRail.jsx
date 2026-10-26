@@ -1,5 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "~/providers/i18n-provider";
+import { useAuth } from "~/providers/auth-provider";
 
 // ─── Nav Items ────────────────────────────────────────────────────────────────
 const navItems = [
@@ -69,7 +70,7 @@ const navItems = [
     id: "revenue",
     labelKey: "adminNav.revenue",
     label: "Báo cáo & Doanh thu",
-    path: "/admin",
+    path: "/admin/revenue",
     badge: null,
     trailingDot: true,
     icon: (
@@ -87,6 +88,7 @@ const navItems = [
 export default function AdminDashboardRail({ active }) {
   const { t } = useTranslation();
   const location = useLocation();
+  const { user } = useAuth();
 
   // Determine active item from prop or URL
   const resolveActive = (item) => {
@@ -173,9 +175,29 @@ export default function AdminDashboardRail({ active }) {
       {/* Footer User Info */}
       <div className="shrink-0 px-4 py-4 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-900/50">
         <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-full bg-[#00a3e0]/10 dark:bg-sky-950/60 flex items-center justify-center text-[#00a3e0] text-xs font-bold">A</div>
+          {user?.avatarUrl ? (
+            <img
+              src={user.avatarUrl}
+              alt={user.fullName || "Admin"}
+              onError={(e) => {
+                e.currentTarget.style.display = "none";
+                const fallback = e.currentTarget.parentElement?.querySelector(".rail-avatar-fallback");
+                if (fallback) fallback.style.display = "flex";
+              }}
+              className="w-7 h-7 rounded-full object-cover border border-[#00a3e0]"
+            />
+          ) : null}
+          <div
+            className={`rail-avatar-fallback w-7 h-7 rounded-full bg-[#00a3e0]/10 dark:bg-sky-950/60 items-center justify-center text-[#00a3e0] text-xs font-bold ${
+              user?.avatarUrl ? "hidden" : "flex"
+            }`}
+          >
+            {(user?.fullName || user?.username || user?.email || "A").slice(0, 1).toUpperCase()}
+          </div>
           <div className="flex-1 min-w-0">
-            <div className="text-[11px] font-semibold text-slate-700 dark:text-slate-200 truncate">Admin</div>
+            <div className="text-[11px] font-semibold text-slate-700 dark:text-slate-200 truncate">
+              {user?.fullName || user?.username || "Admin"}
+            </div>
             <div className="text-[10px] text-slate-400 dark:text-slate-500 truncate">{t("adminNav.roleAdmin", "Quản trị viên")}</div>
           </div>
           <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0" title="Online" />

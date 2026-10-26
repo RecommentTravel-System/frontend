@@ -1,14 +1,11 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppHeader, AppFooter } from "~/shared/components";
 import { HeroPlanner, WhyUseWayvee, TravelYourWay } from "~/features/trip";
 import { HotDestinations } from "~/features/destination";
 import { PlacesCategoryBar, TravelBlogPlaces } from "~/features/places";
 import { RecommendationGrid } from "~/features/recommendation";
-import { LoginCard, RegisterCard } from "~/features/auth";
 
 export default function HomeRoute() {
-  const [authModal, setAuthModal] = useState(null); // null | "login" | "register"
   const navigate = useNavigate();
 
   const handlePlannerSubmit = (plannerData) => {
@@ -18,8 +15,8 @@ export default function HomeRoute() {
   return (
     <div className="bg-background min-h-screen text-foreground transition-colors duration-200">
       <AppHeader
-        onLogin={() => setAuthModal("login")}
-        onRegister={() => setAuthModal("register")}
+        onLogin={() => navigate("/login", { state: { from: "/" } })}
+        onRegister={() => navigate("/register", { state: { from: "/" } })}
       />
 
       <main className="space-y-6">
@@ -37,36 +34,6 @@ export default function HomeRoute() {
       </main>
 
       <AppFooter />
-
-      {/* Auth Modals */}
-      {authModal === "login" && (
-        <LoginCard
-          onClose={() => setAuthModal(null)}
-          onSubmit={(vals) => {
-            const account = vals?.data?.userResponse;
-            const roles = account?.roles || (account?.role ? [account.role] : []);
-            if (roles.some((role) => {
-              const r = String(role).toLowerCase();
-              return r === "admin" || r === "role_admin";
-            })) {
-              navigate("/admin");
-            }
-            setAuthModal(null);
-          }}
-          onSignUp={() => setAuthModal("register")}
-        />
-      )}
-
-      {authModal === "register" && (
-        <RegisterCard
-          onClose={() => setAuthModal(null)}
-          onSubmit={(vals) => {
-            console.log("Register submitted", vals);
-            setAuthModal(null);
-          }}
-          onLogin={() => setAuthModal("login")}
-        />
-      )}
     </div>
   );
 }

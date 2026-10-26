@@ -59,11 +59,15 @@ export default function AdminUsers() {
         const isPending = u.status === "PENDING";
         const isLocked = u.status === "SUSPENDED" || u.status === "DELETED" || u.status === "INACTIVE";
         const isAdmin = u.role === "ADMIN";
+        const displayName = u.fullName || u.email?.split("@")[0] || "User";
+        const initials = displayName
+          ? displayName.trim().split(/\s+/).map((w) => w[0]).join("").slice(0, 2).toUpperCase()
+          : "U";
 
         return {
           id: `WV-${String(u.userId).padStart(5, "0")}`,
           userId: u.userId,
-          name: u.fullName || u.email.split("@")[0],
+          name: displayName,
           email: u.email,
           phone: u.phone || "Chưa cập nhật",
           role: isAdmin ? "admin" : "member",
@@ -81,7 +85,8 @@ export default function AdminUsers() {
           lastActiveVi: isActive ? "Đang hoạt động" : isPending ? "Chờ xác thực" : "Đã khóa",
           lastActiveEn: isActive ? "Active" : isPending ? "Pending" : "Locked",
           status: isActive ? "active" : isPending ? "pending" : "locked",
-          avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(u.email)}`
+          avatar: u.avatarUrl || null,
+          initials: initials
         };
       });
       setUsers(mapped);
@@ -405,7 +410,7 @@ export default function AdminUsers() {
                 className="px-3.5 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-[#00a3e0] min-w-[150px]"
               >
                 <option value="">{t("adminUsers.allRoles", "Tất cả vai trò")}</option>
-                <option value="superadmin">{t("adminUsers.superadmin", "Quản trị viên (Admin)")}</option>
+                <option value="admin">{t("adminUsers.superadmin", "Quản trị viên (Admin)")}</option>
                 <option value="member">{t("adminUsers.member", "Thành viên (Member)")}</option>
               </select>
 
@@ -513,19 +518,27 @@ export default function AdminUsers() {
                                   <img
                                     src={user.avatar}
                                     alt={user.name}
+                                    onError={(e) => {
+                                      e.currentTarget.style.display = "none";
+                                      const fallback = e.currentTarget.parentElement?.querySelector(".avatar-fallback");
+                                      if (fallback) fallback.style.display = "flex";
+                                    }}
                                     className={`w-10 h-10 rounded-full object-cover border transition-transform group-hover/user:scale-105 ${
                                       isLocked
                                         ? "border-red-400 ring-1 ring-red-200 dark:ring-red-900"
-                                        : user.role === "superadmin"
+                                        : user.role === "admin" || user.role === "superadmin"
                                           ? "border-sky-500 ring-1 ring-sky-300 dark:ring-sky-800"
                                           : "border-[#00a3e0]"
                                     }`}
                                   />
-                                ) : (
-                                  <div className="w-10 h-10 rounded-full bg-sky-100 dark:bg-sky-950/60 text-[#00a3e0] font-bold text-sm flex items-center justify-center border border-sky-200 dark:border-sky-800">
-                                    {user.initials || user.name.slice(0, 2).toUpperCase()}
-                                  </div>
-                                )}
+                                ) : null}
+                                <div
+                                  className={`avatar-fallback w-10 h-10 rounded-full bg-sky-100 dark:bg-sky-950/60 text-[#00a3e0] font-bold text-sm items-center justify-center border border-sky-200 dark:border-sky-800 ${
+                                    user.avatar ? "hidden" : "flex"
+                                  }`}
+                                >
+                                  {user.initials || (user.name || "U").slice(0, 2).toUpperCase()}
+                                </div>
 
                                 {/* Status dot on Avatar */}
                                 <span
@@ -997,13 +1010,21 @@ export default function AdminUsers() {
                   <img
                     src={activeDetailUser.avatar}
                     alt={activeDetailUser.name}
+                    onError={(e) => {
+                      e.currentTarget.style.display = "none";
+                      const fallback = e.currentTarget.parentElement?.querySelector(".detail-avatar-fallback");
+                      if (fallback) fallback.style.display = "flex";
+                    }}
                     className="w-14 h-14 rounded-full object-cover border-2 border-[#00a3e0]"
                   />
-                ) : (
-                  <div className="w-14 h-14 rounded-full bg-sky-100 dark:bg-sky-950/60 text-[#00a3e0] font-bold text-lg flex items-center justify-center border border-sky-200 dark:border-sky-800">
-                    {activeDetailUser.initials || activeDetailUser.name.slice(0, 2).toUpperCase()}
-                  </div>
-                )}
+                ) : null}
+                <div
+                  className={`detail-avatar-fallback w-14 h-14 rounded-full bg-sky-100 dark:bg-sky-950/60 text-[#00a3e0] font-bold text-lg items-center justify-center border border-sky-200 dark:border-sky-800 ${
+                    activeDetailUser.avatar ? "hidden" : "flex"
+                  }`}
+                >
+                  {activeDetailUser.initials || (activeDetailUser.name || "U").slice(0, 2).toUpperCase()}
+                </div>
                 <div>
                   <h4 className="font-bold text-base text-slate-900 dark:text-white">
                     {activeDetailUser.name}

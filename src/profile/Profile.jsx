@@ -1,8 +1,7 @@
 import { useRef, useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import './Profile.css';
 import { AppHeader, AppFooter } from '~/shared/components';
-import { LoginCard, RegisterCard } from '~/features/auth';
 import { useAuth } from '~/providers/auth-provider';
 import { getMyFavorites, deleteFavorite, removeFavoriteByOsmId } from '~/shared/services/favorite-api';
 import AccountSidebar from '../components/AccountSidebar.jsx';
@@ -14,7 +13,8 @@ import AvatarEditor from './AvatarEditor.jsx';
 export default function Profile({ user: propUser }) {
   const { user: authUser } = useAuth();
   const user = propUser || authUser;
-  const [authModal, setAuthModal] = useState(null);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const [saved, setSaved] = useState(() => readProfile(user));
   const [values, setValues] = useState(saved);
@@ -106,8 +106,8 @@ export default function Profile({ user: propUser }) {
   return (
     <div className="profile-page">
       <AppHeader
-        onLogin={() => setAuthModal('login')}
-        onRegister={() => setAuthModal('register')}
+        onLogin={() => navigate('/login', { state: { from: location.pathname + location.search } })}
+        onRegister={() => navigate('/register', { state: { from: location.pathname + location.search } })}
       />
       <main className="account-layout">
         <AccountSidebar name={name} onNotice={setNotice} />
@@ -286,21 +286,6 @@ export default function Profile({ user: propUser }) {
         </section>
       </main>
       <AppFooter />
-
-      {authModal === 'login' && (
-        <LoginCard
-          onClose={() => setAuthModal(null)}
-          onSubmit={() => setAuthModal(null)}
-          onSignUp={() => setAuthModal('register')}
-        />
-      )}
-      {authModal === 'register' && (
-        <RegisterCard
-          onClose={() => setAuthModal(null)}
-          onSubmit={() => setAuthModal(null)}
-          onLogin={() => setAuthModal('login')}
-        />
-      )}
     </div>
   );
 }

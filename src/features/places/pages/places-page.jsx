@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "~/providers/i18n-provider";
 import { AppHeader } from "~/shared/components";
 import { AppFooter } from "~/shared/components";
-import { LoginCard, RegisterCard } from "~/features/auth";
 import { FilterPanel } from "../components/filters/filter-panel";
 import { PlaceCard } from "../components/listing/place-card";
 import { usePlacesFilter } from "../hooks/use-places-filter";
@@ -80,7 +79,6 @@ export function PlacesPage({ initialMode = "all" }) {
 
   // Cờ bỏ qua gọi API khi quay lại từ trang chi tiết nếu đã có dữ liệu sẵn
   const skipFetchRef = useRef(places.length > 0);
-  const [authModal, setAuthModal] = useState(null);
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
@@ -111,10 +109,10 @@ export function PlacesPage({ initialMode = "all" }) {
   }, []);
 
   useEffect(() => {
-    const onPromptLogin = () => setAuthModal("login");
+    const onPromptLogin = () => navigate("/login", { state: { from: location.pathname + location.search } });
     window.addEventListener("wayvee:prompt-login", onPromptLogin);
     return () => window.removeEventListener("wayvee:prompt-login", onPromptLogin);
-  }, []);
+  }, [location.pathname, location.search, navigate]);
 
   // Selected places to add to trip itinerary
   const [selectedPlaceIds, setSelectedPlaceIds] = useState(() => {
@@ -355,8 +353,8 @@ export function PlacesPage({ initialMode = "all" }) {
     <div className="bg-[#f8fafc] dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans min-h-screen flex flex-col antialiased">
       {/* App Header */}
       <AppHeader
-        onLogin={() => setAuthModal("login")}
-        onRegister={() => setAuthModal("register")}
+        onLogin={() => navigate("/login", { state: { from: location.pathname + location.search } })}
+        onRegister={() => navigate("/register", { state: { from: location.pathname + location.search } })}
       />
 
       {/* Main Container - Full-width sát lề trái giống trang Admin để không tạo khoảng trắng */}
@@ -929,22 +927,6 @@ export function PlacesPage({ initialMode = "all" }) {
       {/* Footer */}
       <AppFooter />
 
-      {/* Auth Modals */}
-      {authModal === "login" && (
-        <LoginCard
-          onClose={() => setAuthModal(null)}
-          onSubmit={() => setAuthModal(null)}
-          onSignUp={() => setAuthModal("register")}
-        />
-      )}
-
-      {authModal === "register" && (
-        <RegisterCard
-          onClose={() => setAuthModal(null)}
-          onSubmit={() => setAuthModal(null)}
-          onLogin={() => setAuthModal("login")}
-        />
-      )}
     </div>
   );
 }
