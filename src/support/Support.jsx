@@ -43,10 +43,10 @@ export default function Support() {
   const view = params.get('view');
   const [notice, setNotice] = useState('');
   const [draft, setDraft] = useState({ rating: 0, comment: '', email: user?.mode === 'flow-test' ? '' : user?.email || '' });
-  const choices = [{ view: 'chat', icon: 'review', label: 'Trò chuyện ngay' }, { view: 'help', icon: 'support', label: 'Trung tâm trợ giúp' }, { view: 'feedback', icon: 'review', label: 'Gửi phản hồi' }];
+  const choices = [{ view: 'chat', icon: 'review', label: 'Trò chuyện ngay' }, { view: 'help', icon: 'support', label: 'Trung tâm trợ giúp' }, { view: 'feedback', icon: 'review', label: 'Gửi đánh giá trang web' }];
   return <div className="support-page"><AppHeader /><main className="account-layout support-layout"><AccountSidebar onNotice={setNotice} /><section className="support-panel" aria-labelledby="support-heading"><header className="support-heading"><h1 id="support-heading">Hỗ trợ &amp; Phản hồi</h1><p>Bạn cần trợ giúp hoặc muốn góp ý? Chúng tôi luôn sẵn sàng lắng nghe.</p></header><nav className="support-options" aria-label="Các mục hỗ trợ">{choices.map(choice => <Link key={choice.view} to={`/support?view=${choice.view}`} className={view === choice.view ? 'is-active' : ''} aria-current={view === choice.view ? 'page' : undefined}><Icon name={choice.icon} /><span>{choice.label}</span><span aria-hidden="true">›</span></Link>)}</nav>
     {view === 'chat' && <ChatPanel />}
     {view === 'help' && <section className="support-help" aria-labelledby="support-help-heading"><h2 id="support-help-heading">Trung tâm trợ giúp</h2>{helpTopics.map(topic => <details key={topic.title}><summary>{topic.title}</summary><p>{topic.answer}</p>{topic.to && <Link to={topic.to}>{topic.link} →</Link>}</details>)}<p className="support-contact">Cần thêm trợ giúp? <a href="mailto:wayvee@gmail.com">Liên hệ qua email</a></p></section>}
     {notice && <p className="support-notice" role="status">{notice}</p>}
-  </section></main><AppFooter />{view === 'feedback' && <FeedbackForm user={user} draft={draft} onDraftChange={setDraft} onClose={() => { const next = new URLSearchParams(params); next.delete('view'); setParams(next, { replace: true }); }} />}</div>;
+  </section></main><AppFooter />{(view === 'feedback' || view === 'review') && <FeedbackForm user={user} draft={draft} onDraftChange={setDraft} onClose={() => { const next = new URLSearchParams(params); next.delete('view'); setParams(next, { replace: true }); }} />}</div>;
 }
