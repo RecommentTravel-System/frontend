@@ -1,5 +1,6 @@
 import { signInWithPopup, signOut, onAuthStateChanged } from "firebase/auth";
 import { auth, googleProvider, isFirebaseConfigured } from "../../../shared/lib/firebase.js";
+import { googleLoginApi } from "./auth-api.js";
 
 /**
  * Friendly error messages for Firebase Authentication
@@ -76,12 +77,42 @@ export async function signInWithGoogle() {
   try {
     const result = await signInWithPopup(auth, googleProvider);
     const fbUser = result.user;
-    const token = await fbUser.getIdToken();
-    const user = formatFirebaseUser(fbUser);
+    const firebaseIdToken = await fbUser.getIdToken();
+    const fallbackUser = formatFirebaseUser(fbUser);
+
+    // Lưu / đồng bộ người dùng Google vào database backend Wayvee
+    try {
+      const beResponse = await googleLoginApi({
+        email: fbUser.email,
+        fullName: fbUser.displayName || fbUser.email?.split("@")[0] || "User",
+        avatarUrl: fbUser.photoURL || null,
+        googleId: fbUser.uid,
+        idToken: firebaseIdToken
+      });
+
+      const responseData = beResponse?.data || beResponse;
+      const userResponse = responseData?.userResponse;
+      const accessToken = responseData?.accessToken;
+
+      if (userResponse && accessToken) {
+        return {
+          user: {
+            ...userResponse,
+            id: `WV-${String(userResponse.userId).padStart(5, "0")}`,
+            authProvider: userResponse.authProvider || "GOOGLE",
+            isGoogleUser: true
+          },
+          token: accessToken,
+          firebaseUser: fbUser
+        };
+      }
+    } catch (backendError) {
+      console.warn("Backend Google sync error, falling back to Firebase auth state:", backendError);
+    }
 
     return {
-      user,
-      token,
+      user: fallbackUser,
+      token: firebaseIdToken,
       firebaseUser: fbUser
     };
   } catch (error) {

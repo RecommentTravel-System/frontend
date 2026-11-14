@@ -4,6 +4,16 @@ export async function loginApi({ email, password }) {
   return await api.post("/api/auth/login", { email, password });
 }
 
+export async function googleLoginApi({ email, fullName, avatarUrl, idToken, googleId }) {
+  return await api.post("/api/auth/google", {
+    email,
+    fullName,
+    avatarUrl,
+    idToken,
+    googleId
+  });
+}
+
 export async function signupApi({ email, password, fullName, phone }) {
   return await api.post("/api/auth/signup", {
     email,
