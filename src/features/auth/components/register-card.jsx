@@ -181,7 +181,7 @@ export function RegisterCard({ onClose, onSubmit, onLogin }) {
     try {
       await resendOtpApi(formData.email.trim().toLowerCase());
       setResendCooldown(60);
-      setInfoMessage(t("auth.otpResent") || "Đã gửi lại mã OTP tới email của bạn.");
+      setInfoMessage(t("auth.otpResent") || "đã gửi lại mã OTP tới email của bạn.");
     } catch (err) {
       setError(
         getLocalizedErrorMessage(err) ||
@@ -207,7 +207,7 @@ export function RegisterCard({ onClose, onSubmit, onLogin }) {
       <div className="bg-white dark:bg-[#111a2e] text-slate-900 dark:text-slate-100 rounded-3xl shadow-2xl max-w-md w-full p-6 sm:p-8 border border-gray-200 dark:border-slate-800 my-8 animate-in fade-in zoom-in duration-200">
         <div className="flex items-center justify-between pb-3">
           <h2 className="text-base font-bold text-slate-800 dark:text-slate-200">
-            {step === "register" ? (t("auth.registerTitle") || "Đăng ký tài khoản") : (t("auth.otpTitle") || "Xác thực Email")}
+            {step === "register" ? (t("auth.registerTitle") || "đăng ký tài khoản") : (t("auth.otpTitle") || "Xác thực Email")}
           </h2>
           <button
             type="button"
@@ -263,7 +263,7 @@ export function RegisterCard({ onClose, onSubmit, onLogin }) {
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-gray-600 dark:text-gray-300">{t("auth.emailLabel") || "Địa chỉ Email"}</label>
+              <label className="text-xs font-semibold text-gray-600 dark:text-gray-300">{t("auth.emailLabel") || "địa chỉ Email"}</label>
               <input
                 type="email"
                 value={formData.email}
@@ -362,7 +362,7 @@ export function RegisterCard({ onClose, onSubmit, onLogin }) {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                   </svg>
-                  <span>{t("auth.processing") || "Đang xử lý..."}</span>
+                  <span>{t("auth.processing") || "đang xử lý..."}</span>
                 </>
               ) : (
                 t("auth.createAccountButton") || "Tạo tài khoản"
@@ -402,7 +402,7 @@ export function RegisterCard({ onClose, onSubmit, onLogin }) {
               disabled={loading || otp.join("").length < 6}
               className="w-full py-3 rounded-xl bg-[#002d54] text-white font-semibold text-sm hover:bg-[#001f3b] transition-colors shadow-sm disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
             >
-              {loading ? (t("auth.verifying") || "Đang xác thực...") : (t("auth.activateAccountButton") || "Kích hoạt tài khoản")}
+              {loading ? (t("auth.verifying") || "đang xác thực...") : (t("auth.activateAccountButton") || "Kích hoạt tài khoản")}
             </button>
 
             <div className="flex flex-col items-center gap-2 pt-2">
@@ -433,9 +433,9 @@ export function RegisterCard({ onClose, onSubmit, onLogin }) {
         )}
 
         <div className="mt-5 text-center text-xs text-gray-500 dark:text-gray-400">
-          <span>{t("auth.alreadyHaveAccount") || "Đã có tài khoản?"} </span>
+          <span>{t("auth.alreadyHaveAccount") || "đã có tài khoản?"} </span>
           <button type="button" className="font-bold text-[#002d54] dark:text-sky-400 hover:underline cursor-pointer" onClick={onLogin}>
-            {t("auth.logIn") || "Đăng nhập"}
+            {t("auth.logIn") || "đăng nhập"}
           </button>
         </div>
       </div>
@@ -447,7 +447,7 @@ export function RegisterCard({ onClose, onSubmit, onLogin }) {
               ✓
             </div>
             <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">
-              Đăng ký thành công!
+              đăng ký thành công!
             </h3>
             <p className="text-xs text-gray-600 dark:text-gray-300 mb-6">
               Tài khoản của bạn đã được kích hoạt thành công. Vui lòng đăng nhập để bắt đầu sử dụng Wayvee.
@@ -457,7 +457,7 @@ export function RegisterCard({ onClose, onSubmit, onLogin }) {
               className="w-full py-3 rounded-xl bg-[#002d54] text-white font-semibold text-sm hover:bg-[#001f3b] transition-colors shadow-sm cursor-pointer"
               onClick={handleSuccessRedirect}
             >
-              Đăng nhập ngay
+              đăng nhập ngay
             </button>
           </div>
         </div>

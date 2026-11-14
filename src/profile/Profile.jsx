@@ -1,8 +1,7 @@
 import { useRef, useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import './Profile.css';
 import { AppHeader, AppFooter } from '~/shared/components';
-import { LoginCard, RegisterCard } from '~/features/auth';
 import { useAuth } from '~/providers/auth-provider';
 import { getMyFavorites, deleteFavorite, removeFavoriteByOsmId } from '~/shared/services/favorite-api';
 import AccountSidebar from '../components/AccountSidebar.jsx';
@@ -14,7 +13,8 @@ import AvatarEditor from './AvatarEditor.jsx';
 export default function Profile({ user: propUser }) {
   const { user: authUser } = useAuth();
   const user = propUser || authUser;
-  const [authModal, setAuthModal] = useState(null);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const [saved, setSaved] = useState(() => readProfile(user));
   const [values, setValues] = useState(saved);
@@ -59,7 +59,7 @@ export default function Profile({ user: propUser }) {
         await removeFavoriteByOsmId(fav.osmId);
       }
       setFavorites((prev) => prev.filter((item) => item.favoriteId !== fav.favoriteId && item.osmId !== fav.osmId));
-      setNotice('Đã bỏ yêu thích địa điểm.');
+      setNotice('đã bỏ yêu thích địa điểm.');
       setTimeout(() => setNotice(''), 3000);
     } catch (err) {
       console.error("Failed to remove favorite:", err);
@@ -78,7 +78,7 @@ export default function Profile({ user: propUser }) {
     try {
       localStorage.setItem(profileKey(user?.email), JSON.stringify(values));
       setSaved({ ...values });
-      setNotice('Đã lưu thay đổi thông tin cá nhân.');
+      setNotice('đã lưu thay đổi thông tin cá nhân.');
     } catch {
       setNotice('Không thể lưu trên trình duyệt. Vui lòng thử lại.');
     }
@@ -106,8 +106,8 @@ export default function Profile({ user: propUser }) {
   return (
     <div className="profile-page">
       <AppHeader
-        onLogin={() => setAuthModal('login')}
-        onRegister={() => setAuthModal('register')}
+        onLogin={() => navigate('/login', { state: { from: location.pathname + location.search } })}
+        onRegister={() => navigate('/register', { state: { from: location.pathname + location.search } })}
       />
       <main className="account-layout">
         <AccountSidebar name={name} onNotice={setNotice} />
@@ -131,7 +131,7 @@ export default function Profile({ user: propUser }) {
             <div className="flex items-center justify-between mb-3">
               <div>
                 <h2 id="favorite-places-heading" className="font-bold text-lg text-slate-900 dark:text-white flex items-center gap-2">
-                  <span className="text-rose-500">♥</span> Địa điểm yêu thích
+                  <span className="text-rose-500">♥</span> địa điểm yêu thích
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
                   Các địa điểm bạn đã lưu để lên kế hoạch cho chuyến đi.
@@ -149,12 +149,12 @@ export default function Profile({ user: propUser }) {
 
             {loadingFavorites ? (
               <div className="py-6 text-center text-xs text-slate-400 animate-pulse">
-                Đang tải địa điểm yêu thích...
+                đang tải địa điểm yêu thích...
               </div>
             ) : favorites.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 pt-2">
                 {favorites.slice(0, 3).map((fav) => {
-                  const placeName = fav.placeName || `Địa điểm #${fav.osmId}`;
+                  const placeName = fav.placeName || `địa điểm #${fav.osmId}`;
                   const coordsText = fav.latitude && fav.longitude
                     ? `${fav.latitude.toFixed(3)}, ${fav.longitude.toFixed(3)}`
                     : "Việt Nam";
@@ -168,7 +168,7 @@ export default function Profile({ user: propUser }) {
                     imageUrl: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=800&q=80",
                     address: fav.latitude && fav.longitude ? `Tọa độ: ${fav.latitude.toFixed(4)}, ${fav.longitude.toFixed(4)}` : "Việt Nam",
                     categoryCode: "ATTRACTION",
-                    description: "Địa điểm yêu thích đã lưu trên hệ thống WAYVEE."
+                    description: "địa điểm yêu thích đã lưu trên hệ thống WAYVEE."
                   };
 
                   return (
@@ -258,7 +258,7 @@ export default function Profile({ user: propUser }) {
               <label className="profile-field">
                 <span>Thành phố</span>
                 <select name="city" value={values.city} onChange={update}>
-                  {['Hồ Chí Minh', 'Hà Nội', 'Đà Nẵng', 'Hải Phòng', 'Cần Thơ', 'Huế', 'Khác'].map((city) => (
+                  {['Hồ Chí Minh', 'Hà Nội', 'đà Nẵng', 'Hải Phòng', 'Cần Thơ', 'Huế', 'Khác'].map((city) => (
                     <option key={city}>{city}</option>
                   ))}
                 </select>
@@ -274,7 +274,7 @@ export default function Profile({ user: propUser }) {
                   type="button"
                   onClick={() => {
                     setValues({ ...saved });
-                    setNotice('Đã hủy các thay đổi chưa lưu.');
+                    setNotice('đã hủy các thay đổi chưa lưu.');
                   }}
                 >
                   Hủy
@@ -286,21 +286,6 @@ export default function Profile({ user: propUser }) {
         </section>
       </main>
       <AppFooter />
-
-      {authModal === 'login' && (
-        <LoginCard
-          onClose={() => setAuthModal(null)}
-          onSubmit={() => setAuthModal(null)}
-          onSignUp={() => setAuthModal('register')}
-        />
-      )}
-      {authModal === 'register' && (
-        <RegisterCard
-          onClose={() => setAuthModal(null)}
-          onSubmit={() => setAuthModal(null)}
-          onLogin={() => setAuthModal('login')}
-        />
-      )}
     </div>
   );
 }

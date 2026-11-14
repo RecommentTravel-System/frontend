@@ -58,7 +58,10 @@ export function I18nProvider({ children }) {
     }
 
     const dict = dictionaries[language]?.[ns] || dictionaries.vi[ns] || {};
-    const parts = keyPath.split(".");
+    let parts = keyPath.split(".");
+    if (ns === "common" && parts[0] === "common" && parts.length > 1 && !(parts[0] in dict)) {
+      parts = parts.slice(1);
+    }
     let curr = dict;
     let found = true;
     for (const p of parts) {

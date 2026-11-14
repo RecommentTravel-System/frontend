@@ -1,54 +1,55 @@
 import { beforeEach, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { clearSession, loginAccount, readSession, registerAccount } from '../src/auth/authService.js';
+import { clearSession, readSession, registerAccount, startDemoSession } from '../src/auth/authService.js';
 
 function storage() {
   const entries = new Map();
-  return { getItem: key => entries.get(key) ?? null, setItem: (key, value) => entries.set(key, String(value)), removeItem: key => entries.delete(key) };
+  return {
+    getItem: key => entries.get(key) ?? null,
+    setItem: (key, value) => entries.set(key, String(value)),
+    removeItem: key => entries.delete(key)
+  };
 }
 
-const credentials = { email: 'traveler@example.com', password: 'WayveeDemo123!', confirmPassword: 'WayveeDemo123!' };
 beforeEach(() => {
   Object.defineProperty(globalThis, 'localStorage', { value: storage(), configurable: true });
-  Object.defineProperty(globalThis, 'sessionStorage', { value: storage(), configurable: true });
 });
 
-test('registration does not authenticate and does not store the plain password', async () => {
-  await registerAccount(credentials);
+test('readSession returns null when token or user is missing', () => {
   assert.equal(readSession(), null);
-  assert.ok(!localStorage.getItem('wayvee-demo-accounts').includes(credentials.password));
+  localStorage.setItem('wayvee_token', 'sample-token');
+  assert.equal(readSession(), null);
 });
 
-test('only matching credentials create a session; logout removes it', async () => {
-  await registerAccount(credentials);
-  await assert.rejects(loginAccount({ ...credentials, password: 'wrong' }), /không đúng/);
-  await assert.rejects(loginAccount({ ...credentials, email: 'unknown@example.com' }), /không đúng/);
-  assert.equal(readSession(), null);
-  const user = await loginAccount({ ...credentials, email: ' TRAVELER@EXAMPLE.COM ' });
-  assert.deepEqual(user, { email: credentials.email });
+test('readSession parses saved user when token and user are both present', () => {
+  const user = { email: 'user@example.com', fullName: 'Wayvee User' };
+  localStorage.setItem('wayvee_token', 'sample-token');
+  localStorage.setItem('wayvee_user', JSON.stringify(user));
   assert.deepEqual(readSession(), user);
+});
+
+test('clearSession removes wayvee_token and wayvee_user', () => {
+  localStorage.setItem('wayvee_token', 'sample-token');
+  localStorage.setItem('wayvee_user', JSON.stringify({ email: 'user@example.com' }));
   clearSession();
+  assert.equal(localStorage.getItem('wayvee_token'), null);
+  assert.equal(localStorage.getItem('wayvee_user'), null);
   assert.equal(readSession(), null);
 });
 
-test('registration rejects duplicates, invalid email and invalid passwords', async () => {
-  await registerAccount(credentials);
-  await assert.rejects(registerAccount({ ...credentials, email: 'TRAVELER@example.com' }), /đã được đăng ký/);
-  await assert.rejects(registerAccount({ ...credentials, email: 'bad' }), /hợp lệ/);
-  await assert.rejects(registerAccount({ ...credentials, password: 'short' }), /8 ký tự/);
-  await assert.rejects(registerAccount({ ...credentials, confirmPassword: 'different' }), /không khớp/);
+test('startDemoSession sets demo user in storage and returns user', () => {
+  const demo = startDemoSession();
+  assert.equal(demo.email, 'demo@wayvee.vn');
+  assert.equal(JSON.parse(localStorage.getItem('wayvee_user')).email, 'demo@wayvee.vn');
 });
 
-test('broken or unknown persisted sessions are treated as signed out', () => {
-  sessionStorage.setItem('wayvee-demo-session', 'invalid JSON');
-  assert.equal(readSession(), null);
-  sessionStorage.setItem('wayvee-demo-session', JSON.stringify({ email: credentials.email }));
-  assert.equal(readSession(), null);
-});
-
-test('storage failures never return a successful login', async () => {
-  await registerAccount(credentials);
-  sessionStorage.setItem = () => { throw new Error('Storage unavailable'); };
-  await assert.rejects(loginAccount(credentials), /Storage unavailable/);
-  assert.equal(readSession(), null);
+test('registerAccount validates email format and password length before calling API', async () => {
+  await assert.rejects(
+    registerAccount({ email: 'invalid-email', password: 'password123' }),
+    /email hợp lệ/
+  );
+  await assert.rejects(
+    registerAccount({ email: 'valid@example.com', password: '123' }),
+    /ít nhất 6 ký tự/
+  );
 });

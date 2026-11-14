@@ -248,7 +248,7 @@ export function AppHeader({ onLogin, onRegister }) {
               }}
               className="px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 hover:text-[#00a3e0] dark:hover:text-[#00a3e0] hover:bg-sky-50 dark:hover:bg-slate-800 transition-all border border-transparent hover:border-sky-200 dark:hover:border-slate-700 cursor-pointer"
             >
-              {t("login", "Đăng nhập")}
+              {t("login", "đăng nhập")}
             </button>
             <button
               type="button"
@@ -258,7 +258,7 @@ export function AppHeader({ onLogin, onRegister }) {
               }}
               className="px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold text-white bg-[#00a3e0] hover:bg-[#008ec4] transition-all shadow-xs active:scale-95 cursor-pointer"
             >
-              {t("register", "Đăng ký")}
+              {t("register", "đăng ký")}
             </button>
           </div>
         ) : (
@@ -272,7 +272,7 @@ export function AppHeader({ onLogin, onRegister }) {
               type="button"
               onClick={handleAvatarClick}
               title={user?.fullName || "Tài khoản của bạn"}
-              className="w-9 h-9 rounded-full overflow-hidden border-2 border-[#00a3e0] shadow-xs cursor-pointer hover:scale-105 transition-transform flex items-center justify-center relative"
+              className="w-9 h-9 rounded-full overflow-hidden border-2 border-[#00a3e0] shadow-xs cursor-pointer hover:scale-105 active:scale-95 transition-transform flex items-center justify-center relative"
             >
               <Avatar name={user?.fullName} src={user?.avatarUrl || user?.avatar} />
               <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-white dark:ring-slate-900"></span>
@@ -281,7 +281,7 @@ export function AppHeader({ onLogin, onRegister }) {
             {/* User Menu Dropdown Popover */}
             {menuOpen && (
               <div
-                className="absolute right-0 top-full mt-2 w-64 bg-white dark:bg-[#111a2e] rounded-3xl p-3 shadow-2xl border border-slate-100 dark:border-slate-800 animate-in fade-in slide-in-from-top-2 duration-200 z-50"
+                className="absolute right-0 top-full mt-2 w-64 bg-white dark:bg-[#111a2e] rounded-3xl p-3 shadow-2xl border border-slate-100 dark:border-slate-800 animate-dropdown-enter z-50"
                 role="menu"
               >
                 <div className="space-y-1">

@@ -8,7 +8,7 @@ const hotDestinations = [
   { name: "Mộc Châu", tag: "Hoa mận, hoa đào nở khắp lối", seed: "mocchau" },
   { name: "Hà Giang", tag: "Núi đá + hoa anh đào, vẻ đẹp hùng vĩ", seed: "hagiang" },
   { name: "Huế", tag: "Thời tiết dễ chịu, cảnh cổ kính rất bình yên", seed: "hue" },
-  { name: "Đà Lạt", tag: "Mùa mai anh đào khoe sắc rực rỡ", seed: "dalat" }
+  { name: "đà Lạt", tag: "Mùa mai anh đào khoe sắc rực rỡ", seed: "dalat" }
 ];
 
 export function HotDestinations() {

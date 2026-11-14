@@ -15,7 +15,7 @@ export function ItineraryOptimizationBadge({ onOptimize }) {
       <button
         type="button"
         onClick={onOptimize}
-        className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#00a8e8] hover:bg-sky-600 text-white font-bold text-xs transition-colors shadow-sm cursor-pointer whitespace-nowrap"
+        className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#00a8e8] hover:bg-sky-600 text-white font-bold text-xs transition-all shadow-sm cursor-pointer whitespace-nowrap active:scale-[0.98] duration-150"
       >
         Tối ưu ngay
       </button>

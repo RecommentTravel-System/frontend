@@ -113,17 +113,17 @@ export function PlaceCard({
     FAST_FOOD: t("places.categories.fastFood") || "Thức ăn nhanh",
     BAR: t("places.categories.bar") || "Quán bar / Pub",
     HOTEL: t("places.categories.hotel") || "Khách sạn / Lưu trú",
-    ATTRACTION: t("places.categories.attraction") || "Điểm tham quan",
+    ATTRACTION: t("places.categories.attraction") || "điểm tham quan",
     SHOPPING: t("places.categories.shopping") || "Mua sắm",
     ENTERTAINMENT: t("places.categories.entertainment") || "Khu vui chơi",
-    OTHER: t("places.categories.other") || "Địa điểm khác"
+    OTHER: t("places.categories.other") || "địa điểm khác"
   };
-  const categoryLabel = categoryMap[categoryCodeUpper] || place.categoryCode || t("places.categories.other", "Địa điểm");
+  const categoryLabel = categoryMap[categoryCodeUpper] || place.categoryCode || t("places.categories.other", "địa điểm");
 
   // LIST VIEW: Horizontal layout — icon category thay ảnh
   if (variant === "list") {
     return (
-      <article className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-all flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+      <article className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 transition-all duration-200 flex flex-col sm:flex-row gap-4 items-start sm:items-center">
         {/* Category Icon Thumbnail — thay thế ảnh riêng */}
         <div
           className={`w-full sm:w-48 h-36 rounded-xl overflow-hidden relative flex-shrink-0 border border-slate-100 dark:border-slate-800 cursor-pointer bg-gradient-to-br ${catVisual.gradient} flex items-center justify-center`}
@@ -192,7 +192,7 @@ export function PlaceCard({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-            <span>{distanceKm} km từ trung tâm • {place.address || "Địa điểm trung tâm thành phố"}</span>
+            <span>{distanceKm} km từ trung tâm • {place.address || "địa điểm trung tâm thành phố"}</span>
           </p>
 
           {/* Opening hours & info */}
@@ -207,7 +207,7 @@ export function PlaceCard({
             <button
               type="button"
               onClick={() => onToggleAdd && onToggleAdd(place)}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer ${
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer active:scale-95 duration-150 ${
                 isAdded
                   ? "bg-emerald-600 text-white shadow-xs hover:bg-emerald-700"
                   : "bg-[#0b2545] hover:bg-[#102f58] dark:bg-sky-500 dark:hover:bg-sky-600 text-white dark:text-slate-950 shadow-xs"
@@ -218,7 +218,7 @@ export function PlaceCard({
                   <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
                   </svg>
-                  <span>{t("places.card.added") || "Đã thêm"}</span>
+                  <span>{t("places.card.added") || "đã thêm"}</span>
                 </>
               ) : (
                 <>
@@ -237,7 +237,7 @@ export function PlaceCard({
 
   // GRID VIEW: Vertical layout — icon category thay ảnh
   return (
-    <article className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-all flex flex-col justify-between group">
+    <article className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between group">
       {/* Category Icon Header — thay thế ảnh */}
       <div
         className={`w-full h-44 relative overflow-hidden cursor-pointer bg-gradient-to-br ${catVisual.gradient} flex items-center justify-center`}
@@ -297,7 +297,7 @@ export function PlaceCard({
 
           {/* Distance & Address */}
           <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2">
-            📍 {distanceKm} km • {place.address || "Địa điểm trung tâm"}
+            📍 {distanceKm} km • {place.address || "địa điểm trung tâm"}
           </p>
         </div>
 
@@ -306,7 +306,7 @@ export function PlaceCard({
           <button
             type="button"
             onClick={() => onToggleAdd && onToggleAdd(place)}
-            className={`w-full py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-1.5 cursor-pointer ${
+            className={`w-full py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-1.5 cursor-pointer active:scale-95 duration-150 ${
               isAdded
                 ? "bg-emerald-600 text-white shadow-xs hover:bg-emerald-700"
                 : "bg-[#0b2545] hover:bg-[#102f58] dark:bg-sky-500 dark:hover:bg-sky-600 text-white dark:text-slate-950 shadow-xs"
@@ -317,7 +317,7 @@ export function PlaceCard({
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
                 </svg>
-                <span>{t("places.card.added") || "Đã thêm"}</span>
+                <span>{t("places.card.added") || "đã thêm"}</span>
               </>
             ) : (
               <>

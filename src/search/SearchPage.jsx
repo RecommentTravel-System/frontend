@@ -1,5 +1,6 @@
 import { useRef, useState, useSyncExternalStore } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
+import { useLoading } from '~/providers/loading-provider';
 import SiteHeader from '../components/SiteHeader.jsx';
 import SiteFooter from '../components/SiteFooter.jsx';
 import SearchDialog from './SearchDialog.jsx';
@@ -16,6 +17,7 @@ const readPreview = () => { try { return localStorage.getItem('wayvee-home-previ
 export default function SearchPage() {
   const [params, setParams] = useSearchParams();
   const [searchOpen, setSearchOpen] = useState(false);
+  const { showLoading } = useLoading();
   const sortMenu = useRef(null);
   const premium = useSyncExternalStore(subscribePreview, readPreview, () => false);
   const map = premium && params.get('view') === 'map';
@@ -50,11 +52,26 @@ export default function SearchPage() {
         <div className="search-view" role="group" aria-label="Kiểu hiển thị"><button aria-label="Danh sách" aria-pressed={!grid && !map} onClick={() => change('view', 'list')}>☷</button><button aria-label="Lưới" aria-pressed={grid} onClick={() => change('view', 'grid')}>▦</button>{premium && <button aria-label="Bản đồ" aria-pressed={map} onClick={() => showOnMap(selected?.id)}>⌖</button>}</div></div>
       <p className="search-result-count" role="status">{results.length} địa điểm · Dữ liệu, giá và ảnh minh họa{params.has('maxPrice') && ` · Ngân sách tối đa: ${Number(params.get('maxPrice')).toLocaleString('vi-VN')}đ`}</p>
       <div className={`search-results ${grid ? 'is-grid' : ''}`}>{results.map(place => <SearchCard key={place.id} place={place} onMap={premium ? () => showOnMap(place.id) : undefined} selected={map && selected?.id === place.id} />)}</div>
-      {!results.length && <div className="search-empty"><h2>Chưa tìm thấy địa điểm phù hợp</h2><p>Thử từ khóa khác hoặc bỏ bớt bộ lọc.</p><button className="search-outline" onClick={clearFilters}>Xóa bộ lọc</button><button className="search-outline" onClick={() => setSearchOpen(true)}>Đổi tìm kiếm</button></div>}
+      {!results.length && <div className="search-empty"><h2>Chưa tìm thấy địa điểm phù hợp</h2><p>Thử từ khóa khác hoặc bỏ bớt bộ lọc.</p><button className="search-outline" onClick={clearFilters}>Xóa bộ lọc</button><button className="search-outline" onClick={() => setSearchOpen(true)}>đổi tìm kiếm</button></div>}
     </section>
     {map && <MapResize controller={resize} />}
     {map && <SearchMap results={results} selected={selected} onSelect={id => change("place", id)} onClose={closeMap} />}
-  </main><SiteFooter />{searchOpen && <SearchDialog initialQuery={params.get('q') || ''} initialPrice={params.get('maxPrice') || ''} onClose={() => setSearchOpen(false)} onSearch={values => { setParams(previous => { const next = new URLSearchParams(previous); for (const [key, value] of Object.entries(values)) { next.delete(key); if (value !== '') next.set(key, value); } return next; }); setSearchOpen(false); }} />}</>;
+  </main><SiteFooter />{searchOpen && <SearchDialog initialQuery={params.get('q') || ''} initialPrice={params.get('maxPrice') || ''} onClose={() => setSearchOpen(false)} onSearch={values => {
+    const done = showLoading(
+      values.q ? `Đang tìm kiếm "${values.q}"...` : "Đang tìm kiếm địa điểm...",
+      "search-query"
+    );
+    setParams(previous => {
+      const next = new URLSearchParams(previous);
+      for (const [key, value] of Object.entries(values)) {
+        next.delete(key);
+        if (value !== '') next.set(key, value);
+      }
+      return next;
+    });
+    setSearchOpen(false);
+    setTimeout(done, 300);
+  }} />}</>;
 }
 
 function SearchCard({ place, onMap, selected }) {

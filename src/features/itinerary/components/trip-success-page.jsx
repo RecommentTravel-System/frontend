@@ -14,7 +14,7 @@ export function TripSuccessPage() {
       }).catch(() => {});
     } else {
       navigator.clipboard.writeText(window.location.href);
-      alert(language === "vi" ? "Đã sao chép liên kết chuyến đi!" : "Trip link copied to clipboard!");
+      alert(language === "vi" ? "đã sao chép liên kết chuyến đi!" : "Trip link copied to clipboard!");
     }
   };
 

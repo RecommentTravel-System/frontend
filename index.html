@@ -31,6 +31,26 @@
       } catch(e) {}
     })();
   </script>
+  <style>
+    /* Desktop App Startup: Prevents white flash before React hydrates */
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      background-color: #f8fafc;
+      color: #0b2545;
+      font-family: 'Plus Jakarta Sans', Inter, system-ui, -apple-system, sans-serif;
+    }
+    html.dark, html.dark body {
+      background-color: #0b1220;
+      color: #f8fafc;
+    }
+    #root {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+  </style>
 </head>
 
 <body>

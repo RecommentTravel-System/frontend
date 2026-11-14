@@ -48,7 +48,7 @@ export default function WayveeTravelLoader({
     }
   };
 
-  const displayTitle = title || t('paymentPage.loader.title', 'Đang chờ xác nhận thanh toán');
+  const displayTitle = title || t('paymentPage.loader.title', 'đang chờ xác nhận thanh toán');
   const displaySubtitle = subtitle || t('paymentPage.loader.subtitleGeneric', 'Vui lòng hoàn tất thanh toán trên ứng dụng ngân hàng hoặc cổng PayOS');
 
   return (
@@ -155,7 +155,7 @@ export default function WayveeTravelLoader({
       <div className="loader-info">
         <div className="status-live-badge">
           <span className="live-dot" />
-          <span>{badgeText || t('paymentPage.loader.badgeLabel', 'ĐANG CHỜ THANH TOÁN (WEBHOOK)')}</span>
+          <span>{badgeText || t('paymentPage.loader.badgeLabel', 'đANG CHỜ THANH TOÁN (WEBHOOK)')}</span>
         </div>
 
         <h3 className="loader-title">{displayTitle}</h3>

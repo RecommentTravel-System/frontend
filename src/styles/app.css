@@ -54,3 +54,170 @@ html, body, #root {
   padding-right: var(--container-padding, 1.5rem);
   transition: max-width 0.25s ease-in-out, padding 0.25s ease-in-out;
 }
+
+/* ==========================================================================
+   Wayvee Motion System (Subtle, purposeful, accessible, high performance)
+   ========================================================================== */
+
+/* Keyframe Definitions */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes dropdownEnter {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes toastEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes successCheck {
+  0% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.06);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes splashLogoEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes splashProgress {
+  0% {
+    transform: translateX(-120%);
+  }
+  50% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(320%);
+  }
+}
+
+/* Motion Utility Classes */
+.animate-splash-logo {
+  animation: splashLogoEnter 420ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-splash-progress {
+  will-change: transform;
+  animation: splashProgress 1.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.animate-fade-in {
+  animation: fadeIn var(--duration-fast, 160ms) var(--ease-out, ease-out) forwards;
+}
+
+.animate-modal-enter {
+  animation: modalEnter var(--duration-normal, 220ms) var(--ease-standard, cubic-bezier(0.16, 1, 0.3, 1)) forwards;
+}
+
+.animate-scale-up {
+  animation: modalEnter var(--duration-normal, 220ms) var(--ease-standard, cubic-bezier(0.16, 1, 0.3, 1)) forwards;
+}
+
+.animate-dropdown-enter {
+  animation: dropdownEnter var(--duration-fast, 160ms) var(--ease-standard, cubic-bezier(0.16, 1, 0.3, 1)) forwards;
+}
+
+.animate-toast-enter {
+  animation: toastEnter var(--duration-normal, 220ms) var(--ease-standard, cubic-bezier(0.16, 1, 0.3, 1)) forwards;
+}
+
+.animate-success-check {
+  animation: successCheck 320ms var(--ease-standard, cubic-bezier(0.16, 1, 0.3, 1)) forwards;
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(226, 232, 240, 0.7) 0%,
+    rgba(241, 245, 249, 0.95) 50%,
+    rgba(226, 232, 240, 0.7) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
+}
+
+.dark .animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(30, 41, 59, 0.7) 0%,
+    rgba(51, 65, 85, 0.9) 50%,
+    rgba(30, 41, 59, 0.7) 100%
+  );
+  background-size: 200% 100%;
+}
+
+/* Accessibility: Global Reduced Motion & User Setting */
+:root[data-motion="off"] *,
+:root[data-motion="off"] *::before,
+:root[data-motion="off"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

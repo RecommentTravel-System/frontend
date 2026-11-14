@@ -6,11 +6,11 @@ import { getAnalyticsApi } from "~/features/analytics/services/analytics-api";
 
 // ─── Helper: format VND currency ─────────────────────────────────────────────
 function fmtVND(value) {
-  if (!value && value !== 0) return "0 ₫";
-  if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(1)} tỷ ₫`;
-  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M ₫`;
-  if (value >= 1_000) return `${(value / 1_000).toFixed(0)}K ₫`;
-  return `${value} ₫`;
+  if (!value && value !== 0) return "0 đ";
+  if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(1)} tỷ đ`;
+  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M đ`;
+  if (value >= 1_000) return `${(value / 1_000).toFixed(0)}K đ`;
+  return `${value} đ`;
 }
 
 function fmtNum(n) {

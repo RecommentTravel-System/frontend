@@ -1,9 +1,9 @@
-import { lazy, Suspense, useEffect, useLayoutEffect, useRef } from 'react';
+import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useMemo, useState } from 'react';
 import { Link, Navigate, Outlet, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { AppProviders } from '~/providers/app-providers';
+import { SplashScreen } from '~/shared/components';
 import { useAuth } from './auth/useAuth.js';
-import { registerAccount } from './auth/authService.js';
 import Login from './login/Login.jsx';
 import Register from './register/Register.jsx';
 import Home from './homepage/Home.jsx';
@@ -34,6 +34,7 @@ import AdminDashboardRoute from '~/routes/admin-dashboard';
 import AdminReviewsRoute from '~/routes/admin-reviews';
 import AdminCategoriesRoute from '~/routes/admin-categories';
 import AdminUsersRoute from '~/routes/admin-users';
+import AdminRevenueRoute from '~/routes/admin-revenue';
 import AdminGuard from '~/routes/admin-guard';
 
 function RequireAuth() {
@@ -43,10 +44,24 @@ function RequireAuth() {
 }
 
 function AccountPage({ register = false }) {
-  const { user, login } = useAuth();
+  const { user, login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const requestedDestination = location.state?.from;
+
+  const requestedDestination = useMemo(() => {
+    const fromState = location.state?.from;
+    if (typeof fromState === 'string' && fromState.startsWith('/') && !fromState.startsWith('//') && fromState !== '/login' && fromState !== '/register') {
+      try { sessionStorage.setItem('wayvee_return_to', fromState); } catch {}
+      return fromState;
+    }
+    try {
+      const saved = sessionStorage.getItem('wayvee_return_to');
+      if (typeof saved === 'string' && saved.startsWith('/') && !saved.startsWith('//') && saved !== '/login' && saved !== '/register') {
+        return saved;
+      }
+    } catch {}
+    return null;
+  }, [location.state?.from]);
 
   // Helper: kiểm tra role admin
   const isAdminUser = (u) => {
@@ -57,24 +72,27 @@ function AccountPage({ register = false }) {
 
   const getDestination = (u) => {
     if (isAdminUser(u)) return '/admin/dashboard';
-    return typeof requestedDestination === 'string' && requestedDestination.startsWith('/') && !requestedDestination.startsWith('//')
-      ? requestedDestination
-      : '/';
+    const dest = requestedDestination || '/';
+    try { sessionStorage.removeItem('wayvee_return_to'); } catch {}
+    return dest;
   };
 
   // Nếu đã đăng nhập, redirect ngay
   if (user) return <Navigate to={getDestination(user)} replace />;
 
-  const socialLogin = () => { throw new Error('Đăng nhập mạng xã hội chưa được kết nối. Vui lòng dùng email và mật khẩu.'); };
-  const backDestination = typeof requestedDestination === 'string' && requestedDestination.startsWith('/') && !requestedDestination.startsWith('//')
-    ? requestedDestination
-    : '/';
-  const shared = { onClose: () => navigate(backDestination), onGoogle: socialLogin };
+  const handleGoogleLogin = async () => {
+    const googleUser = await loginWithGoogle();
+    if (googleUser) {
+      navigate(getDestination(googleUser), { replace: true });
+    }
+  };
+
+  const backDestination = requestedDestination || '/';
+  const shared = { onClose: () => navigate(backDestination), onGoogle: handleGoogleLogin };
 
   if (register) return <Register {...shared} onLogin={() => navigate('/login', { state: location.state })} onSubmit={(values) => {
-    const dest = typeof requestedDestination === 'string' && requestedDestination.startsWith('/') && !requestedDestination.startsWith('//')
-      ? requestedDestination : '/';
-    navigate('/login', { replace: true, state: { from: dest, message: 'Đăng ký tài khoản thành công! Vui lòng đăng nhập để tiếp tục.' } });
+    const dest = requestedDestination || '/';
+    navigate('/login', { replace: true, state: { from: dest, message: 'đăng ký tài khoản thành công! Vui lòng đăng nhập để tiếp tục.' } });
   }} />;
 
   return <Login {...shared} message={location.state?.message} onSignUp={() => navigate('/register', { state: location.state })} onSubmit={async (values) => {
@@ -101,8 +119,8 @@ function AppRoutes() {
   useEffect(() => {
     const titles = {
       '/': 'Trang chủ',
-      '/login': 'Đăng nhập',
-      '/register': 'Đăng ký',
+      '/login': 'đăng nhập',
+      '/register': 'đăng ký',
       '/profile': 'Thông tin cá nhân',
       '/payment': 'Premium',
       '/reviews': 'Bài đánh giá',
@@ -123,8 +141,9 @@ function AppRoutes() {
       '/admin': 'Quản trị viên',
       '/admin/dashboard': 'Dashboard - Quản trị',
       '/admin/categories': 'Danh mục - Quản trị',
-      '/admin/reviews': 'Đánh giá - Quản trị',
+      '/admin/reviews': 'đánh giá - Quản trị',
       '/admin/users': 'Người dùng - Quản trị',
+      '/admin/revenue': 'Báo cáo & Doanh thu - Quản trị',
     };
     const path = location.pathname;
     const pageTitle =
@@ -132,7 +151,7 @@ function AppRoutes() {
       (path.startsWith('/locations/') ? 'Chi tiết địa điểm' :
        path.startsWith('/places/') ? 'Chi tiết địa điểm' :
        path.startsWith('/itineraries') ? 'Lịch trình' :
-       path.startsWith('/favorites') ? 'Địa điểm yêu thích' :
+       path.startsWith('/favorites') ? 'địa điểm yêu thích' :
        path.startsWith('/trip/') ? 'Lịch trình' :
        path.startsWith('/admin/') ? 'Quản trị viên' :
        'Không tìm thấy trang');
@@ -197,17 +216,44 @@ function AppRoutes() {
         path="/admin/users"
         element={<AdminGuard><AdminUsersRoute /></AdminGuard>}
       />
+      <Route
+        path="/admin/revenue"
+        element={<AdminGuard><AdminRevenueRoute /></AdminGuard>}
+      />
 
       <Route path="*" element={<main className="route-not-found"><h1>Không tìm thấy trang</h1><Link to="/">Quay về trang chủ</Link></main>} />
     </Routes>
   </div>;
 }
 
+function AppContent() {
+  const [isAppReady, setIsAppReady] = useState(false);
+  const [isSplashDone, setIsSplashDone] = useState(false);
+
+  return (
+    <>
+      {!isSplashDone && (
+        <SplashScreen
+          onReady={() => setIsAppReady(true)}
+          onFinish={() => setIsSplashDone(true)}
+        />
+      )}
+      <div
+        className={`w-full min-h-screen transition-opacity duration-300 ${
+          isAppReady ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+      >
+        <AppRoutes />
+      </div>
+    </>
+  );
+}
+
 export default function App() {
   return (
     <AppProviders>
       <BrowserRouter>
-        <AppRoutes />
+        <AppContent />
       </BrowserRouter>
     </AppProviders>
   );

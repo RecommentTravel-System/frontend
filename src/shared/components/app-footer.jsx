@@ -1,17 +1,41 @@
+import { Link } from "react-router-dom";
 import { SITE } from "~/shared/config/site";
 import { useTranslation } from "~/providers/i18n-provider";
 
 export function AppFooter() {
   const { t } = useTranslation();
 
+  const getLinkTarget = (link) => {
+    switch (link) {
+      case "Trang chủ":
+        return "/";
+      case "điểm đến hot":
+      case "Khám phá ngay":
+      case "địa điểm nổi bật":
+        return "/places";
+      case "đánh giá chuyến đi":
+        return "/reviews";
+      case "Trung tâm hỗ trợ":
+        return "/support?view=help";
+      case "Trò chuyện ngay":
+        return "/support?view=chat";
+      case "Góp ý phản hồi":
+        return "/support?view=feedback";
+      case "Liên hệ chúng tôi":
+        return "mailto:wayvee@gmail.com";
+      default:
+        return null;
+    }
+  };
+
   const footerColumns = [
     {
       title: t("footer.navigation"),
-      links: ["Trang chủ", "Điểm đến hot", "Blog du lịch", "Đánh giá chuyến đi", "Khám phá ngay"]
+      links: ["Trang chủ", "điểm đến hot", "Blog du lịch", "đánh giá chuyến đi", "Khám phá ngay"]
     },
     {
       title: t("footer.explore"),
-      links: ["Địa điểm nổi bật", "Quản lý chuyến đi thích", "Xu hướng du lịch", "Gợi ý theo mùa"]
+      links: ["địa điểm nổi bật", "Quản lý chuyến đi thích", "Xu hướng du lịch", "Gợi ý theo mùa"]
     },
     {
       title: t("footer.support"),
@@ -31,11 +55,22 @@ export function AppFooter() {
           <div key={col.title}>
             <p className="text-sm font-semibold mb-3.5 text-white">{col.title}</p>
             <ul className="space-y-2">
-              {col.links.map((link) => (
-                <li key={link} className="text-sm text-slate-300 hover:text-white transition-colors cursor-pointer">
-                  {link}
-                </li>
-              ))}
+              {col.links.map((link) => {
+                const target = getLinkTarget(link);
+                return (
+                  <li key={link} className="text-sm text-slate-300 hover:text-white transition-colors cursor-pointer">
+                    {target ? (
+                      target.startsWith("mailto:") ? (
+                        <a href={target}>{link}</a>
+                      ) : (
+                        <Link to={target}>{link}</Link>
+                      )
+                    ) : (
+                      <span>{link}</span>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           </div>
         ))}

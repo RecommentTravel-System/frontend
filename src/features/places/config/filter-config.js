@@ -175,7 +175,7 @@ export const CATEGORY_FILTER_CONFIGS = {
     categoryId: "ATTRACTION",
     backendCategory: "ATTRACTION",
     labelKey: "places.categories.attraction",
-    defaultLabel: "Điểm tham quan",
+    defaultLabel: "điểm tham quan",
     preferences: [
       {
         id: "historical",
@@ -230,7 +230,7 @@ export const CATEGORY_FILTER_CONFIGS = {
       {
         id: "souvenirs",
         labelKey: "places.preferences.souvenirs",
-        defaultLabel: "Đặc sản & Quà lưu niệm",
+        defaultLabel: "đặc sản & Quà lưu niệm",
         targetField: "keyword",
         value: "souvenir"
       }

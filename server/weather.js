@@ -15,7 +15,7 @@ export function createWeatherHandler(env, fetchWeather = fetch) {
     const key = env.PUBLIC_OPENWEATHER_API_KEY;
     if (!key) return send(503, { error: 'Dịch vụ thời tiết chưa được cấu hình. Quản trị viên cần thêm PUBLIC_OPENWEATHER_API_KEY vào biến môi trường server và triển khai lại.' });
     const base = (env.PUBLIC_OPENWEATHER_BASE_URL || 'https://api.openweathermap.org/data/2.5').replace(/\/$/, '');
-    if (base !== 'https://api.openweathermap.org/data/2.5') return send(503, { error: 'Địa chỉ OpenWeather không hợp lệ.' });
+    if (base !== 'https://api.openweathermap.org/data/2.5') return send(503, { error: 'địa chỉ OpenWeather không hợp lệ.' });
     const cacheKey = `${city}:${type}`;
     if (cache.has(cacheKey) && Date.now() - cache.get(cacheKey).at < ttl) return send(200, cache.get(cacheKey).data);
     try {
@@ -25,7 +25,7 @@ export function createWeatherHandler(env, fetchWeather = fetch) {
           const params = new URLSearchParams({ lat, lon, appid: key, units: 'metric', lang: 'vi' });
           const response = await fetchWeather(`${base}/${type}?${params}`, { signal: AbortSignal.timeout(12000) });
           if (!response.ok) {
-            const error = new Error(response.status === 401 ? 'OpenWeather chưa chấp nhận API key. Hãy kiểm tra key hoặc chờ kích hoạt.' : response.status === 429 ? 'Đã đạt giới hạn OpenWeather. Vui lòng thử lại sau.' : 'OpenWeather tạm thời không khả dụng.');
+            const error = new Error(response.status === 401 ? 'OpenWeather chưa chấp nhận API key. Hãy kiểm tra key hoặc chờ kích hoạt.' : response.status === 429 ? 'đã đạt giới hạn OpenWeather. Vui lòng thử lại sau.' : 'OpenWeather tạm thời không khả dụng.');
             error.status = response.status === 429 ? 429 : 502; throw error;
           }
           const raw = await response.json();

@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { api } from "~/shared/lib/api";
+import { useDelayedLoading } from "~/shared/lib/use-delayed-loading";
+import { Spinner } from "~/shared/ui/loading";
 
 const LEAFLET_OVERRIDE_STYLES = `
   .pb-map-wrapper {
@@ -34,6 +36,9 @@ export function LocationMapModal({ initialQuery = "", onConfirm, onClose }) {
   });
   const [isLeafletReady, setIsLeafletReady] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
+
+  const { visible: showSearchLoading } = useDelayedLoading(isSearching, { delay: 200 });
+  const { visible: showLocatingLoading } = useDelayedLoading(isLocating, { delay: 200 });
 
   // Dynamic load of Leaflet CSS & JS
   useEffect(() => {
@@ -458,9 +463,9 @@ export function LocationMapModal({ initialQuery = "", onConfirm, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-fade-in">
       <style>{LEAFLET_OVERRIDE_STYLES}</style>
-      <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-2xl w-full p-5 sm:p-6 shadow-2xl space-y-4 border border-slate-200 dark:border-slate-800 flex flex-col max-h-[90vh]">
+      <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-2xl w-full p-5 sm:p-6 shadow-2xl space-y-4 border border-slate-200 dark:border-slate-800 flex flex-col max-h-[90vh] animate-modal-enter">
         {/* Modal Header */}
         <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
           <div>
@@ -485,7 +490,7 @@ export function LocationMapModal({ initialQuery = "", onConfirm, onClose }) {
           <div className="relative flex-1">
             <input
               type="text"
-              placeholder="Gõ tìm địa điểm (ví dụ: Hà Nội, Huế, Đà Nẵng, Phú Quốc...)"
+              placeholder="Gõ tìm địa điểm (ví dụ: Hà Nội, Huế, đà Nẵng, Phú Quốc...)"
               value={searchQuery}
               onChange={(e) => handleSearch(e.target.value)}
               onKeyDown={(e) => {
@@ -496,14 +501,20 @@ export function LocationMapModal({ initialQuery = "", onConfirm, onClose }) {
               }}
               className="w-full pl-9 pr-16 py-2.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-[#002d54] dark:focus:border-sky-500 text-slate-800 dark:text-slate-100 placeholder:text-slate-400"
             />
-            <button
-              type="button"
-              onClick={handleDirectSearch}
-              className="absolute left-3 top-2.5 text-xs text-slate-400 hover:text-sky-600 transition-colors cursor-pointer"
-              title="Tìm kiếm vị trí"
-            >
-              🔍
-            </button>
+            {showSearchLoading ? (
+              <span className="absolute left-3 top-2.5 flex items-center justify-center pointer-events-none" aria-label="Đang tìm kiếm vị trí">
+                <Spinner size="xs" variant="primary" />
+              </span>
+            ) : (
+              <button
+                type="button"
+                onClick={handleDirectSearch}
+                className="absolute left-3 top-2.5 text-xs text-slate-400 hover:text-sky-600 transition-colors cursor-pointer"
+                title="Tìm kiếm vị trí"
+              >
+                🔍
+              </button>
+            )}
 
             {searchQuery && (
               <button
@@ -542,9 +553,10 @@ export function LocationMapModal({ initialQuery = "", onConfirm, onClose }) {
             type="button"
             onClick={handleGetMyLocation}
             disabled={isLocating}
+            aria-busy={isLocating}
             className="flex items-center gap-1.5 px-3.5 py-2.5 bg-sky-50 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800 rounded-xl text-xs font-semibold hover:bg-sky-100 dark:hover:bg-sky-900/50 transition-colors cursor-pointer disabled:opacity-50 flex-shrink-0"
           >
-            <span>🎯</span>
+            {showLocatingLoading ? <Spinner size="xs" variant="cyan" /> : <span>🎯</span>}
             <span className="hidden sm:inline">
               {isLocating ? "Đang định vị..." : "Vị trí của tôi"}
             </span>
@@ -554,8 +566,9 @@ export function LocationMapModal({ initialQuery = "", onConfirm, onClose }) {
         {/* Leaflet Map Area */}
         <div className="pb-map-wrapper relative w-full h-72 sm:h-80 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800">
           {!isLeafletReady && (
-            <div className="absolute inset-0 flex items-center justify-center text-xs text-slate-500 z-10 bg-slate-100 dark:bg-slate-800">
-              Đang tải bản đồ Leaflet...
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-xs text-slate-500 z-10 bg-slate-100/90 dark:bg-slate-800/90 backdrop-blur-xs">
+              <Spinner size="sm" variant="primary" />
+              <span>Đang tải bản đồ...</span>
             </div>
           )}
           <div ref={mapContainerRef} className="w-full h-full" />
@@ -564,7 +577,7 @@ export function LocationMapModal({ initialQuery = "", onConfirm, onClose }) {
         {/* Selected Location Summary & Actions */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
           <div className="text-xs text-slate-600 dark:text-slate-400 line-clamp-1 w-full sm:w-auto">
-            <span className="font-semibold text-slate-800 dark:text-slate-200">Đã chọn:</span>{" "}
+            <span className="font-semibold text-slate-800 dark:text-slate-200">đã chọn:</span>{" "}
             {selectedLocation.fullName || selectedLocation.name || "Chưa có địa điểm"}
           </div>
 

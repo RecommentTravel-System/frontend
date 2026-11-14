@@ -39,7 +39,7 @@ export function useMapResize(active, root) {
     toggle: () => update(split === 0 ? previous.current : 0),
     reset: () => update(.38),
     separator: {
-      role: 'separator', tabIndex: 0, 'aria-orientation': 'vertical', 'aria-label': 'Điều chỉnh độ rộng danh sách và bản đồ',
+      role: 'separator', tabIndex: 0, 'aria-orientation': 'vertical', 'aria-label': 'điều chỉnh độ rộng danh sách và bản đồ',
       'aria-valuemin': 0, 'aria-valuemax': 100, 'aria-valuenow': Math.round(width / Math.max(1, max) * 100),
       'aria-valuetext': split === 0 ? 'Danh sách đã thu gọn, bản đồ mở rộng' : `Danh sách rộng ${Math.round(width)} pixel`,
       'aria-controls': 'search-result-panel',

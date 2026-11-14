@@ -78,7 +78,7 @@ const INITIAL_DAYS = [
         rating: 4.6,
         reviewsCount: "Bún Chả Obama",
         address: "24 Lê Văn Hưu, Hai Bà Trưng",
-        tagVi: "Đã đặt bàn 12h",
+        tagVi: "đã đặt bàn 12h",
         tagEn: "Booked 12:00",
         image:
           "https://lh3.googleusercontent.com/aida-public/AB6AXuCiiuQ2wsuR0njNGC8aEPWZn2HEUm7eDWlkrIFZ62t2IEJ5QgGny81oLlHFPPnZ2GcQq2TzhR5YHeOva4-9Q8Ph6ekhGbtAt59HhHu_HHjJkEiCJ2aPzGPFbhg1TfPEuKRLaWpI0GV4Hm0M7Zbox_nnD9w6vsekXcxa_UGWEj4k1k-0UrZ9Vx0W_DKok9UPSjAAmgtBWcfw7cZ3zd7VSrDK-8uqL5h0wFk4nYRP2J0"
@@ -90,12 +90,12 @@ const INITIAL_DAYS = [
     dayNum: 2,
     dayLabelVi: "Ngày 2 (15 Thg 8)",
     dayLabelEn: "Day 2 (Aug 15)",
-    titleVi: "Văn hóa & Lịch sử Thủ Đô",
+    titleVi: "Văn hóa & Lịch sử Thủ đô",
     titleEn: "Culture & Capital History",
     items: [
       {
         id: "d2-1",
-        name: "Lăng Bác & Ba Đình",
+        name: "Lăng Bác & Ba đình",
         category: "culture",
         categoryVi: "Văn hóa",
         categoryEn: "Culture",
@@ -103,8 +103,8 @@ const INITIAL_DAYS = [
         barColor: "bg-sky-500",
         rating: 4.9,
         reviewsCount: "12,000+",
-        address: "Số 2 Hùng Vương, Ba Đình",
-        tagVi: "Đến sớm xem lễ đổi gác",
+        address: "Số 2 Hùng Vương, Ba đình",
+        tagVi: "đến sớm xem lễ đổi gác",
         tagEn: "Guard change ceremony",
         image:
           "https://lh3.googleusercontent.com/aida-public/AB6AXuD1GUjDo_Yuq9J22vlCLsz0ggPVTjYqk_8O6No1rOzdTpmWXq6vbzxk7F-n5naZiM8giseBPmTbsKJQ5tsAN6Bt0bL0AYDlqYYWfwKzVNpVF3UqwRPCeG1_tZ1uJDDEDrmlMCYC9mv3wsGdLAIrNUqvI7bcwuWGIGP1E1fFcHDlcxeu2ndibpei06uDoUBWAwCHumy4PliVI6yxig2_RiEL4HUZ6jCkuDcVamLEmRw"
@@ -127,7 +127,7 @@ const INITIAL_DAYS = [
       },
       {
         id: "d2-3",
-        name: "Phố Cà Phê Đường Tàu",
+        name: "Phố Cà Phê đường Tàu",
         category: "checkin",
         categoryVi: "Check-in",
         categoryEn: "Check-in",
@@ -151,7 +151,7 @@ const INITIAL_DAYS = [
         barColor: "bg-emerald-500",
         rating: 4.7,
         reviewsCount: "2,800",
-        address: "6B Đường Thành, Cửa Đông",
+        address: "6B đường Thành, Cửa đông",
         tagVi: "Khuyên dùng mắm tôm",
         tagEn: "Recommended with shrimp paste",
         image:
@@ -177,7 +177,7 @@ const INITIAL_DAYS = [
         barColor: "bg-sky-500",
         rating: 4.8,
         reviewsCount: "Trấn Quốc Pagoda",
-        address: "Đường Thanh Niên, Yên Phụ",
+        address: "đường Thanh Niên, Yên Phụ",
         tagVi: "Cây bồ đề ngàn năm",
         tagEn: "Ancient Bodhi Tree",
         image:
@@ -194,7 +194,7 @@ const INITIAL_DAYS = [
         rating: 4.9,
         reviewsCount: "Hanoi Kayak Club",
         address: "292 Lạc Long Quân, Tây Hồ",
-        tagVi: "Đã có áo phao & HDV",
+        tagVi: "đã có áo phao & HDV",
         tagEn: "Lifejacket & guide included",
         image:
           "https://lh3.googleusercontent.com/aida-public/AB6AXuAzZoB89scjJVg6A66pZgRt3IXx86zpoQGczoMrsGzsDYGyEBe4TXok4iz8mjN03dHFNuNp_z5KJXJ0k82SiWQWRGMNtmuWN25eVFGhYpn_r88RTPoKmhPBmg5tjEPC3BQI05JxNalJpRDfG4Lmmv9PyeFFWDdl65DVsG6mNmmuAXJb-JC2-i9DkNQdqTndW5WmsQIbc1kXgiwOnQ57oasCYAqhXtYuIDkcz1vn3rc"
@@ -251,7 +251,7 @@ const INITIAL_DAYS = [
         barColor: "bg-sky-500",
         rating: 4.7,
         reviewsCount: "Fine Arts",
-        address: "66 Nguyễn Thái Học, Ba Đình",
+        address: "66 Nguyễn Thái Học, Ba đình",
         tagVi: "Tranh Thiếu nữ bên hoa huệ",
         tagEn: "Famous oil paintings",
         image:
@@ -292,8 +292,8 @@ const INITIAL_DAYS = [
         categoryColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
         barColor: "bg-emerald-500",
         rating: 4.8,
-        reviewsCount: "Đặc sản quà biếu",
-        address: "21 Hàng Đường, Hoàn Kiếm",
+        reviewsCount: "đặc sản quà biếu",
+        address: "21 Hàng đường, Hoàn Kiếm",
         tagVi: "Sấu xào gừng, mơ mận",
         tagEn: "Dried fruit specialties",
         image:
@@ -310,7 +310,7 @@ const INITIAL_DAYS = [
         rating: 4.8,
         reviewsCount: "VN219 HAN ➔ SGN",
         address: "Nhà ga T1 - Cửa số 4",
-        tagVi: "Đã check-in online",
+        tagVi: "đã check-in online",
         tagEn: "Online check-in done",
         image:
           "https://lh3.googleusercontent.com/aida-public/AB6AXuCUc6F5u5ApWbpnGqy9vrRo0JfQ8zc8o3f801p3JZF58410m3UyM0QRXD7IO4avpax_eV8T68dODKYS4AoDygE2sFLrQWXOl0JccH6XlD7KOTflhmXMsFPruZ3Ephmj1kqw8srLGxtwYLV-Gki9E8O0lK0l5Om2BM3u6c16eIbrlXXLIZQjhCPiR3vGWLrl_GO_Pum2S9ywi3AJ8cp2_yu6AkpySYJFmX2RIkon9G0"
@@ -358,7 +358,7 @@ const INITIAL_WISHLIST = [
     barColor: "bg-emerald-500",
     rating: 4.6,
     reviewsCount: "1,900",
-    address: "25 Ngũ Xã, Ba Đình",
+    address: "25 Ngũ Xã, Ba đình",
     image:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuBDeByxo_DxogAq3IsAeOActdR-UkFRwnzs_jOyBc6OxHF6463Iy-GNiCKILKWdkXKTCkDEp9zfFAufUcfJaDmCI__fomLc8giGckqfO2Uun1znMYzkN9HTXhIYDaiLdYULOUKWyPXHEc6AqqqqokmYGi32KuGES4hohwz8YV9c3Ioh_hjIvqMU7XyLPMkIJyZP1fnupvYJFF6Do_2RPMm2Gx_-6jUptotISB0vCnY"
   },
@@ -371,8 +371,8 @@ const INITIAL_WISHLIST = [
     categoryColor: "bg-sky-50 text-sky-700 border-sky-200",
     barColor: "bg-sky-500",
     rating: 4.9,
-    reviewsCount: "Đêm thiêng liêng",
-    address: "1 Hoả Lò, Trần Hưng Đạo",
+    reviewsCount: "đêm thiêng liêng",
+    address: "1 Hoả Lò, Trần Hưng đạo",
     image:
       "https://lh3.googleusercontent.com/aida-public/AB6AXuC7taMeCVCw_sPcgGUo5Kw1qMAH9NMXVvlm32Kqq86Lp44I_y7S81eJDOxAKbKiXidcjqChiU8sqjJdhtYm_CMHUuizyKENTbZ51r5aQGAtRayemuies-X0MSo6byqiJvdnK_4GdP4DN3Ywknw1ow_v-_NQ68zWdEI-YaQ8ge5FHOxvjFd-ZMHVPpWD4RCTS-WAXJ_4UwwnORP7XdqKsGz8bcr2vMYISgcJ5OCcgYc"
   }
@@ -410,7 +410,7 @@ function generateDynamicDays(tripDatesStr) {
 
   const defaultThemes = [
     { vi: "Phố Cổ & Check-in Cà phê", en: "Old Quarter & Coffee Check-in" },
-    { vi: "Văn hóa & Lịch sử Thủ Đô", en: "Culture & Capital History" },
+    { vi: "Văn hóa & Lịch sử Thủ đô", en: "Culture & Capital History" },
     { vi: "Hồ Tây & Hoàng hôn lãng mạn", en: "West Lake & Romantic Sunset" },
     { vi: "Bảo tàng & Nghệ thuật", en: "Museums & Arts" },
     { vi: "Ẩm thực đường phố & Mua sắm", en: "Street Food & Souvenirs" },
@@ -454,16 +454,16 @@ function mapPlaceToWishlistItem(p, idx) {
   const cat = catColorMap[catCode] || { color: "bg-sky-50 text-sky-700 border-sky-200", bar: "bg-sky-500", vi: "Tham quan", en: "Sightseeing" };
   return {
     id: p.osmId || p.id || `wishlist-${idx}-${Date.now()}`,
-    name: p.name || "Địa điểm",
+    name: p.name || "địa điểm",
     category: catCode.toLowerCase() || "checkin",
     categoryVi: cat.vi,
     categoryEn: cat.en,
     categoryColor: cat.color,
     barColor: cat.bar,
     rating: p.rating || 4.8,
-    reviewsCount: p.reviewCount || p.reviewsCount || "Được yêu thích",
-    address: p.location || p.address || "Điểm đến",
-    tagVi: "Địa điểm đã chọn",
+    reviewsCount: p.reviewCount || p.reviewsCount || "được yêu thích",
+    address: p.location || p.address || "điểm đến",
+    tagVi: "địa điểm đã chọn",
     tagEn: "Selected place",
     image: p.image || p.imageUrl || null
   };
@@ -682,7 +682,7 @@ export function TripPlanPage() {
           })
         );
       }
-      showToast(isEn ? `Reordered "${item.name}"` : `Đã đổi thứ tự "${item.name}"`);
+      showToast(isEn ? `Reordered "${item.name}"` : `đã đổi thứ tự "${item.name}"`);
       setDraggedData(null);
       return;
     }
@@ -709,7 +709,7 @@ export function TripPlanPage() {
         next.splice(destIdx, 0, item);
         return next;
       });
-      showToast(isEn ? `Moved "${item.name}" to Wishlist` : `Đã chuyển "${item.name}" vào danh sách chờ`);
+      showToast(isEn ? `Moved "${item.name}" to Wishlist` : `đã chuyển "${item.name}" vào danh sách chờ`);
     } else {
       setDays((prev) =>
         prev.map((d) => {
@@ -722,7 +722,7 @@ export function TripPlanPage() {
       );
       const targetDay = days.find((d) => d.dayId === targetColId);
       const dayName = targetDay ? (isEn ? targetDay.dayLabelEn : targetDay.dayLabelVi) : targetColId;
-      showToast(isEn ? `Moved "${item.name}" to ${dayName}` : `Đã chuyển "${item.name}" sang ${dayName}`);
+      showToast(isEn ? `Moved "${item.name}" to ${dayName}` : `đã chuyển "${item.name}" sang ${dayName}`);
     }
 
     setDraggedData(null);
@@ -741,7 +741,7 @@ export function TripPlanPage() {
 
     if (targetDayId === "wishlist") {
       setWishlist((prev) => [item, ...prev]);
-      showToast(isEn ? `Moved "${item.name}" to Wishlist` : `Đã chuyển "${item.name}" vào danh sách chờ`);
+      showToast(isEn ? `Moved "${item.name}" to Wishlist` : `đã chuyển "${item.name}" vào danh sách chờ`);
       return;
     }
 
@@ -755,7 +755,7 @@ export function TripPlanPage() {
     );
     const targetDay = days.find((d) => d.dayId === targetDayId);
     const dayName = targetDay ? (isEn ? targetDay.dayLabelEn : targetDay.dayLabelVi) : "";
-    showToast(isEn ? `Assigned "${item.name}" to ${dayName}` : `Đã gán "${item.name}" vào ${dayName}`);
+    showToast(isEn ? `Assigned "${item.name}" to ${dayName}` : `đã gán "${item.name}" vào ${dayName}`);
   };
 
   // Delete item
@@ -771,7 +771,7 @@ export function TripPlanPage() {
         )
       );
     }
-    showToast(isEn ? "Activity removed" : "Đã xóa địa điểm");
+    showToast(isEn ? "Activity removed" : "đã xóa địa điểm");
   };
 
   // Quick Add Stop to Day
@@ -790,7 +790,7 @@ export function TripPlanPage() {
       rating: 5.0,
       reviewsCount: "Mới thêm",
       address: destination,
-      tagVi: "Điểm tham quan mới",
+      tagVi: "điểm tham quan mới",
       tagEn: "New place",
       image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=400&q=80"
     };
@@ -798,7 +798,7 @@ export function TripPlanPage() {
     setDays((prev) =>
       prev.map((d) => (d.dayId === dayId ? { ...d, items: [...d.items, newItem] } : d))
     );
-    showToast(isEn ? `Added "${promptName}"` : `Đã thêm "${promptName}"`);
+    showToast(isEn ? `Added "${promptName}"` : `đã thêm "${promptName}"`);
   };
 
   // Quick Add to Wishlist
@@ -819,7 +819,7 @@ export function TripPlanPage() {
       };
       setWishlist((prev) => [newItem, ...prev]);
       setWishlistInput("");
-      showToast(isEn ? "Added to wishlist" : "Đã thêm vào danh sách chờ");
+      showToast(isEn ? "Added to wishlist" : "đã thêm vào danh sách chờ");
     }
   };
 
@@ -944,9 +944,9 @@ export function TripPlanPage() {
                   categoryColor: it.categoryColor || "bg-sky-50 text-sky-700 border-sky-200",
                   barColor: it.barColor || "bg-sky-500",
                   rating: it.rating || 4.8,
-                  reviewsCount: it.reviewsCount || "Được yêu thích",
+                  reviewsCount: it.reviewsCount || "được yêu thích",
                   address: it.address || "",
-                  tagVi: it.tagVi || "Đã tối ưu thứ tự",
+                  tagVi: it.tagVi || "đã tối ưu thứ tự",
                   tagEn: it.tagEn || "Optimized order",
                   image: it.image || null,
                   latitude: it.latitude,
@@ -958,7 +958,7 @@ export function TripPlanPage() {
         // Clear wishlist after placing
         setWishlist([]);
 
-        // Đánh dấu chuyến đi này đã mở khóa (unlocked)
+        // đánh dấu chuyến đi này đã mở khóa (unlocked)
         const wasUnlocked = Boolean(isUnlocked);
         setIsUnlocked(true);
 
@@ -972,9 +972,9 @@ export function TripPlanPage() {
         }
 
         if (wasUnlocked) {
-          showToast(isEn ? "✨ Itinerary re-optimized successfully! (No credits used)" : "✨ Đã tối ưu lại lịch trình! (Không trừ thêm lượt)");
+          showToast(isEn ? "✨ Itinerary re-optimized successfully! (No credits used)" : "✨ đã tối ưu lại lịch trình! (Không trừ thêm lượt)");
         } else {
-          showToast(isEn ? "✨ Itinerary optimized! 1 trip credit deducted." : "✨ Đã tối ưu hóa lịch trình và trừ 1 chuyến đi từ gói của bạn!");
+          showToast(isEn ? "✨ Itinerary optimized! 1 trip credit deducted." : "✨ đã tối ưu hóa lịch trình và trừ 1 chuyến đi từ gói của bạn!");
         }
       }
     } catch (err) {
@@ -993,7 +993,7 @@ export function TripPlanPage() {
         showToast(
           isEn
             ? "⚠️ Trip payment required. Redirecting to select a plan..."
-            : "⚠️ Chuyến đi chưa được thanh toán hoặc đã hết lượt. Đang chuyển hướng sang chọn gói..."
+            : "⚠️ Chuyến đi chưa được thanh toán hoặc đã hết lượt. đang chuyển hướng sang chọn gói..."
         );
 
         // Lưu thông tin chuyến đi đang làm dở để người dùng thanh toán xong có thể tiếp tục
@@ -1186,7 +1186,7 @@ export function TripPlanPage() {
                   type="button"
                   onClick={() => setIsEditingTitle(!isEditingTitle)}
                   className="text-slate-400 hover:text-[#00658d] transition-colors p-1 cursor-pointer"
-                  title="Đổi tên chuyến đi"
+                  title="đổi tên chuyến đi"
                 >
                   <span className="material-symbols-outlined text-[16px]">edit</span>
                 </button>
@@ -1284,7 +1284,7 @@ export function TripPlanPage() {
                   >
                     {isOptimizing ? "progress_activity" : "auto_awesome"}
                   </span>
-                  <span>{isOptimizing ? (isEn ? "Optimizing..." : "Đang tối ưu...") : (isEn ? "Optimize" : "Tối ưu")}</span>
+                  <span>{isOptimizing ? (isEn ? "Optimizing..." : "đang tối ưu...") : (isEn ? "Optimize" : "Tối ưu")}</span>
                 </button>
               </div>
             </div>
@@ -1293,7 +1293,7 @@ export function TripPlanPage() {
 
         {/* MAIN BOARD SECTION: LEFT WISHLIST + RIGHT 3-DAY PAGINATED STREAM */}
         <section className="flex-1 p-4 flex flex-col lg:flex-row gap-5 min-h-[calc(100vh-190px)] w-full pb-20 overflow-x-auto">
-          {/* 1. LEFT COLUMN: WISHLIST / ĐỊA ĐIỂM CHỜ SẮP XẾP */}
+          {/* 1. LEFT COLUMN: WISHLIST / đỊA đIỂM CHỜ SẮP XẾP */}
           <div
             onDragOver={(e) => handleDragOverCol(e, "wishlist")}
             onDragLeave={(e) => handleDragLeave(e, "wishlist")}
@@ -1311,7 +1311,7 @@ export function TripPlanPage() {
                 </span>
                 <div>
                   <h2 className="text-xs sm:text-sm font-bold text-[#002b49] dark:text-sky-300">
-                    {isEn ? "Wishlist & Saved Places" : "Địa điểm chờ sắp xếp"}
+                    {isEn ? "Wishlist & Saved Places" : "địa điểm chờ sắp xếp"}
                   </h2>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400">
                     {isEn ? "Unassigned places" : "Kéo thả hoặc bấm gán ngày"}
@@ -1351,7 +1351,7 @@ export function TripPlanPage() {
                         </span>
                       </div>
 
-                      {/* Gán ngày / Đổi ngày button */}
+                      {/* Gán ngày / đổi ngày button */}
                       <button
                         type="button"
                         onClick={() => setDateChangeMenu({ item, currentColId: "wishlist" })}
@@ -1387,7 +1387,7 @@ export function TripPlanPage() {
                             star
                           </span>
                           <span className="font-semibold">{item.rating || 4.8}</span>
-                          <span className="text-slate-400">({item.reviewsCount || "Được yêu thích"})</span>
+                          <span className="text-slate-400">({item.reviewsCount || "được yêu thích"})</span>
                         </div>
                         <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
                           {item.address}
@@ -1538,12 +1538,12 @@ export function TripPlanPage() {
                               </div>
 
                               <div className="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
-                                {/* ĐỔI NGÀY POPOVER BUTTON (Shows all actual input dates) */}
+                                {/* đỔI NGÀY POPOVER BUTTON (Shows all actual input dates) */}
                                 <button
                                   type="button"
                                   onClick={() => setDateChangeMenu({ item, currentColId: day.dayId })}
                                   className="text-slate-400 hover:text-[#00a3e0] hover:bg-sky-50 dark:hover:bg-slate-700 p-1 rounded-lg cursor-pointer transition-colors"
-                                  title="Đổi sang ngày khác"
+                                  title="đổi sang ngày khác"
                                 >
                                   <span className="material-symbols-outlined text-[17px]">calendar_month</span>
                                 </button>
@@ -1581,7 +1581,7 @@ export function TripPlanPage() {
                                     star
                                   </span>
                                   <span className="font-semibold">{item.rating || 4.8}</span>
-                                  <span className="text-slate-400">({item.reviewsCount || "Được yêu thích"})</span>
+                                  <span className="text-slate-400">({item.reviewsCount || "được yêu thích"})</span>
                                 </div>
                                 <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
                                   {item.address}
@@ -1776,7 +1776,7 @@ export function TripPlanPage() {
             >
               rocket_launch
             </span>
-            <span>{isSaving ? "Đang lưu lịch trình..." : (isEn ? "Confirm & Start Trip" : "Xác nhận & Bắt đầu chuyến đi")}</span>
+            <span>{isSaving ? "đang lưu lịch trình..." : (isEn ? "Confirm & Start Trip" : "Xác nhận & Bắt đầu chuyến đi")}</span>
           </button>
         </div>
       </footer>
@@ -1789,7 +1789,7 @@ export function TripPlanPage() {
           onClose={() => setIsMapModalOpen(false)}
           onConfirm={(locName) => {
             setIsMapModalOpen(false);
-            showToast(`${isEn ? "Selected location" : "Đã chọn tọa độ"}: ${locName}`);
+            showToast(`${isEn ? "Selected location" : "đã chọn tọa độ"}: ${locName}`);
           }}
         />
       )}

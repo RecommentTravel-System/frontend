@@ -1,4 +1,4 @@
-import { signupApi, loginApi, verifyEmailApi, resendOtpApi } from '~/features/auth/services/auth-api';
+import { signupApi, loginApi, verifyEmailApi, resendOtpApi } from '../features/auth/services/auth-api.js';
 
 const SESSION_TOKEN_KEY = 'wayvee_token';
 const SESSION_USER_KEY = 'wayvee_user';

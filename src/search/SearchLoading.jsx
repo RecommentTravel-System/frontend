@@ -1,17 +1,21 @@
-import WayveeTravelLoader from '../payment/WayveeTravelLoader.jsx';
-import './PremiumSearch.css';
+import { GlobalLoadingOverlay } from "~/shared/ui/global-loading-overlay";
 
-export default function SearchLoading() {
+/**
+ * SearchLoading
+ * 
+ * Reusable loading fallback for the Search Page and Search route.
+ * Employs the unified Wayvee Global Loading System (Airplane Orbit).
+ */
+export default function SearchLoading({
+  message = "Đang tìm kiếm địa điểm...",
+  submessage = "Wayvee đang truy xuất các địa điểm tốt nhất cho chuyến đi của bạn"
+}) {
   return (
-    <main className="premium-search-loading flex items-center justify-center min-h-[60vh] py-12" role="status" aria-label="Đang tải tìm kiếm">
-      <div className="w-full max-w-xl mx-auto px-4">
-        <WayveeTravelLoader
-          badgeText="ĐANG TÌM KIẾM ĐỊA ĐIỂM"
-          title="Đang tải dữ liệu tìm kiếm..."
-          subtitle="Wayvee đang truy xuất các địa điểm hấp dẫn nhất dành cho bạn."
-          showQR={false}
-        />
-      </div>
-    </main>
+    <GlobalLoadingOverlay
+      isLoading={true}
+      message={message}
+      submessage={submessage}
+      delay={0}
+    />
   );
 }

@@ -46,25 +46,25 @@ export function TripPlanner({ initial, onHome, onSaved, storage }) {
       <section className="manual-trip-panel">
         <h2>Thông tin chuyến đi</h2>
         <div className="manual-trip-grid">
-          <Field label="Tên chuyến đi"><input required maxLength={150} value={trip.title} onChange={e => update('title', e.target.value)} placeholder="Cuối tuần ở Đà Lạt" /></Field>
-          <Field label="Điểm đến"><input required maxLength={150} value={trip.destination} onChange={e => update('destination', e.target.value)} placeholder="Đà Lạt" /></Field>
+          <Field label="Tên chuyến đi"><input required maxLength={150} value={trip.title} onChange={e => update('title', e.target.value)} placeholder="Cuối tuần ở đà Lạt" /></Field>
+          <Field label="điểm đến"><input required maxLength={150} value={trip.destination} onChange={e => update('destination', e.target.value)} placeholder="đà Lạt" /></Field>
           <Field label="Ngày đi"><input required type="date" value={trip.startDate} onChange={e => update('startDate', e.target.value)} /></Field>
           <Field label="Ngày về"><input required type="date" min={trip.startDate} value={trip.endDate} onChange={e => update('endDate', e.target.value)} /></Field>
           <Field label="Phong cách chuyến đi"><input maxLength={150} value={trip.style} onChange={e => update('style', e.target.value)} placeholder="Nghỉ dưỡng, khám phá, ẩm thực…" /></Field>
           <Field label="Số người"><input required type="number" min="1" step="1" value={trip.travelers} onChange={e => update('travelers', e.target.value)} /></Field>
-          <Field label="Tổng ngân sách dự kiến (VNĐ)"><input type="number" min="0" step="1" value={trip.budget} onChange={e => update('budget', e.target.value)} placeholder="Không bắt buộc" /></Field>
+          <Field label="Tổng ngân sách dự kiến (VNđ)"><input type="number" min="0" step="1" value={trip.budget} onChange={e => update('budget', e.target.value)} placeholder="Không bắt buộc" /></Field>
           <Field label="Ghi chú chuyến đi"><textarea maxLength={5000} value={trip.notes} onChange={e => update('notes', e.target.value)} placeholder="Chỗ ở, phương tiện, những điều cần nhớ…" /></Field>
         </div>
         <button type="button" className="manual-trip-secondary" onClick={generateDays}>{trip.days.length ? 'Cập nhật các ngày' : 'Tạo các ngày trong lịch trình'}</button>
         {!daysMatch && trip.days.length > 0 && <p role="status">Ngày đi hoặc ngày về đã thay đổi. Hãy cập nhật các ngày trước khi lưu.</p>}
-        {discarding && <div className="manual-trip-notice" role="alert"><p>Thay đổi này sẽ bỏ các hoạt động nằm ngoài khoảng ngày mới.</p><button type="button" onClick={rebuildDays}>Đồng ý cập nhật</button><button type="button" onClick={() => setDiscarding(false)}>Giữ lại</button></div>}
+        {discarding && <div className="manual-trip-notice" role="alert"><p>Thay đổi này sẽ bỏ các hoạt động nằm ngoài khoảng ngày mới.</p><button type="button" onClick={rebuildDays}>đồng ý cập nhật</button><button type="button" onClick={() => setDiscarding(false)}>Giữ lại</button></div>}
       </section>
       {trip.days.map((day, index) => <section className="manual-trip-panel" key={day.date}>
         <h2>Ngày {index + 1} · {formatDate(day.date)}</h2>
         {day.activities.map((activity, i) => <fieldset className="manual-trip-activity" key={activity.id}>
           <legend>Hoạt động {i + 1}</legend>
           <div className="manual-trip-grid">
-            {[[ 'time', 'Thời gian', 'time' ], [ 'title', 'Hoạt động', 'text' ], [ 'location', 'Địa điểm / địa chỉ', 'text' ]].map(([key, label, type]) => <Field key={key} label={label}><input type={type} required={key === 'title'} maxLength={300} value={activity[key]} onChange={e => changeDay(day.date, day.activities.map(a => a.id === activity.id ? { ...a, [key]: e.target.value } : a))} /></Field>)}
+            {[[ 'time', 'Thời gian', 'time' ], [ 'title', 'Hoạt động', 'text' ], [ 'location', 'địa điểm / địa chỉ', 'text' ]].map(([key, label, type]) => <Field key={key} label={label}><input type={type} required={key === 'title'} maxLength={300} value={activity[key]} onChange={e => changeDay(day.date, day.activities.map(a => a.id === activity.id ? { ...a, [key]: e.target.value } : a))} /></Field>)}
             <Field label="Chi tiết / ghi chú"><textarea maxLength={5000} value={activity.notes} onChange={e => changeDay(day.date, day.activities.map(a => a.id === activity.id ? { ...a, notes: e.target.value } : a))} /></Field>
           </div>
           <button type="button" className="manual-trip-text-button" disabled={day.activities.length === 1} onClick={() => changeDay(day.date, day.activities.filter(a => a.id !== activity.id))}>Bỏ hoạt động</button>
@@ -92,7 +92,7 @@ export function Profile({ onHome, onCreate, onOpen, saved, storage }) {
         </div>
       </div>
 
-      {saved && <p className="saved-trips-success" role="status">Đã lưu lịch trình thành công. Bạn có thể xem lại chi tiết bên dưới.</p>}
+      {saved && <p className="saved-trips-success" role="status">đã lưu lịch trình thành công. Bạn có thể xem lại chi tiết bên dưới.</p>}
       {result.error && <p className="saved-trips-error" role="alert">{result.error}</p>}
 
       {/* Count + create button */}
@@ -148,7 +148,7 @@ export function TripDetails({ trip, onHome, onProfile, onEdit }) {
         <h2>Thông tin chuyến đi</h2>
         <p>📅 {formatDate(trip.startDate)} – {formatDate(trip.endDate)} · {trip.travelers} người</p>
         <p>🎯 Phong cách: {trip.style || 'Chưa chọn'}</p>
-        <p>💰 Ngân sách: {trip.budget === '' ? 'Chưa đặt' : `${Number(trip.budget).toLocaleString('vi-VN')} VNĐ`}</p>
+        <p>💰 Ngân sách: {trip.budget === '' ? 'Chưa đặt' : `${Number(trip.budget).toLocaleString('vi-VN')} VNđ`}</p>
         {trip.notes && <p className="saved-trips-preline">{trip.notes}</p>}
       </section>
 

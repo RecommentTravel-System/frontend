@@ -52,7 +52,7 @@ export default function Login({
         </div>
         <h1>Welcome to Wayvee</h1>
         <p className="auth-note">
-          Đăng nhập để khám phá các địa điểm và quản lý lịch trình của bạn.
+          đăng nhập để khám phá các địa điểm và quản lý lịch trình của bạn.
         </p>
 
         {message && (
@@ -120,7 +120,7 @@ export default function Login({
             {pending ? (
               <span className="btn-loading-content">
                 <span className="spinner" />
-                Đang đăng nhập…
+                đang đăng nhập…
               </span>
             ) : (
               'Continue'
@@ -136,6 +136,7 @@ export default function Login({
 
         <div className="social-list">
           <SocialButton
+            disabled={pending}
             onClick={() => {
               if (onGoogle) runAction(onGoogle);
             }}
@@ -153,9 +154,9 @@ export default function Login({
   );
 }
 
-function SocialButton({ onClick, icon, label }) {
+function SocialButton({ onClick, icon, label, disabled = false }) {
   return (
-    <button type="button" className="social-btn" onClick={onClick}>
+    <button type="button" className="social-btn" onClick={onClick} disabled={disabled}>
       {icon}
       {label}
     </button>

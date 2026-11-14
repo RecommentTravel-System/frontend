@@ -115,12 +115,12 @@ export function getPaginationItems(currentPage, totalPages) {
     return Array.from({ length: totalPages }, (_, index) => index + 1);
   }
 
-  // 1. Đoạn đầu: 5 số đầu ... 1 số cuối
+  // 1. đoạn đầu: 5 số đầu ... 1 số cuối
   if (currentPage <= 4) {
     return [1, 2, 3, 4, 5, "...", totalPages];
   }
 
-  // 2. Đoạn gần cuối: 1 số đầu ... 5 số cuối
+  // 2. đoạn gần cuối: 1 số đầu ... 5 số cuối
   if (currentPage >= totalPages - 3) {
     return [
       1,

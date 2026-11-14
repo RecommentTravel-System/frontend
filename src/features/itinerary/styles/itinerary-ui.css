@@ -14,7 +14,7 @@
   padding-bottom: 2rem;
 }
 
-.trip-stepper > div {
+.trip-stepper>div {
   max-width: 760px;
   padding: 1.25rem 2rem 0;
   border: 1px solid #e1eaf1;
@@ -23,11 +23,11 @@
   box-shadow: 0 12px 30px rgba(11, 37, 69, 0.06);
 }
 
-.trip-stepper > div > div > div:first-child {
+.trip-stepper>div>div>div:first-child {
   background: linear-gradient(90deg, #0b2545 0 33%, #dbe7ef 33% 100%);
 }
 
-.trip-stepper > div > div > div:not(:first-child) > div:first-child {
+.trip-stepper>div>div>div:not(:first-child)>div:first-child {
   border: 4px solid #eef4f8;
   box-shadow: none;
 }
@@ -39,16 +39,6 @@
 
 .trip-info-main form {
   position: relative;
-}
-
-.trip-info-main form::before {
-  content: "PLAN WITH INTENTION";
-  display: block;
-  margin-bottom: 0.9rem;
-  color: #00a8e8;
-  font-size: 0.67rem;
-  font-weight: 900;
-  letter-spacing: 0.18em;
 }
 
 .trip-summary,
@@ -66,7 +56,7 @@
   letter-spacing: -0.02em;
 }
 
-.trip-summary > div:nth-of-type(1) > span,
+.trip-summary>div:nth-of-type(1)>span,
 .trip-destination-details label {
   letter-spacing: 0.06em;
 }
@@ -91,7 +81,7 @@
   box-shadow: 0 0 0 4px rgba(0, 168, 232, 0.12);
 }
 
-.trip-destination-details > div > div:first-child button {
+.trip-destination-details>div>div:first-child button {
   padding: 0.55rem 0.8rem;
   border: 1px solid #bde8f7;
   border-radius: 999px;
@@ -99,7 +89,7 @@
   text-decoration: none;
 }
 
-.trip-destination-details > div > div:first-child button:hover {
+.trip-destination-details>div>div:first-child button:hover {
   background: #dff6ff;
 }
 
@@ -121,13 +111,13 @@
 }
 
 @media (max-width: 640px) {
-  .trip-stepper > div {
+  .trip-stepper>div {
     margin-inline: 1rem;
     padding-inline: 0.7rem;
     border-radius: 1.25rem;
   }
 
-  .trip-stepper > div > div > div span {
+  .trip-stepper>div>div>div span {
     font-size: 0.65rem;
   }
 
@@ -159,7 +149,7 @@
   padding-bottom: 1rem !important;
 }
 
-.trip-modern-stepper > div {
+.trip-modern-stepper>div {
   max-width: 760px;
   padding: 1rem 2rem 0.65rem;
   border: 1px solid #e1edf5;
@@ -178,7 +168,7 @@
   margin-bottom: 1.5rem;
 }
 
-.trip-modern-intro > span {
+.trip-modern-intro>span {
   display: inline-flex;
   margin-bottom: 0.55rem;
   padding: 0.35rem 0.75rem;
@@ -225,7 +215,7 @@
   border-bottom: 1px solid #edf2f6;
 }
 
-.trip-modern-card-heading > div:first-child {
+.trip-modern-card-heading>div:first-child {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -292,7 +282,7 @@
   font-size: 0.68rem;
 }
 
-.trip-modern-summary-body > div:last-child > div {
+.trip-modern-summary-body>div:last-child>div {
   padding: 0.75rem;
   border: 1px solid #edf2f6;
   border-radius: 0.75rem;
@@ -338,7 +328,7 @@
   font-size: 0.78rem;
 }
 
-.trip-modern-destination > div > div:first-child button {
+.trip-modern-destination>div>div:first-child button {
   padding: 0.45rem 0.75rem;
   border: 1px solid #b9e8f8;
   border-radius: 999px;
@@ -351,7 +341,7 @@
   position: relative;
 }
 
-.trip-modern-count-field > input {
+.trip-modern-count-field>input {
   padding-right: 7rem;
 }
 
@@ -421,7 +411,7 @@
 }
 
 @media (max-width: 640px) {
-  .trip-modern-stepper > div {
+  .trip-modern-stepper>div {
     margin-inline: 0.5rem;
     padding-inline: 0.75rem;
     border-radius: 1.25rem;
@@ -455,7 +445,7 @@
   padding-bottom: 2rem !important;
 }
 
-.wizard-stepper > div {
+.wizard-stepper>div {
   max-width: 760px;
   padding: 1.2rem 2rem 0.15rem;
   border: 1px solid #e1eaf1;
@@ -464,13 +454,13 @@
   box-shadow: 0 12px 30px rgba(11, 37, 69, 0.06);
 }
 
-.wizard-stepper > div > div > div > div:first-child {
+.wizard-stepper>div>div>div>div:first-child {
   border: 4px solid #eef4f8;
   box-shadow: 0 6px 16px rgba(11, 37, 69, 0.1);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.wizard-stepper > div > div > div > div:first-child:hover {
+.wizard-stepper>div>div>div>div:first-child:hover {
   transform: scale(1.06);
 }
 
@@ -522,7 +512,7 @@
   box-shadow: 0 0 0 4px rgba(0, 168, 232, 0.12);
 }
 
-.trip-confirm-page [data-purpose="page-main-content"] > div:not([data-purpose]) {
+.trip-confirm-page [data-purpose="page-main-content"]>div:not([data-purpose]) {
   padding: 1.1rem 1.2rem;
   border: 1px solid #e3ebf1;
   border-radius: 1.1rem;
@@ -566,13 +556,13 @@
 }
 
 @media (max-width: 640px) {
-  .wizard-stepper > div {
+  .wizard-stepper>div {
     margin-inline: 1rem;
     padding-inline: 0.7rem;
     border-radius: 1.25rem;
   }
 
-  .wizard-stepper > div > div > div span {
+  .wizard-stepper>div>div>div span {
     font-size: 0.65rem;
   }
 
@@ -633,7 +623,7 @@
   background: #f5f9fb;
 }
 
-.location-map-search > button {
+.location-map-search>button {
   min-height: 46px;
   border-radius: 999px;
   background: #effaff;
@@ -723,7 +713,7 @@
   padding-bottom: 1rem !important;
 }
 
-.trip-create-stepper > div {
+.trip-create-stepper>div {
   max-width: 760px;
   padding: 1rem 2rem 0.65rem;
   border: 1px solid #dcebf3;
@@ -762,7 +752,7 @@
   font-size: 0.82rem;
 }
 
-.trip-create-intro > div > span {
+.trip-create-intro>div>span {
   display: inline-flex;
   padding: 0.35rem 0.7rem;
   border-radius: 999px;
@@ -809,8 +799,8 @@
   font-weight: 700;
 }
 
-.trip-create-summary > h2,
-.trip-create-summary > h2 + div {
+.trip-create-summary>h2,
+.trip-create-summary>h2+div {
   display: none;
 }
 
@@ -818,7 +808,7 @@
   padding-top: 0.25rem;
 }
 
-.trip-create-summary [data-purpose="your-trip-summary"] > h2 {
+.trip-create-summary [data-purpose="your-trip-summary"]>h2 {
   color: #3a5f94;
   font-size: 0.68rem;
   letter-spacing: 0.12em;
@@ -861,7 +851,7 @@
   font-size: 0.72rem;
 }
 
-.trip-create-section-heading > span {
+.trip-create-section-heading>span {
   display: inline-flex;
   width: 2rem;
   height: 2rem;
@@ -877,7 +867,7 @@
   border-top: 4px solid #9fc2fe !important;
 }
 
-.trip-create-places-card > h3 {
+.trip-create-places-card>h3 {
   color: #051f25;
   font-size: 0.75rem;
   letter-spacing: 0.12em;
@@ -892,7 +882,7 @@
   border-radius: 0.65rem;
 }
 
-.trip-create-places-card > button {
+.trip-create-places-card>button {
   border: 2px dashed #bdc8d1;
   border-radius: 0.75rem;
   color: #00658d;
@@ -961,7 +951,7 @@
 }
 
 @media (max-width: 640px) {
-  .trip-create-stepper > div {
+  .trip-create-stepper>div {
     margin-inline: 0.5rem;
     padding-inline: 0.75rem;
     border-radius: 1.25rem;
