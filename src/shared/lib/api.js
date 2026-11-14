@@ -29,6 +29,16 @@ export async function request(endpoint, options = {}) {
   }
   const url = `${BASE_URL}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
 
+  const isAuthEndpoint =
+    endpoint.includes("/auth/login") ||
+    endpoint.includes("/auth/google") ||
+    endpoint.includes("/auth/signup") ||
+    endpoint.includes("/auth/verify-email") ||
+    endpoint.includes("/auth/resend-otp") ||
+    endpoint.includes("/auth/forgot-password") ||
+    endpoint.includes("/auth/verify-reset-otp") ||
+    endpoint.includes("/auth/reset-password");
+
   const token = localStorage.getItem("wayvee_token");
   const lang = getCurrentLanguage();
   const isFormData = typeof FormData !== "undefined" && options.body instanceof FormData;
@@ -63,11 +73,6 @@ export async function request(endpoint, options = {}) {
     } catch {
       result = {};
     }
-
-    const isAuthEndpoint =
-      endpoint.includes("/auth/login") ||
-      endpoint.includes("/auth/signup") ||
-      endpoint.includes("/auth/verify-email");
 
     // Check if token expired / unauthenticated on a protected endpoint
     const isUnauthenticated =

@@ -106,18 +106,17 @@ export async function signInWithGoogle() {
           firebaseUser: fbUser
         };
       }
+      throw new Error("Không nhận được dữ liệu tài khoản từ máy chủ Wayvee.");
     } catch (backendError) {
-      console.warn("Backend Google sync error, falling back to Firebase auth state:", backendError);
+      console.error("Lỗi đồng bộ tài khoản Google vào backend:", backendError);
+      throw new Error(
+        backendError.message ||
+        "Đăng nhập Google thành công nhưng không thể đồng bộ tài khoản vào hệ thống. Vui lòng kiểm tra kết nối máy chủ backend."
+      );
     }
-
-    return {
-      user: fallbackUser,
-      token: firebaseIdToken,
-      firebaseUser: fbUser
-    };
   } catch (error) {
-    console.error("Firebase Google Sign-In failed:", error);
-    const message = getFirebaseErrorMessage(error);
+    console.error("Google Sign-In failed:", error);
+    const message = error.code ? getFirebaseErrorMessage(error) : (error.message || "Đăng nhập Google không thành công. Vui lòng thử lại.");
     const err = new Error(message);
     err.code = error.code;
     err.originalError = error;
