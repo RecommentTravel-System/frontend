@@ -1,0 +1,286 @@
+/* ==========================================================================
+   WeayveeLoadingAnimation CSS
+   Vector-based brand motion for Weayvee:
+   - 100% SVG Vector paths (No images, No PNG/JPG, No raster assets)
+   - Brand Motion: Location Pin (Destination) + Mountain (Route) + Swoosh Arc (Flight) + Plane (Discovery)
+   - Single Hero Motion with graceful loop (Build -> Lockup -> Beacon Pulse -> Rest -> Reset)
+   - Cycle: 3.0s calm, travel-oriented cadence
+   - Accessible: full reduced-motion & [data-motion="off"] support
+   ========================================================================== */
+
+.weayvee-vector-loader {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  pointer-events: none;
+}
+
+.weayvee-vector-svg {
+  display: block;
+  overflow: visible;
+}
+
+/* ── Vector Palette (Light / Dark Adaptive) ── */
+:root {
+  --wayvee-pin-from: #00b4f8;
+  --wayvee-pin-to: #008be2;
+  --wayvee-mountain-dark-1: #07233b;
+  --wayvee-mountain-dark-2: #0e3858;
+  --wayvee-mountain-teal-1: #256b85;
+  --wayvee-mountain-teal-2: #1e5268;
+  --wayvee-mountain-tip: #00b4f8;
+  --wayvee-swoosh-stroke: #07233b;
+  --wayvee-plane-fill: #07233b;
+  --wayvee-beacon-color: rgba(0, 180, 248, 0.45);
+}
+
+.dark {
+  --wayvee-pin-from: #38bdf8;
+  --wayvee-pin-to: #0284c7;
+  --wayvee-mountain-dark-1: #0f172a;
+  --wayvee-mountain-dark-2: #1e293b;
+  --wayvee-mountain-teal-1: #1e3a5f;
+  --wayvee-mountain-teal-2: #0369a1;
+  --wayvee-mountain-tip: #38bdf8;
+  --wayvee-swoosh-stroke: #38bdf8;
+  --wayvee-plane-fill: #f0f9ff;
+  --wayvee-beacon-color: rgba(56, 189, 248, 0.4);
+}
+
+/* ── Phase 1: Location Pin Anchor ── */
+.weayvee-anim-pin {
+  transform-origin: 80px 146px;
+  animation: wayveePinMaterialize 3.0s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes wayveePinMaterialize {
+  0% {
+    transform: scale(0.88);
+    opacity: 0;
+  }
+  16% {
+    transform: scale(1.02);
+    opacity: 1;
+  }
+  24% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  88% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  96% {
+    opacity: 0.15;
+  }
+  100% {
+    transform: scale(0.88);
+    opacity: 0;
+  }
+}
+
+/* ── Phase 1b: Mountain / Route Chevron ── */
+.weayvee-anim-mountain {
+  transform-origin: 80px 110px;
+  animation: wayveeMountainRise 3.0s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes wayveeMountainRise {
+  0% {
+    transform: translateY(12px);
+    opacity: 0;
+  }
+  8% {
+    opacity: 0;
+  }
+  20% {
+    transform: translateY(-1px);
+    opacity: 1;
+  }
+  26% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  88% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  96% {
+    opacity: 0.15;
+  }
+  100% {
+    transform: translateY(12px);
+    opacity: 0;
+  }
+}
+
+/* ── Phase 2: Flight Path (Swoosh Arc) ── */
+.weayvee-anim-swoosh {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: wayveeSwooshDraw 3.0s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  will-change: stroke-dashoffset, opacity;
+}
+
+@keyframes wayveeSwooshDraw {
+  0%, 22% {
+    stroke-dashoffset: 100;
+    opacity: 0;
+  }
+  26% {
+    opacity: 1;
+  }
+  56% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  88% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  96% {
+    opacity: 0.15;
+  }
+  100% {
+    stroke-dashoffset: 100;
+    opacity: 0;
+  }
+}
+
+/* ── Phase 2b: Hero Airplane Soaring to Apex ── */
+.weayvee-anim-plane {
+  transform-origin: 12px 12px;
+  animation: wayveePlaneFlight 3.0s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes wayveePlaneFlight {
+  0%, 20% {
+    transform: translate(52px, 68px) rotate(10deg) scale(0.3);
+    opacity: 0;
+  }
+  24% {
+    transform: translate(54px, 68px) rotate(15deg) scale(0.45);
+    opacity: 1;
+  }
+  38% {
+    transform: translate(82px, 46px) rotate(22deg) scale(0.72);
+    opacity: 1;
+  }
+  56% {
+    transform: translate(116px, 18px) rotate(32deg) scale(0.95);
+    opacity: 1;
+  }
+  64% {
+    transform: translate(118px, 16px) rotate(34deg) scale(1.02);
+    opacity: 1;
+  }
+  72% {
+    transform: translate(116px, 18px) rotate(32deg) scale(0.95);
+    opacity: 1;
+  }
+  88% {
+    transform: translate(116px, 18px) rotate(32deg) scale(0.95);
+    opacity: 1;
+  }
+  96% {
+    opacity: 0.15;
+  }
+  100% {
+    transform: translate(52px, 68px) rotate(10deg) scale(0.3);
+    opacity: 0;
+  }
+}
+
+/* ── Phase 3: Destination Beacon Echo ── */
+.weayvee-anim-beacon {
+  transform-origin: 80px 72px;
+  animation: wayveeBeaconPulse 3.0s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes wayveeBeaconPulse {
+  0%, 55% {
+    transform: scale(0.65);
+    opacity: 0;
+  }
+  58% {
+    opacity: 0.65;
+  }
+  76% {
+    transform: scale(1.38);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.38);
+    opacity: 0;
+  }
+}
+
+/* ── Static Mode & Reduced Motion Support ── */
+.weayvee-vector-loader.is-static .weayvee-anim-pin,
+.weayvee-vector-loader.is-static .weayvee-anim-mountain,
+.weayvee-vector-loader.is-static .weayvee-anim-swoosh,
+.weayvee-vector-loader.is-static .weayvee-anim-plane,
+.weayvee-vector-loader.is-static .weayvee-anim-beacon {
+  animation: none !important;
+  opacity: 1 !important;
+}
+
+.weayvee-vector-loader.is-static .weayvee-anim-swoosh {
+  stroke-dashoffset: 0 !important;
+}
+
+.weayvee-vector-loader.is-static .weayvee-anim-plane {
+  transform: translate(116px, 18px) rotate(32deg) scale(0.95) !important;
+}
+
+.weayvee-vector-loader.is-static .weayvee-anim-beacon {
+  display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .weayvee-anim-pin,
+  .weayvee-anim-mountain,
+  .weayvee-anim-swoosh,
+  .weayvee-anim-plane,
+  .weayvee-anim-beacon {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+  .weayvee-anim-swoosh {
+    stroke-dashoffset: 0 !important;
+  }
+  .weayvee-anim-plane {
+    transform: translate(116px, 18px) rotate(32deg) scale(0.95) !important;
+  }
+  .weayvee-anim-beacon {
+    display: none !important;
+  }
+}
+
+[data-motion="off"] .weayvee-anim-pin,
+[data-motion="off"] .weayvee-anim-mountain,
+[data-motion="off"] .weayvee-anim-swoosh,
+[data-motion="off"] .weayvee-anim-plane,
+[data-motion="off"] .weayvee-anim-beacon {
+  animation: none !important;
+  opacity: 1 !important;
+}
+
+[data-motion="off"] .weayvee-anim-swoosh {
+  stroke-dashoffset: 0 !important;
+}
+
+[data-motion="off"] .weayvee-anim-plane {
+  transform: translate(116px, 18px) rotate(32deg) scale(0.95) !important;
+}
+
+[data-motion="off"] .weayvee-anim-beacon {
+  display: none !important;
+}
+

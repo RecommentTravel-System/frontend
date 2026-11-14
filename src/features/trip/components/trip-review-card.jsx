@@ -3,7 +3,7 @@ import { StarRating } from "~/shared/components/star-rating";
 const img = (seed, w = 400, h = 300) => `https://picsum.photos/seed/${seed}/${w}/${h}`;
 
 const reviews = [
-  { id: 1, title: "Chuyến đi Đà Lạt 3N2Đ", subtitle: "Đà Lạt • 3 ngày • Vui vẻ", rating: "5.0", seed: "review-0" },
+  { id: 1, title: "Chuyến đi đà Lạt 3N2đ", subtitle: "đà Lạt • 3 ngày • Vui vẻ", rating: "5.0", seed: "review-0" },
   { id: 2, title: "Khám phá Hà Giang", subtitle: "Hà Giang • 4 ngày • Trải nghiệm", rating: "5.0", seed: "review-1" },
   { id: 3, title: "Phú Quốc Chữa Lành", subtitle: "Phú Quốc • 3 ngày • Nghỉ dưỡng", rating: "4.9", seed: "review-2" },
   { id: 4, title: "Foodtour Hà Nội", subtitle: "Hà Nội • 2 ngày • Món ngon", rating: "5.0", seed: "review-3" }
@@ -14,7 +14,7 @@ export function TripReviews() {
     <section className="wayvee-container py-8 sm:py-12">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-lg font-bold text-[#0b2545] dark:text-white">Đánh giá chuyến đi</h2>
+          <h2 className="text-lg font-bold text-[#0b2545] dark:text-white">đánh giá chuyến đi</h2>
           <p className="text-xs text-gray-500 dark:text-gray-400">Trải nghiệm thực tế từ cộng đồng Wayvee</p>
         </div>
         <div className="flex gap-2">

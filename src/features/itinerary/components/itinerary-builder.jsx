@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "~/providers/i18n-provider";
+import { useDelayedLoading } from "~/shared/lib/use-delayed-loading";
+import { Spinner } from "~/shared/ui/loading";
 
 export function ItineraryBuilder({
   placesList,
@@ -16,6 +18,7 @@ export function ItineraryBuilder({
   });
   const [isOptimizing, setIsOptimizing] = useState(false);
   const [optimizeMessage, setOptimizeMessage] = useState(null);
+  const { visible: showOptimizingLoading } = useDelayedLoading(isOptimizing, { delay: 200 });
 
   // Places assigned to currently active day
   const assignedPlaceIdsForActiveDay = daysSchedule[activeDay] || [];
@@ -153,16 +156,20 @@ export function ItineraryBuilder({
           type="button"
           disabled={isOptimizing || assignedPlacesForActiveDay.length < 2}
           onClick={handleOptimizeActiveDay}
-          className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-sky-400 hover:bg-sky-300 text-slate-950 font-bold text-xs transition-all shadow-sm cursor-pointer whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+          aria-busy={isOptimizing}
+          className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-sky-400 hover:bg-sky-300 text-slate-950 font-bold text-xs transition-all shadow-sm cursor-pointer whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
-          {isOptimizing
-            ? t("tripCreate.itineraryBuilder.optimizing")
-            : t("tripCreate.itineraryBuilder.optimizeDay", { day: activeDay })}
+          {showOptimizingLoading && <Spinner size="xs" variant="primary" />}
+          <span>
+            {isOptimizing
+              ? t("tripCreate.itineraryBuilder.optimizing")
+              : t("tripCreate.itineraryBuilder.optimizeDay", { day: activeDay })}
+          </span>
         </button>
       </div>
 
       {optimizeMessage && (
-        <div className="p-3 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 rounded-xl text-xs flex items-center gap-2 animate-in fade-in">
+        <div className="p-3 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 rounded-xl text-xs flex items-center gap-2 animate-toast-enter">
           <span>✨</span>
           <span className="font-medium">{optimizeMessage}</span>
         </div>
@@ -181,7 +188,7 @@ export function ItineraryBuilder({
                 key={dayNum}
                 type="button"
                 onClick={() => setActiveDay(dayNum)}
-                className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap ${
+                className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap active:scale-[0.98] duration-150 ${
                   isActive
                     ? "bg-[#002d5b] dark:bg-sky-500 text-white dark:text-slate-950 shadow-sm"
                     : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
@@ -294,7 +301,7 @@ export function ItineraryBuilder({
                         )}
                       </div>
                       <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
-                        {place.location || place.address || "Địa điểm khám phá"}
+                        {place.location || place.address || "địa điểm khám phá"}
                       </p>
                     </div>
 
@@ -377,7 +384,7 @@ export function ItineraryBuilder({
                           {place.name}
                         </h5>
                         <p className="text-[10px] text-slate-500 truncate">
-                          {place.location || place.address || "Địa điểm"}
+                          {place.location || place.address || "địa điểm"}
                         </p>
                       </div>
                     </div>

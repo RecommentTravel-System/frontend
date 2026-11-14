@@ -1,0 +1,94 @@
+/* ==========================================================================
+   Wayvee Global Loading System - Overlay Presentation
+   - Translucent backdrop with subtle blur (glassmorphism)
+   - Central Stage for WeayveeLoadingAnimation (100% Vector Brand Motion)
+   - Contextual Loading Messages (Primary + Subtitle)
+   - 200ms entering & exiting transitions
+   ========================================================================== */
+
+.wayvee-global-loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background-color: rgba(15, 23, 42, 0.32);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  user-select: none;
+  pointer-events: auto;
+  opacity: 0;
+  transform: scale(0.96);
+  transition: opacity 200ms cubic-bezier(0.16, 1, 0.3, 1), transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dark .wayvee-global-loading-overlay {
+  background-color: rgba(0, 0, 0, 0.55);
+}
+
+.wayvee-global-loading-overlay.is-visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.wayvee-global-loading-overlay.is-exiting {
+  opacity: 0;
+  transform: scale(0.98);
+  pointer-events: none;
+}
+
+/* Central Stage Container */
+.wayvee-loading-stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Contextual Loading Message Box */
+.wayvee-loading-message-box {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 320px;
+  text-align: center;
+}
+
+.wayvee-loading-message-primary {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.015em;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.dark .wayvee-loading-message-primary {
+  color: #f8fafc;
+}
+
+.wayvee-loading-message-sub {
+  font-size: 0.75rem;
+  color: #475569;
+  margin-top: 5px;
+  line-height: 1.35;
+}
+
+.dark .wayvee-loading-message-sub {
+  color: #94a3b8;
+}
+
+/* Reduced Motion Mode for the Overlay container */
+@media (prefers-reduced-motion: reduce) {
+  .wayvee-global-loading-overlay {
+    transition: none !important;
+  }
+}
+
+[data-motion="off"] .wayvee-global-loading-overlay {
+  transition: none !important;
+}

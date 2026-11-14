@@ -98,7 +98,7 @@ export function SavedLocationsSummary({
                         )}
                       </div>
                       <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
-                        {place.location || place.address || "Địa điểm"}
+                        {place.location || place.address || "địa điểm"}
                       </p>
                     </div>
                   </div>

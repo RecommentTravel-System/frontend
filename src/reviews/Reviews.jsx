@@ -5,7 +5,7 @@ import AccountSidebar from '../components/AccountSidebar.jsx';
 import { AppHeader, AppFooter } from '~/shared/components';
 import Icon from '../components/AccountIcon.jsx';
 import { readReviews, reviewsKey, reviewStatuses, scoreLabel } from './reviewsData.js';
-import { getWebsiteReviews } from '~/shared/services/website-review-api.js';
+import { getMyWebsiteReviews } from '~/shared/services/website-review-api.js';
 import WebsiteReviewModal from './WebsiteReviewModal.jsx';
 import './Reviews.css';
 
@@ -32,7 +32,7 @@ function ReviewPhoto({ review }) {
   );
 }
 
-function EmptyReviews({ onWriteReview }) {
+function EmptyReviews({ onWriteReview, title, subtitle }) {
   return (
     <section className="reviews-empty" aria-labelledby="reviews-empty-title">
       <svg className="reviews-empty-art" width="140" height="130" viewBox="0 0 140 130" fill="none" aria-hidden="true">
@@ -41,10 +41,10 @@ function EmptyReviews({ onWriteReview }) {
         <path d="m94 17 7 15 17 2-12 12 3 17-15-8-16 8 3-17-12-12 17-2Z" stroke="#97a3b6" strokeWidth="5" strokeLinejoin="round" />
       </svg>
       <h2 id="reviews-empty-title" className="text-base font-bold text-slate-700 dark:text-slate-200">
-        Bạn chưa có bài đánh giá nào.
+        {title || 'Bạn chưa có bài đánh giá nào.'}
       </h2>
       <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 mb-4">
-        Hãy chia sẻ cảm nhận của bạn để giúp hệ thống và cộng đồng du lịch ngày càng tốt hơn!
+        {subtitle || 'Hãy chia sẻ cảm nhận của bạn để giúp hệ thống và cộng đồng du lịch ngày càng tốt hơn!'}
       </p>
       {onWriteReview && (
         <button
@@ -91,13 +91,13 @@ function ReviewEditor({ review, onSave, onClose }) {
       <form onSubmit={submit}>
         <div className="review-editor-heading">
           <h2 id="review-editor-title">Chỉnh sửa bài đánh giá</h2>
-          <button type="button" onClick={() => dialog.current.close()} aria-label="Đóng">
+          <button type="button" onClick={() => dialog.current.close()} aria-label="đóng">
             ×
           </button>
         </div>
         <p className="review-editor-hotel">{review.hotel}</p>
         <label>
-          Điểm đánh giá
+          điểm đánh giá
           <select value={score} onChange={(event) => setScore(event.target.value)}>
             {Array.from({ length: 10 }, (_, i) => i + 1).map((value) => (
               <option key={value} value={value}>
@@ -107,11 +107,11 @@ function ReviewEditor({ review, onSave, onClose }) {
           </select>
         </label>
         <label>
-          Điều bạn thích
+          điều bạn thích
           <textarea rows={3} maxLength={2000} value={positive} onChange={(event) => setPositive(event.target.value)} />
         </label>
         <label>
-          Điều cần cải thiện
+          điều cần cải thiện
           <textarea rows={3} maxLength={2000} value={negative} onChange={(event) => setNegative(event.target.value)} />
         </label>
         <p className="review-editor-note">Bản chỉnh sửa được lưu trên trình duyệt với trạng thái chờ duyệt minh họa.</p>
@@ -134,7 +134,7 @@ function ReviewCard({ review, onEdit, onDelete }) {
   const menu = useRef(null);
   const date = new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${review.date}T00:00:00Z`));
   return (
-    <article className="review-card shadow-xs border border-slate-100 dark:border-slate-800" aria-label={`Đánh giá ${review.hotel}`}>
+    <article className="review-card shadow-xs border border-slate-100 dark:border-slate-800" aria-label={`đánh giá ${review.hotel}`}>
       <ReviewPhoto review={review} />
       <div className="review-body">
         <div className="review-card-top">
@@ -173,7 +173,7 @@ function ReviewCard({ review, onEdit, onDelete }) {
           </details>
         </div>
         <h2>
-          Đánh giá cho{' '}
+          đánh giá cho{' '}
           <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(review.hotel)}`} target="_blank" rel="noreferrer">
             {review.hotel}
           </a>
@@ -219,7 +219,7 @@ function ReviewCard({ review, onEdit, onDelete }) {
 
 function WebsiteReviewCard({ item }) {
   const dateStr = item.createdAt ? new Date(item.createdAt).toLocaleDateString('vi-VN', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Vừa xong';
-  const name = item.anonymous ? 'Người dùng ẩn danh' : item.userFullName || 'Thành viên WAYVEE';
+  const name = item.anonymous ? 'Bạn (Đánh giá ẩn danh)' : (item.userFullName || 'Đánh giá của bạn');
   const initial = item.anonymous ? '?' : (name.slice(0, 2).toUpperCase() || 'WV');
 
   return (
@@ -238,7 +238,7 @@ function WebsiteReviewCard({ item }) {
                 </span>
               ) : (
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-sky-50 dark:bg-sky-950/60 text-[#00a3e0] border border-sky-200 dark:border-sky-900">
-                  Thành viên
+                  Đánh giá của bạn
                 </span>
               )}
             </div>
@@ -291,10 +291,10 @@ export default function Reviews() {
   const loadWebsiteReviews = useCallback(async () => {
     setLoadingWebsiteReviews(true);
     try {
-      const res = await getWebsiteReviews();
+      const res = await getMyWebsiteReviews();
       setWebsiteReviews(res.data || []);
     } catch (err) {
-      console.error('Failed to load website reviews:', err);
+      console.error('Failed to load user website reviews:', err);
     } finally {
       setLoadingWebsiteReviews(false);
     }
@@ -323,13 +323,13 @@ export default function Reviews() {
 
   function savePlaceReview(review) {
     const error = persistPlaceReviews(placeReviews.map((item) => (item.id === review.id ? review : item)));
-    if (!error) setNotice('Đã lưu bản chỉnh sửa trên trình duyệt.');
+    if (!error) setNotice('đã lưu bản chỉnh sửa trên trình duyệt.');
     return error;
   }
 
   function removePlaceReview(review) {
     if (!window.confirm(`Xóa bài đánh giá về ${review.hotel}?`)) return;
-    setNotice(persistPlaceReviews(placeReviews.filter((item) => item.id !== review.id)) || 'Đã xóa bài đánh giá.');
+    setNotice(persistPlaceReviews(placeReviews.filter((item) => item.id !== review.id)) || 'đã xóa bài đánh giá.');
   }
 
   const handleModalClose = () => {
@@ -359,7 +359,7 @@ export default function Reviews() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
             <div>
               <h1 className="text-xl sm:text-2xl font-extrabold text-[#002d54] dark:text-white">
-                Trung tâm Đánh giá &amp; Góp ý
+                Trung tâm đánh giá &amp; Góp ý
               </h1>
               <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
                 Theo dõi các nhận xét của bạn và chia sẻ đánh giá trải nghiệm hệ thống WAYVEE
@@ -403,7 +403,7 @@ export default function Reviews() {
                   : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
               }`}
             >
-              Đánh giá trang web ({websiteReviews.length})
+              Đánh giá của bạn ({websiteReviews.length})
             </button>
             <button
               type="button"
@@ -414,7 +414,7 @@ export default function Reviews() {
                   : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
               }`}
             >
-              Đánh giá địa điểm ({placeReviews.length})
+              đánh giá địa điểm ({placeReviews.length})
             </button>
           </div>
 
@@ -429,7 +429,7 @@ export default function Reviews() {
                     <span>Bạn đánh giá thế nào về trang web WAYVEE?</span>
                   </h2>
                   <p className="text-xs text-slate-600 dark:text-slate-400">
-                    Mỗi góp ý về giao diện, tính năng hay tốc độ của bạn đều giúp chúng tôi hoàn thiện sản phẩm mỗi ngày.
+                    Mỗi góp ý của bạn đều được gửi trực tiếp đến Ban Quản Trị. Bạn luôn có thể xem lại những phản hồi của chính mình tại đây.
                   </p>
                 </div>
                 <button
@@ -444,7 +444,7 @@ export default function Reviews() {
               {/* Reviews List */}
               {loadingWebsiteReviews ? (
                 <div className="p-12 text-center text-slate-400 text-sm bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse">
-                  Đang tải danh sách đánh giá trang web...
+                  đang tải danh sách đánh giá của bạn...
                 </div>
               ) : websiteReviews.length ? (
                 <div className="space-y-3">
@@ -453,7 +453,11 @@ export default function Reviews() {
                   ))}
                 </div>
               ) : (
-                <EmptyReviews onWriteReview={() => setIsModalOpen(true)} />
+                <EmptyReviews
+                  onWriteReview={() => setIsModalOpen(true)}
+                  title="Bạn chưa gửi đánh giá trang web nào."
+                  subtitle="Chỉ bạn mới có thể xem các đánh giá mình đã gửi. Mọi ý kiến đều được Ban Quản Trị tiếp nhận để nâng cấp hệ thống!"
+                />
               )}
             </div>
           )}

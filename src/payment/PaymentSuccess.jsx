@@ -122,7 +122,7 @@ export default function PaymentSuccess({ paymentInfo = null }) {
           <div className="receipt-box">
             <div className="receipt-header">
               <h3>{t('paymentPage.success.receiptTitle', 'Thông tin giao dịch')}</h3>
-              <span className="badge-paid">{t('paymentPage.success.paid', 'Đã thanh toán')}</span>
+              <span className="badge-paid">{t('paymentPage.success.paid', 'đã thanh toán')}</span>
             </div>
 
             <dl className="receipt-details">
@@ -157,7 +157,7 @@ export default function PaymentSuccess({ paymentInfo = null }) {
 
           {/* Unlocked Benefits */}
           <div className="unlocked-benefits">
-            <h4>{t('paymentPage.success.benefitsTitle', 'Đặc quyền đã sẵn sàng')}</h4>
+            <h4>{t('paymentPage.success.benefitsTitle', 'đặc quyền đã sẵn sàng')}</h4>
             <div className="benefits-grid">
               <div className="benefit-item">
                 <span className="benefit-icon">✨</span>

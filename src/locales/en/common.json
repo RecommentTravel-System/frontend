@@ -339,6 +339,8 @@
       "countFound": "places found matching your search",
       "searchPlaceholder": "Search by name, cuisine, vibe..."
     },
+    "loading": "Loading places...",
+    "loadingSub": "Wayvee is finding the best spots for you",
     "filter": {
       "title": "Search Filters",
       "clearAll": "Clear all",

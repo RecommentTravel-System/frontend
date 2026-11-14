@@ -11,7 +11,7 @@ import {
 
 // ─── Format Currency VND ──────────────────────────────────────────────────────
 function fmtVND(value) {
-  if (!value && value !== 0) return "0 ₫";
+  if (!value && value !== 0) return "0 đ";
   return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(value);
 }
 
@@ -74,8 +74,8 @@ const STATUS_CONFIG = {
     ),
   },
   PENDING: {
-    label: "Đang chờ thanh toán",
-    shortLabel: "Đang chờ",
+    label: "đang chờ thanh toán",
+    shortLabel: "đang chờ",
     pillClass: "bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border-amber-200 dark:border-amber-800",
     dotClass: "bg-amber-500 animate-pulse",
     icon: (
@@ -86,8 +86,8 @@ const STATUS_CONFIG = {
     ),
   },
   CANCELLED: {
-    label: "Đã hủy giao dịch",
-    shortLabel: "Đã hủy",
+    label: "đã hủy giao dịch",
+    shortLabel: "đã hủy",
     pillClass: "bg-slate-100 text-slate-600 dark:bg-slate-800/60 dark:text-slate-400 border-slate-200 dark:border-slate-700",
     dotClass: "bg-slate-400",
     icon: (
@@ -260,7 +260,7 @@ export default function AdminRevenue() {
   const handleCopy = (text) => {
     navigator.clipboard?.writeText(String(text));
     setCopiedCode(text);
-    showToast(`Đã sao chép mã: ${text}`);
+    showToast(`đã sao chép mã: ${text}`);
     setTimeout(() => setCopiedCode(null), 2000);
   };
 
@@ -333,7 +333,7 @@ export default function AdminRevenue() {
     setSyncingId(paymentId);
     try {
       const updated = await syncPaymentStatusApi(paymentId);
-      showToast("Đã đồng bộ trạng thái giao dịch với PayOS!");
+      showToast("đã đồng bộ trạng thái giao dịch với PayOS!");
       fetchSummary();
       fetchPayments();
       if (selectedPayment && selectedPayment.paymentId === paymentId) {
@@ -374,9 +374,9 @@ export default function AdminRevenue() {
           : p.status === "FAILED"
             ? "Thất bại"
             : p.status === "PENDING"
-              ? "Đang chờ"
+              ? "đang chờ"
               : p.status === "CANCELLED"
-                ? "Đã hủy"
+                ? "đã hủy"
                 : p.status;
 
       return [
@@ -403,7 +403,7 @@ export default function AdminRevenue() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    showToast("Đã tải xuống file báo cáo doanh thu CSV thành công!");
+    showToast("đã tải xuống file báo cáo doanh thu CSV thành công!");
   };
 
   // Calculated rate
@@ -445,7 +445,7 @@ export default function AdminRevenue() {
                   fetchSummary();
                   fetchChart(chartPeriod);
                   fetchPayments();
-                  showToast("Đã làm mới dữ liệu báo cáo!");
+                  showToast("đã làm mới dữ liệu báo cáo!");
                 }}
                 className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-xl bg-[#00a3e0] hover:bg-[#0089bd] text-white shadow-sm transition-all active:scale-95"
                 title="Làm mới dữ liệu từ máy chủ"
@@ -469,7 +469,7 @@ export default function AdminRevenue() {
                   Doanh Thu Thực Nhận
                 </span>
                 <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/70 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-lg border border-emerald-100 dark:border-emerald-900/50">
-                  ₫
+                  đ
                 </div>
               </div>
               <div className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
@@ -548,11 +548,11 @@ export default function AdminRevenue() {
               </div>
             </div>
 
-            {/* Card 4: Đang chờ thanh toán */}
+            {/* Card 4: đang chờ thanh toán */}
             <div className="p-5 rounded-2xl bg-white dark:bg-[#0f172a] border border-slate-200/80 dark:border-slate-800 shadow-sm relative overflow-hidden group hover:border-amber-300 dark:hover:border-amber-700/60 transition-all">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                  Đang Chờ Quét Mã QR
+                  đang Chờ Quét Mã QR
                 </span>
                 <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/70 text-amber-600 dark:text-amber-400 flex items-center justify-center border border-amber-100 dark:border-amber-900/50">
                   <svg className="w-5 h-5 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -581,7 +581,7 @@ export default function AdminRevenue() {
               <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
                 <div>
                   <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                    <span>Biểu Đồ Doanh Thu Thành Công</span>
+                    <span>Biểu đồ Doanh Thu Thành Công</span>
                     <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-200 dark:border-emerald-800">
                       VND
                     </span>
@@ -632,12 +632,12 @@ export default function AdminRevenue() {
                     <div
                       className="bg-amber-500 transition-all duration-500"
                       style={{ width: `${summary.totalCount ? (summary.pendingCount / summary.totalCount) * 100 : 0}%` }}
-                      title={`Đang chờ: ${summary.pendingCount} đơn`}
+                      title={`đang chờ: ${summary.pendingCount} đơn`}
                     />
                     <div
                       className="bg-slate-400 transition-all duration-500"
                       style={{ width: `${summary.totalCount ? (summary.cancelledCount / summary.totalCount) * 100 : 0}%` }}
-                      title={`Đã hủy: ${summary.cancelledCount} đơn`}
+                      title={`đã hủy: ${summary.cancelledCount} đơn`}
                     />
                   </div>
                 </div>
@@ -671,7 +671,7 @@ export default function AdminRevenue() {
                   <div className="flex items-center justify-between p-2 rounded-xl bg-amber-50/60 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30">
                     <div className="flex items-center gap-2">
                       <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
-                      <span className="font-semibold text-slate-700 dark:text-slate-200">Đang chờ quét QR</span>
+                      <span className="font-semibold text-slate-700 dark:text-slate-200">đang chờ quét QR</span>
                     </div>
                     <div className="text-right">
                       <span className="font-bold text-amber-700 dark:text-amber-400">{summary.pendingCount} đơn</span>
@@ -758,8 +758,8 @@ export default function AdminRevenue() {
                   { id: "ALL", label: "Tất cả", count: summary.totalCount },
                   { id: "PAID", label: "Thành công", count: summary.successCount, dot: "bg-emerald-500" },
                   { id: "FAILED", label: "Thất bại", count: summary.failedCount, dot: "bg-rose-500" },
-                  { id: "PENDING", label: "Đang chờ", count: summary.pendingCount, dot: "bg-amber-500" },
-                  { id: "CANCELLED", label: "Đã hủy", count: summary.cancelledCount, dot: "bg-slate-400" },
+                  { id: "PENDING", label: "đang chờ", count: summary.pendingCount, dot: "bg-amber-500" },
+                  { id: "CANCELLED", label: "đã hủy", count: summary.cancelledCount, dot: "bg-slate-400" },
                 ].map((tab) => (
                   <button
                     key={tab.id}
@@ -792,7 +792,7 @@ export default function AdminRevenue() {
               <table className="w-full text-left text-xs">
                 <thead className="bg-slate-50/80 dark:bg-slate-900/60 text-slate-500 dark:text-slate-400 uppercase text-[10px] font-bold tracking-wider border-b border-slate-100 dark:border-slate-800">
                   <tr>
-                    <th className="py-3 px-4">Mã Đơn / Mã GD</th>
+                    <th className="py-3 px-4">Mã đơn / Mã GD</th>
                     <th className="py-3 px-4">Khách Hàng</th>
                     <th className="py-3 px-4">Gói Dịch Vụ</th>
                     <th className="py-3 px-4">Số Tiền</th>
@@ -811,7 +811,7 @@ export default function AdminRevenue() {
                             <polyline points="23 4 23 10 17 10" />
                             <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
                           </svg>
-                          <span>Đang tải danh sách giao dịch...</span>
+                          <span>đang tải danh sách giao dịch...</span>
                         </div>
                       </td>
                     </tr>
@@ -956,7 +956,7 @@ export default function AdminRevenue() {
                                   onClick={() => handleSyncPayment(p.paymentId)}
                                   disabled={syncingId === p.paymentId}
                                   className="p-1.5 text-xs rounded-lg border border-amber-300 text-amber-700 dark:border-amber-700 dark:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-950/50 transition-colors disabled:opacity-50"
-                                  title="Đồng bộ ngay với PayOS xem tiền đã vào chưa"
+                                  title="đồng bộ ngay với PayOS xem tiền đã vào chưa"
                                 >
                                   {syncingId === p.paymentId ? (
                                     <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -1049,7 +1049,7 @@ export default function AdminRevenue() {
             <div className="flex items-start justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
               <div>
                 <div className="text-[11px] font-bold uppercase tracking-wider text-[#00a3e0] mb-0.5">
-                  HÓA ĐƠN GIAO DỊCH
+                  HÓA đƠN GIAO DỊCH
                 </div>
                 <h3 className="text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
                   <span>Mã đơn #{selectedPayment.orderCode || selectedPayment.paymentId}</span>
@@ -1185,7 +1185,7 @@ export default function AdminRevenue() {
                     <polyline points="1 20 1 14 7 14" />
                     <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
                   </svg>
-                  <span>Đồng bộ PayOS ngay</span>
+                  <span>đồng bộ PayOS ngay</span>
                 </button>
               ) : (
                 <div />
@@ -1196,7 +1196,7 @@ export default function AdminRevenue() {
                 onClick={() => setSelectedPayment(null)}
                 className="px-5 py-2 text-xs font-bold rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 transition-all active:scale-95"
               >
-                Đóng
+                đóng
               </button>
             </div>
           </div>

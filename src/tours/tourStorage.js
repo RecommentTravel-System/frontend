@@ -17,7 +17,7 @@ export function validateTour(draft, requirePlaces = false) {
   if (draft.start < localDate()) return 'Ngày đi không được nằm trong quá khứ.';
   if (!draft.destination?.trim() || draft.destination.length > 150) return 'Nhập địa điểm bạn muốn đến (tối đa 150 ký tự).';
   if (!Number.isInteger(Number(draft.guests)) || Number(draft.guests) < 1 || Number(draft.guests) > 100) return 'Số người phải là số nguyên từ 1 đến 100.';
-  if (!['Một mình', 'Bạn bè', 'Gia đình', 'Cặp đôi', 'Đồng nghiệp'].includes(draft.companions)) return 'Vui lòng chọn người đồng hành.';
+  if (!['Một mình', 'Bạn bè', 'Gia đình', 'Cặp đôi', 'đồng nghiệp'].includes(draft.companions)) return 'Vui lòng chọn người đồng hành.';
   if (!['Khám phá', 'Nghỉ dưỡng', 'Ẩm thực', 'Văn hóa', 'Phiêu lưu'].includes(draft.style)) return 'Vui lòng chọn phong cách chuyến đi.';
   if (requirePlaces && (!Array.isArray(draft.placeIds) || !draft.placeIds.length || draft.placeIds.some(id => !destinations.some(place => place.id === id)))) return 'Chọn ít nhất một địa điểm trong danh sách.';
   return '';
@@ -58,7 +58,7 @@ export function saveTour(email, draft) {
   const trip = {
     id: draft.id, title: draft.title.trim(), destination: draft.destination.trim(),
     start: draft.start, end: draft.end, guests: Number(draft.guests), companions: draft.companions, style: draft.style,
-    image: selected[0].image, status: 'ongoing', confirmed: true, time: 'Chưa đặt giờ', duration: `${nights + 1}N / ${nights}Đ`,
+    image: selected[0].image, status: 'ongoing', confirmed: true, time: 'Chưa đặt giờ', duration: `${nights + 1}N / ${nights}đ`,
     summary: `${draft.guests} người · ${draft.style} · ${draft.companions}`,
     description: `Hành trình tự tạo với ${selected.length} địa điểm. Thứ tự ghé thăm theo danh sách đã chọn.`,
     places: selected.map(place => place.name), placeIds: selected.map(place => place.id), amenities: [...new Set(selected.flatMap(place => place.amenities))], createdAt: new Date().toISOString(), source: 'created',

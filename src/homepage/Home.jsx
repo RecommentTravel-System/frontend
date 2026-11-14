@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import "./Home.css";
 import { AppHeader, AppFooter } from "~/shared/components";
 import { useTranslation } from "~/providers/i18n-provider";
+import { useLoading } from "~/providers/loading-provider";
+import { Spinner } from "~/shared/ui/loading";
+import { useDelayedLoading } from "~/shared/lib/use-delayed-loading";
 import PremiumWeather from "./PremiumWeather.jsx";
 
 /* ------------------------------------------------------------------ */
@@ -17,7 +20,7 @@ function Pill({ children, active, onClick }) {
   return (
     <button
       onClick={onClick}
-      className={`px-4 py-2 rounded-full text-sm font-medium border transition-colors whitespace-nowrap cursor-pointer ${
+      className={`px-4 py-2 rounded-full text-sm font-medium border transition-all whitespace-nowrap cursor-pointer active:scale-[0.97] duration-150 ${
         active
           ? "bg-slate-900 dark:bg-sky-500 text-white border-slate-900 dark:border-sky-500 shadow-xs"
           : "bg-white dark:bg-slate-900 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-800 hover:border-gray-300 dark:hover:border-slate-700"
@@ -56,9 +59,52 @@ function Field({ label, placeholder, ...inputProps }) {
 function Hero() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { showLoading } = useLoading();
   const [values, setValues] = useState({ destination: '', startDate: '', endDate: '', style: '' });
   const [placeQuery, setPlaceQuery] = useState('');
+  const [isNavigating, setIsNavigating] = useState(false);
+  const [navigatingAction, setNavigatingAction] = useState(null);
+
+  const { visible: showSearchLoading } = useDelayedLoading(isNavigating && navigatingAction === 'search', { delay: 250 });
+  const { visible: showPlannerLoading } = useDelayedLoading(isNavigating && navigatingAction === 'planner', { delay: 250 });
+
   const fieldProps = name => ({ value: values[name], onChange: event => setValues({ ...values, [name]: event.target.value }) });
+
+  const handleCreateTrip = () => {
+    if (isNavigating) return;
+    setIsNavigating(true);
+    setNavigatingAction('planner');
+    const done = showLoading(t("hero.loadingTrip", "Đang mở trang tạo lịch trình..."), "hero-planner");
+
+    navigate("/trip/info", {
+      state: {
+        initialDestination: values.destination.trim(),
+        startDate: values.startDate,
+        endDate: values.endDate,
+        style: values.style.trim(),
+      }
+    });
+    setTimeout(done, 500);
+  };
+
+  const handleBrowsePlaces = (event) => {
+    event.preventDefault();
+    if (isNavigating) return;
+    setIsNavigating(true);
+    setNavigatingAction('search');
+
+    const queryLabel = placeQuery.trim() || values.destination.trim();
+    const done = showLoading(
+      queryLabel ? `Đang tìm kiếm "${queryLabel}"...` : "Đang tìm kiếm địa điểm...",
+      "hero-search"
+    );
+
+    const params = new URLSearchParams({ browse: '1' });
+    if (placeQuery.trim()) params.set('q', placeQuery.trim());
+    if (values.destination.trim()) params.set('destination', values.destination.trim());
+    navigate(`/places?${params}`);
+    setTimeout(done, 500);
+  };
 
   return (
     <section className="home-hero-wrap max-w-6xl mx-auto px-6">
@@ -74,7 +120,7 @@ function Hero() {
 
           <div className="home-planner bg-white dark:bg-slate-900 rounded-2xl shadow-xl max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-5 divide-y md:divide-y-0 md:divide-x divide-gray-100 dark:divide-slate-800 overflow-hidden text-left border border-slate-100 dark:border-slate-800">
             <Field
-              label={t("hero.destination", "Địa điểm")}
+              label={t("hero.destination", "địa điểm")}
               {...fieldProps('destination')}
               placeholder={t("hero.destinationPlaceholder", "Bạn đi đâu thế?")}
             />
@@ -95,22 +141,34 @@ function Hero() {
             />
             <button
               type="button"
-              onClick={() => navigate("/trip/info")}
-              className="home-planner-btn col-span-2 md:col-span-1 m-2 rounded-xl bg-slate-900 dark:bg-sky-600 hover:bg-slate-800 dark:hover:bg-sky-500 text-white text-sm font-semibold px-4 py-3 transition-colors cursor-pointer"
+              onClick={handleCreateTrip}
+              disabled={isNavigating}
+              aria-busy={isNavigating && navigatingAction === 'planner'}
+              className="home-planner-btn col-span-2 md:col-span-1 m-2 rounded-xl bg-slate-900 dark:bg-sky-600 hover:bg-slate-800 dark:hover:bg-sky-500 text-white text-sm font-semibold px-4 py-3 transition-colors cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              {t("hero.createButton", "Tạo lịch trình ngay")}
+              {showPlannerLoading && <Spinner size="sm" variant="white" />}
+              <span>{t("hero.createButton", "Tạo lịch trình ngay")}</span>
             </button>
           </div>
-          <form className="home-place-search" role="search" aria-label={t('hero.browsePlaces')} onSubmit={event => {
-            event.preventDefault();
-            const params = new URLSearchParams({ browse: '1' });
-            if (placeQuery.trim()) params.set('q', placeQuery.trim());
-            if (values.destination.trim()) params.set('destination', values.destination.trim());
-            navigate(`/places?${params}`);
-          }}>
+          <form className="home-place-search" role="search" aria-label={t('hero.browsePlaces')} onSubmit={handleBrowsePlaces}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" /><path d="m16 16 5 5" /></svg>
-            <input type="search" value={placeQuery} onChange={event => setPlaceQuery(event.target.value)} aria-label={t('hero.placeSearchPlaceholder')} placeholder={t('hero.placeSearchPlaceholder')} />
-            <button type="submit">{t('hero.browsePlaces')}</button>
+            <input
+              type="search"
+              value={placeQuery}
+              onChange={event => setPlaceQuery(event.target.value)}
+              aria-label={t('hero.placeSearchPlaceholder')}
+              placeholder={t('hero.placeSearchPlaceholder')}
+              disabled={isNavigating}
+            />
+            <button
+              type="submit"
+              disabled={isNavigating}
+              aria-busy={isNavigating && navigatingAction === 'search'}
+              className="disabled:opacity-75 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
+            >
+              {showSearchLoading && <Spinner size="sm" variant="white" />}
+              <span>{t('hero.browsePlaces')}</span>
+            </button>
           </form>
         </div>
       </div>
@@ -172,7 +230,7 @@ function TravelYourWay() {
 
   const travelWays = [
     { title: t("travelYourWay.costOptimizationTitle", "Tối ưu chi phí"), desc: t("travelYourWay.costOptimizationDesc", "Gợi ý hành trình phù hợp ngân sách, thành tối ưu không lãng phí.") },
-    { title: t("travelYourWay.bestPlacesTitle", "Địa điểm tốt nhất"), desc: t("travelYourWay.bestPlacesDesc", "Tổng hợp các địa điểm nổi bật với trải nghiệm mà bạn mong muốn.") },
+    { title: t("travelYourWay.bestPlacesTitle", "địa điểm tốt nhất"), desc: t("travelYourWay.bestPlacesDesc", "Tổng hợp các địa điểm nổi bật với trải nghiệm mà bạn mong muốn.") },
     { title: t("travelYourWay.weekendPlanTitle", "Lên kế hoạch nhanh cho cuối tuần"), desc: t("travelYourWay.weekendPlanDesc", "Tạo lịch trình nhanh phù hợp cho các chuyến đi ngắn ngày.") },
     { title: t("travelYourWay.customSuggestionsTitle", "Gợi ý cho bạn"), desc: t("travelYourWay.customSuggestionsDesc", "Mỗi hành trình được chỉnh dựa trên phong cách du lịch của riêng bạn.") }
   ];
@@ -199,7 +257,7 @@ function HotDestinations() {
     { id: "spring", label: t("destinations.spring", "Mùa Xuân") },
     { id: "summer", label: t("destinations.summer", "Mùa Hè") },
     { id: "autumn", label: t("destinations.autumn", "Mùa Thu") },
-    { id: "winter", label: t("destinations.winter", "Mùa Đông") }
+    { id: "winter", label: t("destinations.winter", "Mùa đông") }
   ];
 
   const [activeSeason, setActiveSeason] = useState("spring");
@@ -208,12 +266,12 @@ function HotDestinations() {
     { name: "Mộc Châu", tag: "Hoa mận, hoa đào nở khắp lối", seed: "mocchau" },
     { name: "Hà Giang", tag: "Núi đá + hoa anh đào, vẻ đẹp hùng vĩ", seed: "hagiang" },
     { name: "Huế", tag: "Thời tiết dễ chịu, cảnh cổ kính rất bình yên", seed: "hue" },
-    { name: "Đà Lạt", tag: "Mùa mai anh đào, mai đào khoe sắc", seed: "dalat" }
+    { name: "đà Lạt", tag: "Mùa mai anh đào, mai đào khoe sắc", seed: "dalat" }
   ];
 
   return (
     <section className="max-w-6xl mx-auto px-6 py-10">
-      <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-4">{t("destinations.sectionTitle", "Điểm đến đang hot")}</h2>
+      <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-4">{t("destinations.sectionTitle", "điểm đến đang hot")}</h2>
       <div className="flex gap-2 mb-6 overflow-x-auto">
         {seasonTabs.map((s) => (
           <Pill key={s.id} active={s.id === activeSeason} onClick={() => setActiveSeason(s.id)}>
@@ -253,7 +311,7 @@ function TravelBlog() {
   const blogCities = [
     { name: "Hà Nội", seed: "hanoi" },
     { name: "Nha Trang", seed: "nhatrang" },
-    { name: "Đà Lạt", seed: "dalat2" },
+    { name: "đà Lạt", seed: "dalat2" },
     { name: "Hồ Chí Minh", seed: "hcmc" },
     { name: "Cần Thơ", seed: "cantho" },
     { name: "Vũng Tàu", seed: "vungtau" }
@@ -262,7 +320,7 @@ function TravelBlog() {
   return (
     <section className="max-w-6xl mx-auto px-6 py-4">
       <div className="bg-gray-50 dark:bg-slate-900/60 rounded-2xl p-6 border border-gray-100 dark:border-slate-800">
-        <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-4">{t("blog.sectionTitle", "Blog du lịch & Địa điểm")}</h2>
+        <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-4">{t("blog.sectionTitle", "Blog du lịch & địa điểm")}</h2>
         <div className="flex gap-2 mb-6 overflow-x-auto">
           {blogTabs.map((f) => (
             <Pill key={f.id} active={f.id === activeFilter} onClick={() => setActiveFilter(f.id)}>
@@ -290,8 +348,8 @@ function TripReviews() {
 
   const reviews = Array.from({ length: 4 }).map((_, i) => ({
     id: i,
-    title: t("tripReviews.dalatTrip", "Chuyến đi Đà Lạt"),
-    subtitle: t("tripReviews.dalatSub", "Đà Lạt, 3 ngày, Vui vẻ"),
+    title: t("tripReviews.dalatTrip", "Chuyến đi đà Lạt"),
+    subtitle: t("tripReviews.dalatSub", "đà Lạt, 3 ngày, Vui vẻ"),
     rating: "5.0",
     seed: `review-${i}`
   }));
@@ -299,7 +357,7 @@ function TripReviews() {
   return (
     <section className="max-w-6xl mx-auto px-6 py-10">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-bold text-slate-900 dark:text-white">{t("tripReviews.sectionTitle", "Đánh giá chuyến đi")}</h2>
+        <h2 className="text-lg font-bold text-slate-900 dark:text-white">{t("tripReviews.sectionTitle", "đánh giá chuyến đi")}</h2>
         <div className="flex gap-2">
           <button className="w-8 h-8 rounded-full border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-center text-gray-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer">‹</button>
           <button className="w-8 h-8 rounded-full border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-center text-gray-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer">›</button>
@@ -338,7 +396,7 @@ function ExploreNow() {
   const { t } = useTranslation();
 
   const exploreSidebar = [
-    { name: "Đà Nẵng", rating: 5, seed: "danang" },
+    { name: "đà Nẵng", rating: 5, seed: "danang" },
     { name: "Nha Trang", rating: 5, seed: "nhatrang2" },
     { name: "Phú Quốc", rating: 5, seed: "phuquoc" }
   ];
@@ -398,7 +456,7 @@ export default function Home() {
       localStorage.setItem("wayvee-home-preview", next ? "premium" : "free");
       setVersionNote("");
     } catch {
-      setVersionNote("Đã đổi giao diện, nhưng trình duyệt không lưu được lựa chọn.");
+      setVersionNote("đã đổi giao diện, nhưng trình duyệt không lưu được lựa chọn.");
     }
   }
 

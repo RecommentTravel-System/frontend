@@ -9,7 +9,7 @@ export function ThemeToggle() {
       onClick={toggleTheme}
       title={theme === "dark" ? "Chuyển sang giao diện Sáng" : "Chuyển sang giao diện Tối"}
       aria-label="Toggle Theme"
-      className="w-9 h-9 rounded-full border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-center text-slate-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
+      className="w-9 h-9 rounded-full border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-center text-slate-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-800 active:scale-90 transition-all duration-150 cursor-pointer"
     >
       {theme === "dark" ? (
         /* Sun Icon */

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { AppHeader, AppFooter } from '~/shared/components';
-import WayveeTravelLoader from './WayveeTravelLoader.jsx';
+import { GlobalLoadingOverlay } from '~/shared/ui/global-loading-overlay';
 import logo from '../assets/Icon.jpg';
 import { plans, formatPrice } from './plans.js';
 import { paymentService } from './paymentService.js';
@@ -219,7 +219,7 @@ export default function PaymentCheckout() {
             <div>
               <h1>
                 {isWaitingWebhook
-                  ? t('paymentPage.checkout.processingTitle', 'Đang xác nhận thanh toán')
+                  ? t('paymentPage.checkout.processingTitle', 'đang xác nhận thanh toán')
                   : paymentData
                     ? 'Thanh toán qua PayOS'
                     : t('paymentPage.checkout.title', 'Hoàn tất giao dịch mua')}
@@ -227,13 +227,14 @@ export default function PaymentCheckout() {
             </div>
           </div>
 
-          {/* Case 1: ONLY Show Travel Animation Loader when waiting for Webhook / confirming response */}
+          {/* Case 1: Unified Airplane Orbit Loading Experience when confirming payment */}
           {isWaitingWebhook ? (
-            <div className="checkout-waiting-view">
-              <WayveeTravelLoader
-                title="Đang xác nhận giao dịch"
-                subtitle="Đang lắng nghe phản hồi từ ngân hàng và kích hoạt tài khoản của bạn..."
-                showQR={false}
+            <div className="checkout-waiting-view min-h-[280px] flex items-center justify-center">
+              <GlobalLoadingOverlay
+                isLoading={true}
+                message="Đang xác nhận giao dịch..."
+                submessage="Đang lắng nghe phản hồi từ ngân hàng và kích hoạt gói Premium của bạn"
+                delay={0}
               />
             </div>
           ) : paymentData ? (
@@ -371,7 +372,7 @@ export default function PaymentCheckout() {
                   onClick={handleStartPayment}
                 >
                   {loading
-                    ? t('paymentPage.checkout.creatingTx', 'Đang tạo giao dịch...')
+                    ? t('paymentPage.checkout.creatingTx', 'đang tạo giao dịch...')
                     : t('paymentPage.checkout.payBtn', 'Thanh toán')}
                 </button>
               </div>

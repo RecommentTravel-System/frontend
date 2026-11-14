@@ -1,4 +1,4 @@
-import { api } from "~/shared/lib/api";
+import { api } from "../../../shared/lib/api.js";
 
 export async function loginApi({ email, password }) {
   return await api.post("/api/auth/login", { email, password });

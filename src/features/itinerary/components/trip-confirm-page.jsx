@@ -28,7 +28,7 @@ function calculateDuration(start, end) {
   const diffTime = Math.abs(end.getTime() - start.getTime());
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
   const nights = Math.max(0, diffDays - 1);
-  return `${diffDays}N / ${nights}Đ`;
+  return `${diffDays}N / ${nights}đ`;
 }
 
 export function TripConfirmPage() {
@@ -49,7 +49,7 @@ export function TripConfirmPage() {
     if (parsedDates.start && parsedDates.end) {
       return calculateDuration(parsedDates.start, parsedDates.end);
     }
-    return "4N / 3Đ";
+    return "4N / 3đ";
   }, [parsedDates]);
 
   // List of confirmed places from user itinerary
@@ -58,7 +58,7 @@ export function TripConfirmPage() {
       ? locationState.placesList
       : [
           {
-            name: "Đại Nội Huế",
+            name: "đại Nội Huế",
             address: "Phú Hậu, Thành phố Huế, Thừa Thiên Huế",
             specs: "Di tích lịch sử & Quần thể Hoàng thành triều Nguyễn",
             rating: 5,
@@ -187,13 +187,13 @@ export function TripConfirmPage() {
 
         {/* BEGIN: Trip Details Summary Card */}
         <section className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-xs border border-slate-200 dark:border-slate-800 space-y-6 mb-6">
-          {/* Card Section 1: CHUYẾN ĐI CỦA BẠN */}
+          {/* Card Section 1: CHUYẾN đI CỦA BẠN */}
           <div>
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3 mb-4">
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-[#00a3e0]"></span>
                 <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                  {t("tripConfirm.tripSummary.yourTrip", "CHUYẾN ĐI CỦA BẠN")}
+                  {t("tripConfirm.tripSummary.yourTrip", "CHUYẾN đI CỦA BẠN")}
                 </h2>
               </div>
               {durationBadge && (
@@ -226,12 +226,12 @@ export function TripConfirmPage() {
             </div>
           </div>
 
-          {/* Card Section 2: ĐỊA ĐIỂM & THÀNH VIÊN */}
+          {/* Card Section 2: đỊA đIỂM & THÀNH VIÊN */}
           <div>
             <div className="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3 mb-4">
               <span className="w-2 h-2 rounded-full bg-[#00a3e0]"></span>
               <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                {t("tripConfirm.tripSummary.locationTitle", "ĐỊA ĐIỂM")}
+                {t("tripConfirm.tripSummary.locationTitle", "đỊA đIỂM")}
               </h2>
             </div>
 
@@ -266,7 +266,7 @@ export function TripConfirmPage() {
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-[#00a3e0]"></span>
               <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                DANH SÁCH ĐỊA ĐIỂM ĐÃ LÊN LỊCH ({placesList.length})
+                DANH SÁCH đỊA đIỂM đÃ LÊN LỊCH ({placesList.length})
               </h2>
             </div>
           </div>
@@ -397,7 +397,7 @@ export function TripConfirmPage() {
             {loadingStage === "processing" ? (
               <>
                 <h3 className="text-base font-bold text-slate-900 dark:text-white">
-                  {t("tripConfirm.modals.processingTitle", "Đang xử lý lịch trình")}
+                  {t("tripConfirm.modals.processingTitle", "đang xử lý lịch trình")}
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 font-medium">
                   {t("tripConfirm.modals.processingSubtitle", "Vui lòng đợi giây lát trong khi WAYVEE đồng bộ hành trình...")}
@@ -409,7 +409,7 @@ export function TripConfirmPage() {
                   {t("tripConfirm.modals.confirmingTitle", "Hoàn tất chuyến đi")}
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 font-medium">
-                  {t("tripConfirm.modals.confirmingSubtitle", "Đang lưu lịch trình vào bộ sưu tập của bạn...")}
+                  {t("tripConfirm.modals.confirmingSubtitle", "đang lưu lịch trình vào bộ sưu tập của bạn...")}
                 </p>
               </>
             )}

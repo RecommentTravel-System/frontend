@@ -4,8 +4,11 @@ import { readFile } from 'node:fs/promises';
 
 // Emulate Vite's build-time environment replacement while exercising the real wrapper.
 const source = await readFile(new URL('../src/shared/lib/api.js', import.meta.url), 'utf8');
+const errorCodesUrl = new URL('../src/shared/lib/error-codes.js', import.meta.url).href;
 async function client(env) {
-  const transformed = source.replaceAll('import.meta.env', JSON.stringify(env));
+  const transformed = source
+    .replaceAll('import.meta.env', JSON.stringify(env))
+    .replace('"./error-codes.js"', JSON.stringify(errorCodesUrl));
   return import(`data:text/javascript;base64,${Buffer.from(transformed).toString('base64')}`);
 }
 const origin = 'https://backend-0xea.onrender.com';

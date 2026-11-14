@@ -44,7 +44,7 @@ export default function AvatarEditor({ name }) {
   async function save() {
     if (!file || busy) return;
     setBusy(true);
-    setNotice('Đang upload ảnh lên …');
+    setNotice('đang upload ảnh lên …');
 
     try {
       const response = await uploadAvatarApi(file);
@@ -54,7 +54,7 @@ export default function AvatarEditor({ name }) {
       }
       setFile(null);
       setPreview('');
-      setNotice('Đã lưu ảnh lên hệ thống thành công!');
+      setNotice('đã lưu ảnh lên hệ thống thành công!');
     } catch (error) {
       setNotice(error?.response?.data?.message || error.message || 'Không thể lưu ảnh.');
     } finally {
@@ -65,7 +65,7 @@ export default function AvatarEditor({ name }) {
   async function remove() {
     if (busy) return;
     setBusy(true);
-    setNotice('Đang xóa ảnh…');
+    setNotice('đang xóa ảnh…');
     try {
       const response = await removeAvatarApi();
       const updatedUser = response?.data || response;
@@ -74,7 +74,7 @@ export default function AvatarEditor({ name }) {
       }
       setFile(null);
       setPreview('');
-      setNotice('Đã khôi phục ảnh đại diện mặc định.');
+      setNotice('đã khôi phục ảnh đại diện mặc định.');
     } catch (error) {
       setNotice(error?.response?.data?.message || error.message || 'Không thể xóa ảnh.');
     } finally {
@@ -105,7 +105,7 @@ export default function AvatarEditor({ name }) {
           {file && (
             <>
               <button type="button" disabled={busy} onClick={save}>
-                {busy ? 'Đang lưu…' : 'Lưu ảnh'}
+                {busy ? 'đang lưu…' : 'Lưu ảnh'}
               </button>
               <button
                 type="button"
@@ -113,7 +113,7 @@ export default function AvatarEditor({ name }) {
                 onClick={() => {
                   setFile(null);
                   setPreview('');
-                  setNotice('Đã hủy thay đổi ảnh.');
+                  setNotice('đã hủy thay đổi ảnh.');
                 }}
               >
                 Hủy

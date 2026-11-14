@@ -1,6 +1,27 @@
-import { getLocalizedErrorMessage, getCurrentLanguage } from "./error-codes";
+import { getLocalizedErrorMessage, getCurrentLanguage } from "./error-codes.js";
 
-const BASE_URL = import.meta.env.VITE_API_URL?.trim().replace(/\/+$/, "");
+const BASE_URL = import.meta.env?.VITE_API_URL?.trim().replace(/\/+$/, "");
+
+// HTTP Activity Tracker for Global Loading Provider
+const httpListeners = new Set();
+
+export function subscribeHttpLoading(listener) {
+  if (typeof listener === "function") {
+    httpListeners.add(listener);
+    return () => httpListeners.delete(listener);
+  }
+  return () => {};
+}
+
+function notifyHttpLoading(type, id, endpoint, options = {}) {
+  httpListeners.forEach((listener) => {
+    try {
+      listener({ type, id, endpoint, options });
+    } catch {
+      // Safe no-op
+    }
+  });
+}
 
 export async function request(endpoint, options = {}) {
   if (!BASE_URL) {
@@ -23,6 +44,9 @@ export async function request(endpoint, options = {}) {
     ...options,
     headers
   };
+
+  const reqId = `req-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+  notifyHttpLoading("start", reqId, endpoint, options);
 
   try {
     const response = await fetch(url, {
@@ -129,6 +153,8 @@ export async function request(endpoint, options = {}) {
       );
     }
     throw err;
+  } finally {
+    notifyHttpLoading("end", reqId, endpoint, options);
   }
 }
 

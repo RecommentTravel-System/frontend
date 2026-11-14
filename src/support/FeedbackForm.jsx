@@ -76,17 +76,17 @@ export default function FeedbackForm({ user, draft, onDraftChange, onClose }) {
         <div className="feedback-success">
           <h2 id="feedback-title">Cảm ơn bạn đã gửi đánh giá!</h2>
           <p role="status">
-            Đánh giá trang web của bạn đã được gửi thành công đến hệ thống WAYVEE. Ý kiến của bạn là động lực để chúng tôi phát triển tốt hơn!
+            đánh giá trang web của bạn đã được gửi thành công đến hệ thống WAYVEE. Ý kiến của bạn là động lực để chúng tôi phát triển tốt hơn!
           </p>
           <button type="button" className="support-primary cursor-pointer" onClick={() => dialog.current.close()}>
-            Đóng
+            đóng
           </button>
         </div>
       ) : (
         <form onSubmit={submit}>
           <fieldset className="feedback-rating" disabled={busy}>
             <legend id="feedback-title">
-              Đánh giá chất lượng và trải nghiệm trang web WAYVEE (1 - 5 sao)
+              đánh giá chất lượng và trải nghiệm trang web WAYVEE (1 - 5 sao)
             </legend>
             <div className="feedback-rating-options">
               {[1, 2, 3, 4, 5].map((rating) => (
@@ -165,10 +165,10 @@ export default function FeedbackForm({ user, draft, onDraftChange, onClose }) {
           </p>
           <div className="feedback-actions">
             <button type="button" className="support-outline cursor-pointer" disabled={busy} onClick={() => dialog.current.close()}>
-              Để sau
+              để sau
             </button>
             <button type="submit" className="support-primary cursor-pointer" disabled={busy}>
-              {busy ? 'Đang gửi…' : 'Gửi đánh giá'}
+              {busy ? 'đang gửi…' : 'Gửi đánh giá'}
             </button>
           </div>
         </form>

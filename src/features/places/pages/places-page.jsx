@@ -5,6 +5,7 @@ import { AppHeader } from "~/shared/components";
 import { AppFooter } from "~/shared/components";
 import { FilterPanel } from "../components/filters/filter-panel";
 import { PlaceCard } from "../components/listing/place-card";
+import { PlaceCardSkeleton } from "../components/listing/place-card-skeleton";
 import { usePlacesFilter } from "../hooks/use-places-filter";
 import {
   searchNearbyPlaces,
@@ -12,7 +13,7 @@ import {
 } from "../services/places-api";
 import { placesCache, getPaginationItems } from "../services/places-cache";
 import { getAllCategoriesApi } from "~/features/categories/services/category-api";
-import WayveeTravelLoader from "~/payment/WayveeTravelLoader.jsx";
+import { GlobalLoadingOverlay } from "~/shared/ui/global-loading-overlay";
 
 export function PlacesPage({ initialMode = "all" }) {
   const { t } = useTranslation();
@@ -259,7 +260,7 @@ export function PlacesPage({ initialMode = "all" }) {
     }
   };
 
-  // Điều hướng xem chi tiết và lưu toàn bộ trạng thái để khi quay lại giữ nguyên
+  // điều hướng xem chi tiết và lưu toàn bộ trạng thái để khi quay lại giữ nguyên
   const handleNavigateDetail = (place) => {
     const placeId = place.osmId || place.id;
     placesCache.save({
@@ -351,6 +352,14 @@ export function PlacesPage({ initialMode = "all" }) {
 
   return (
     <div className="bg-[#f8fafc] dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans min-h-screen flex flex-col antialiased">
+      {/* Global Unified Airplane Fly-By Loading Experience */}
+      <GlobalLoadingOverlay
+        isLoading={loading}
+        delay={0}
+        message={t("places.loading", "Đang tải danh sách địa điểm...")}
+        submessage={destination ? `Đang tìm các địa điểm phù hợp tại ${destination}` : t("places.loadingSub", "Wayvee đang truy xuất các địa điểm tốt nhất cho bạn")}
+      />
+
       {/* App Header */}
       <AppHeader
         onLogin={() => navigate("/login", { state: { from: location.pathname + location.search } })}
@@ -410,10 +419,27 @@ export function PlacesPage({ initialMode = "all" }) {
                 className="py-2 px-3 text-xs font-semibold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl outline-none text-slate-700 dark:text-slate-300 cursor-pointer"
               >
                 <option value="popular">{t("places.sort.popular") || "Phổ biến nhất"}</option>
-                <option value="rating">{t("places.sort.rating") || "Đánh giá cao nhất"}</option>
+                <option value="rating">{t("places.sort.rating") || "đánh giá cao nhất"}</option>
                 <option value="distance">{t("places.sort.distance") || "Gần trung tâm nhất"}</option>
               </select>
             )}
+
+            {/* Quick Demo Preview Button for Global Vector Brand Loading Animation */}
+            <button
+              type="button"
+              onClick={() => {
+                setLoading(true);
+                setTimeout(() => setLoading(false), 5000);
+              }}
+              title="Xem thử Weayvee Vector Brand Loading Animation"
+              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/60 hover:bg-sky-100 dark:hover:bg-sky-900/80 border border-sky-300 dark:border-sky-700 rounded-xl shadow-2xs hover:shadow-xs transition-all cursor-pointer"
+            >
+              <svg className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <span>✨ Xem thử Loading Mới</span>
+            </button>
 
             {/* View Layout Switcher (List vs Grid) */}
             {activeMode !== "filters" && (
@@ -491,15 +517,12 @@ export function PlacesPage({ initialMode = "all" }) {
 
               {/* Vùng nội dung cuộn bên trong để ngang bằng thanh lọc */}
               <div id="places-scroll-container" className="flex-1 overflow-y-auto pr-1 space-y-3">
-                {/* Màn hình loading giống khi thanh toán */}
+                {/* Skeleton placeholders khi đang tải */}
                 {loading && (
-                  <div className="h-full flex items-center justify-center py-6">
-                    <WayveeTravelLoader
-                      badgeText={t("places.loading.badge", "ĐANG TÌM KIẾM ĐỊA ĐIỂM")}
-                      title={t("places.loading.title", "Đang quét và tìm kiếm địa điểm...")}
-                      subtitle={t("places.loading.subtitle", "Wayvee đang truy xuất dữ liệu địa điểm phù hợp nhất cho chuyến đi của bạn.")}
-                      showQR={false}
-                    />
+                  <div className="space-y-3 animate-fade-in">
+                    <PlaceCardSkeleton variant="list" />
+                    <PlaceCardSkeleton variant="list" />
+                    <PlaceCardSkeleton variant="list" />
                   </div>
                 )}
 
@@ -535,7 +558,7 @@ export function PlacesPage({ initialMode = "all" }) {
                       onClick={handleResetFilters}
                       className="px-4 py-2 bg-[#0b2545] text-white text-xs font-semibold rounded-xl hover:bg-[#102f58] transition-colors cursor-pointer"
                     >
-                      {t("places.filter.clearAll") || "Đặt lại bộ lọc"}
+                      {t("places.filter.clearAll") || "đặt lại bộ lọc"}
                     </button>
                   </div>
                 )}
@@ -671,7 +694,7 @@ export function PlacesPage({ initialMode = "all" }) {
                   Chế độ tùy chỉnh Bộ lọc tìm kiếm
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
-                  Bạn đang ở trang điều chỉnh chi tiết các tiêu chí (Loại địa điểm, Bán kính, Đánh giá tối thiểu và Sở thích). Sau khi thiết lập xong, nhấn <strong className="text-slate-800 dark:text-slate-200">"Áp dụng bộ lọc"</strong> để hệ thống trích xuất dữ liệu.
+                  Bạn đang ở trang điều chỉnh chi tiết các tiêu chí (Loại địa điểm, Bán kính, đánh giá tối thiểu và Sở thích). Sau khi thiết lập xong, nhấn <strong className="text-slate-800 dark:text-slate-200">"Áp dụng bộ lọc"</strong> để hệ thống trích xuất dữ liệu.
                 </p>
               </div>
 
@@ -686,7 +709,7 @@ export function PlacesPage({ initialMode = "all" }) {
                   <strong className="text-slate-800 dark:text-slate-200">≤ {pendingFilters.distanceKm} km</strong>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Đánh giá tối thiểu:</span>
+                  <span className="text-slate-500">đánh giá tối thiểu:</span>
                   <strong className="text-slate-800 dark:text-slate-200">★ {pendingFilters.minRating || 4.0}+</strong>
                 </div>
                 <div className="flex justify-between">
@@ -747,15 +770,13 @@ export function PlacesPage({ initialMode = "all" }) {
               </div>
             </div>
 
-            {/* Màn hình loading giống khi thanh toán */}
+            {/* Skeleton placeholders khi đang tải */}
             {loading && (
-              <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-10 shadow-xs flex items-center justify-center min-h-[400px]">
-                <WayveeTravelLoader
-                  badgeText={t("places.loading.badge", "ĐANG TÌM KIẾM ĐỊA ĐIỂM")}
-                  title={t("places.loading.title", "Đang quét và tìm kiếm địa điểm...")}
-                  subtitle={t("places.loading.subtitle", "Wayvee đang truy xuất dữ liệu địa điểm phù hợp nhất cho chuyến đi của bạn.")}
-                  showQR={false}
-                />
+              <div className={cardLayout === "list" ? "space-y-4 animate-fade-in" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 animate-fade-in"}>
+                <PlaceCardSkeleton variant={cardLayout} />
+                <PlaceCardSkeleton variant={cardLayout} />
+                <PlaceCardSkeleton variant={cardLayout} />
+                <PlaceCardSkeleton variant={cardLayout} />
               </div>
             )}
 
@@ -798,7 +819,7 @@ export function PlacesPage({ initialMode = "all" }) {
                   onClick={() => handleSwitchMode("filters")}
                   className="px-4 py-2 bg-[#0b2545] text-white text-xs font-semibold rounded-xl hover:bg-[#102f58] transition-colors cursor-pointer"
                 >
-                  Đổi tiêu chí lọc
+                  đổi tiêu chí lọc
                 </button>
               </div>
             )}

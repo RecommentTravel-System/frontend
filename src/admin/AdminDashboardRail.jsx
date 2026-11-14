@@ -54,7 +54,7 @@ const navItems = [
   {
     id: "reviews",
     labelKey: "adminNav.reviews",
-    label: "Kiểm duyệt Đánh giá",
+    label: "Kiểm duyệt đánh giá",
     path: "/admin/reviews",
     badge: null,
     trailingDot: true,

@@ -31,5 +31,5 @@ export default function PremiumSuggestions({ place }) {
   const { state } = useLocation();
   const data = suggestionsFor(place);
   const back = typeof state?.from === 'string' && /^\/search(?:\?|$)/.test(state.from) ? state.from : '/search';
-  return <div className="premium-location-suggestions"><Carousel title={`${data.featured.length} địa điểm nổi bật ${data.city ? `tại ${data.city}` : 'gần đây'}`} items={data.featured} featured back={back} /><Carousel title="Địa điểm tương tự" items={data.similar} back={back} />{!data.similar.length && <p className="suggestion-data-note">Chưa có địa điểm cùng loại trong danh sách hiện tại.</p>}<p className="suggestion-data-note">Gợi ý từ dữ liệu minh họa, ưu tiên cùng thành phố và loại địa điểm; chưa tính khoảng cách thực tế.</p></div>;
+  return <div className="premium-location-suggestions"><Carousel title={`${data.featured.length} địa điểm nổi bật ${data.city ? `tại ${data.city}` : 'gần đây'}`} items={data.featured} featured back={back} /><Carousel title="địa điểm tương tự" items={data.similar} back={back} />{!data.similar.length && <p className="suggestion-data-note">Chưa có địa điểm cùng loại trong danh sách hiện tại.</p>}<p className="suggestion-data-note">Gợi ý từ dữ liệu minh họa, ưu tiên cùng thành phố và loại địa điểm; chưa tính khoảng cách thực tế.</p></div>;
 }

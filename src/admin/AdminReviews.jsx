@@ -9,8 +9,8 @@ import { getWebsiteReviews, getWebsiteReviewStats } from "~/shared/services/webs
 const statusLabels = {
   pending: "Chờ duyệt",
   flagged: "Báo cáo khẩn",
-  approved: "Đã duyệt",
-  hidden: "Đã ẩn"
+  approved: "đã duyệt",
+  hidden: "đã ẩn"
 };
 
 function Rating({ value }) {
@@ -65,7 +65,7 @@ function WebsiteReviewDetailModal({ review, onClose }) {
               )}
             </div>
             <div className="text-right">
-              <p className="text-xs text-slate-400">Điểm số</p>
+              <p className="text-xs text-slate-400">điểm số</p>
               <span className="text-base font-extrabold text-amber-500">
                 ★ {num.toFixed(1)} / 5.0
               </span>
@@ -105,7 +105,7 @@ function WebsiteReviewDetailModal({ review, onClose }) {
             onClick={onClose}
             className="px-5 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl transition-colors cursor-pointer"
           >
-            Đóng
+            đóng
           </button>
         </div>
       </div>
@@ -320,7 +320,7 @@ export default function AdminReviews() {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  // Active moderation view: "website" (Đánh giá trang web) vs "places" (Đánh giá địa điểm)
+  // Active moderation view: "website" (đánh giá trang web) vs "places" (đánh giá địa điểm)
   const [activeTab, setActiveTab] = useState("website");
 
   // Website Reviews State (READ-ONLY)
@@ -374,13 +374,13 @@ export default function AdminReviews() {
         reviewId: item.reviewId,
         name: item.userFullName || item.username || (item.anonymous ? "Người dùng ẩn danh" : "Thành viên WAYVEE"),
         badge: item.anonymous ? "Ẩn danh" : "Thành viên",
-        place: item.placeName || `Địa điểm #${item.osmId}`,
+        place: item.placeName || `địa điểm #${item.osmId}`,
         rating: item.rating || 5,
         time: item.createdAt ? new Date(item.createdAt).toLocaleString("vi-VN") : "Gần đây",
         status: "approved",
         verified: true,
         avatar: item.userFullName ? item.userFullName.slice(0, 2).toUpperCase() : "WV",
-        content: item.comment || "Đánh giá không có nội dung văn bản.",
+        content: item.comment || "đánh giá không có nội dung văn bản.",
         evidence: `OSM ID: ${item.osmId} · User ID: ${item.userId || "N/A"}`
       }));
       setPlaceReviews(mapped);
@@ -438,9 +438,9 @@ export default function AdminReviews() {
     try {
       if (nextStatus === "hidden") {
         await deleteReview(id);
-        setNotice("Đã xóa/ẩn bài đánh giá địa điểm thành công.");
+        setNotice("đã xóa/ẩn bài đánh giá địa điểm thành công.");
       } else {
-        setNotice("Đã cập nhật trạng thái đánh giá địa điểm thành công.");
+        setNotice("đã cập nhật trạng thái đánh giá địa điểm thành công.");
       }
       await fetchPlaceReviews();
     } catch (err) {
@@ -487,14 +487,14 @@ export default function AdminReviews() {
               <div className="flex items-center space-x-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
                 <span>{t("adminNav.portalBadge", "Admin Portal")}</span>
                 <span className="text-slate-400">›</span>
-                <span>Kiểm duyệt &amp; Đánh giá</span>
+                <span>Kiểm duyệt &amp; đánh giá</span>
                 <span className="text-slate-400">›</span>
                 <span className="text-[#00a3e0]">
-                  {activeTab === "website" ? "Đánh giá trang web" : "Đánh giá địa điểm"}
+                  {activeTab === "website" ? "đánh giá trang web" : "đánh giá địa điểm"}
                 </span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-extrabold text-[#002d54] dark:text-white tracking-tight">
-                {activeTab === "website" ? "Đánh giá trang web WAYVEE" : "Quản lý Đánh giá Địa điểm"}
+                {activeTab === "website" ? "đánh giá trang web WAYVEE" : "Quản lý đánh giá địa điểm"}
               </h1>
               <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
                 {activeTab === "website"
@@ -543,7 +543,7 @@ export default function AdminReviews() {
               }`}
             >
               <span className="text-base">★</span>
-              <span>Đánh giá trang web ({websiteReviews.length})</span>
+              <span>đánh giá trang web ({websiteReviews.length})</span>
               <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-100 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-900">
                 Chỉ xem
               </span>
@@ -559,12 +559,12 @@ export default function AdminReviews() {
               }`}
             >
               <span>📍</span>
-              <span>Đánh giá địa điểm ({placeReviews.length})</span>
+              <span>đánh giá địa điểm ({placeReviews.length})</span>
             </button>
           </div>
 
           {/* ========================================================================= */}
-          {/* TAB 1: WEBSITE REVIEWS (CHẾ ĐỘ CHỈ XEM - KHÔNG XÓA SỬA THÊM)             */}
+          {/* TAB 1: WEBSITE REVIEWS (CHẾ đỘ CHỈ XEM - KHÔNG XÓA SỬA THÊM)             */}
           {/* ========================================================================= */}
           {activeTab === "website" && (
             <div className="space-y-6">
@@ -578,7 +578,7 @@ export default function AdminReviews() {
                     Chế độ chỉ xem (Read-Only) dành cho Quản trị viên
                   </h2>
                   <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
-                    Theo quy định bảo mật &amp; tính khách quan của hệ thống WAYVEE, mục <strong>Đánh giá trang web</strong> chỉ cho phép quản trị viên theo dõi mức độ hài lòng, đọc ý kiến đóng góp và xem thống kê. 
+                    Theo quy định bảo mật &amp; tính khách quan của hệ thống WAYVEE, mục <strong>đánh giá trang web</strong> chỉ cho phép quản trị viên theo dõi mức độ hài lòng, đọc ý kiến đóng góp và xem thống kê. 
                     <span className="text-blue-700 dark:text-blue-300 font-bold ml-1">
                       Hệ thống không cung cấp chức năng thêm mới, chỉnh sửa hoặc xóa đánh giá trang web của người dùng.
                     </span>
@@ -614,7 +614,7 @@ export default function AdminReviews() {
                 <div className="bg-white dark:bg-[#0f172a] p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold uppercase text-slate-500 dark:text-slate-400 tracking-wider">
-                      Điểm hài lòng TB
+                      điểm hài lòng TB
                     </span>
                     <div className="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-500 flex items-center justify-center">
                       <span className="text-lg">★</span>
@@ -630,7 +630,7 @@ export default function AdminReviews() {
                   </div>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 flex items-center space-x-1">
                     <span className="text-amber-500">★</span>
-                    <span>Điểm trung bình thời gian thực</span>
+                    <span>điểm trung bình thời gian thực</span>
                   </p>
                 </div>
 
@@ -752,7 +752,7 @@ export default function AdminReviews() {
                     <option value="all">Tất cả chủ đề</option>
                     <option value="Giao diện">Giao diện (UI/UX)</option>
                     <option value="lịch trình">Lịch trình</option>
-                    <option value="địa điểm">Địa điểm</option>
+                    <option value="địa điểm">địa điểm</option>
                     <option value="Hiệu năng">Hiệu năng &amp; Tốc độ</option>
                     <option value="Chung">Trải nghiệm chung</option>
                   </select>
@@ -794,7 +794,7 @@ export default function AdminReviews() {
               <section className="space-y-4">
                 {loadingWebReviews ? (
                   <div className="p-12 text-center text-slate-500 dark:text-slate-400 text-sm bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse">
-                    Đang tải dữ liệu đánh giá trang web...
+                    đang tải dữ liệu đánh giá trang web...
                   </div>
                 ) : visibleWebsiteReviews.length ? (
                   visibleWebsiteReviews.map((review) => (
@@ -814,7 +814,7 @@ export default function AdminReviews() {
           )}
 
           {/* ========================================================================= */}
-          {/* TAB 2: PLACE REVIEWS (KIỂM DUYỆT ĐỊA ĐIỂM)                                 */}
+          {/* TAB 2: PLACE REVIEWS (KIỂM DUYỆT đỊA đIỂM)                                 */}
           {/* ========================================================================= */}
           {activeTab === "places" && (
             <div className="space-y-6">
@@ -844,7 +844,7 @@ export default function AdminReviews() {
                 <div className="bg-white dark:bg-[#0f172a] p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold uppercase text-slate-500 dark:text-slate-400 tracking-wider">
-                      Đánh giá cần chú ý
+                      đánh giá cần chú ý
                     </span>
                     <div className="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center">
                       <span className="text-lg">⚠</span>
@@ -904,7 +904,7 @@ export default function AdminReviews() {
                   </div>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 flex items-center space-x-1">
                     <span className="text-[#00a3e0]">●</span>
-                    <span>Đồng bộ trực tiếp qua REST API</span>
+                    <span>đồng bộ trực tiếp qua REST API</span>
                   </p>
                 </div>
               </section>
@@ -934,7 +934,7 @@ export default function AdminReviews() {
                     className="px-3.5 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-[#00a3e0] min-w-[150px]"
                   >
                     <option value="all">Tất cả trạng thái</option>
-                    <option value="approved">Đã duyệt / Công khai</option>
+                    <option value="approved">đã duyệt / Công khai</option>
                     <option value="pending">Chờ duyệt</option>
                     <option value="flagged">Báo cáo khẩn</option>
                   </select>
@@ -960,7 +960,7 @@ export default function AdminReviews() {
                           : "bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                       }`}
                     >
-                      Đã xác thực
+                      đã xác thực
                     </button>
                     <button
                       type="button"
@@ -1009,7 +1009,7 @@ export default function AdminReviews() {
                 </label>
                 <div className="flex items-center gap-3">
                   <span>
-                    Đã chọn: <strong className="text-slate-900 dark:text-white">{selectedPlaceReviews.length}</strong>
+                    đã chọn: <strong className="text-slate-900 dark:text-white">{selectedPlaceReviews.length}</strong>
                   </span>
                   <button
                     type="button"
@@ -1040,7 +1040,7 @@ export default function AdminReviews() {
               <section className="space-y-4">
                 {loadingPlaceReviews ? (
                   <div className="p-12 text-center text-slate-500 dark:text-slate-400 text-sm bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse">
-                    Đang tải dữ liệu đánh giá địa điểm từ CSDL...
+                    đang tải dữ liệu đánh giá địa điểm từ CSDL...
                   </div>
                 ) : visiblePlaceReviews.length ? (
                   visiblePlaceReviews.map((review) => (

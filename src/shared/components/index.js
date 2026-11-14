@@ -6,3 +6,4 @@ export { ScreenWidthControl } from "./screen-width-control";
 export { StarRating } from "./star-rating";
 export { DateRangePicker } from "./date-range-picker";
 export { NumericInput } from "./numeric-input";
+export { SplashScreen } from "./splash-screen";

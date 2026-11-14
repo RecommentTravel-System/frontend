@@ -14,10 +14,10 @@ const CATEGORY_NAMES = {
     FAST_FOOD: "Thức ăn nhanh",
     BAR: "Quán bar / Pub",
     HOTEL: "Khách sạn / Lưu trú",
-    ATTRACTION: "Điểm tham quan",
+    ATTRACTION: "điểm tham quan",
     SHOPPING: "Mua sắm",
     ENTERTAINMENT: "Khu vui chơi",
-    OTHER: "Địa điểm"
+    OTHER: "địa điểm"
   },
   en: {
     RESTAURANT: "Restaurant",
@@ -39,7 +39,7 @@ const DEFAULT_AMENITIES = {
       "Wi-Fi tốc độ cao",
       "Không gian yên tĩnh",
       "Ổ cắm điện",
-      "Máy lạnh / Điều hòa",
+      "Máy lạnh / điều hòa",
       "Bàn lớn làm việc",
       "Chỗ để xe máy / ô tô",
       "Thanh toán thẻ & QR Code"
@@ -47,7 +47,7 @@ const DEFAULT_AMENITIES = {
     RESTAURANT: [
       "Ẩm thực đặc sắc",
       "Không gian dùng bữa thoải mái",
-      "Máy lạnh / Điều hòa",
+      "Máy lạnh / điều hòa",
       "Thanh toán thẻ & ví điện tử",
       "Chỗ để xe",
       "Thân thiện gia đình & nhóm",
@@ -55,7 +55,7 @@ const DEFAULT_AMENITIES = {
       "Wi-Fi miễn phí"
     ],
     ATTRACTION: [
-      "Điểm tham quan & Khám phá",
+      "điểm tham quan & Khám phá",
       "Khu vực check-in & Chụp ảnh",
       "Thân thiện gia đình & Trẻ em",
       "Bãi đỗ xe rộng rãi",
@@ -63,7 +63,7 @@ const DEFAULT_AMENITIES = {
       "Khu vực hướng dẫn / Thuyết minh"
     ],
     BAR: [
-      "Đồ uống & Cocktail",
+      "đồ uống & Cocktail",
       "Âm nhạc giải trí",
       "Không gian thư giãn về đêm",
       "Thanh toán thẻ linh hoạt",
@@ -74,7 +74,7 @@ const DEFAULT_AMENITIES = {
       "Phòng nghỉ tiện nghi",
       "Wi-Fi tốc độ cao miễn phí",
       "Dịch vụ lễ tân hỗ trợ",
-      "Điều hòa nhiệt độ",
+      "điều hòa nhiệt độ",
       "Dọn phòng hàng ngày",
       "Chỗ để xe an toàn"
     ],
@@ -194,7 +194,7 @@ export function PlaceDetailPage() {
     initialPlace || {
       id,
       osmId: id,
-      name: `Địa điểm #${id}`,
+      name: `địa điểm #${id}`,
       address: "",
       categoryCode: "ATTRACTION"
     }
@@ -239,7 +239,7 @@ export function PlaceDetailPage() {
         const newPlaceItem = {
           id: placeOsmId,
           osmId: place.osmId || place.id || id,
-          name: place.name || `Địa điểm #${placeOsmId}`,
+          name: place.name || `địa điểm #${placeOsmId}`,
           location: place.address || (isEn ? "Tourist spot" : "Khu vực du lịch"),
           rating: place.rating,
           score: place.rating ? Number(place.rating).toFixed(1) : undefined,
@@ -298,7 +298,7 @@ export function PlaceDetailPage() {
       } else {
         await addFavorite({
           osmId: Number(placeOsmId) || placeOsmId,
-          placeName: place?.name || `Địa điểm #${placeOsmId}`,
+          placeName: place?.name || `địa điểm #${placeOsmId}`,
           latitude: Number(place?.latitude || place?.lat) || 0,
           longitude: Number(place?.longitude || place?.lng || place?.lon) || 0
         });
@@ -376,7 +376,7 @@ export function PlaceDetailPage() {
     try {
       await createReview({
         osmId: Number(placeOsmId) || placeOsmId,
-        placeName: place.name || `Địa điểm #${placeOsmId}`,
+        placeName: place.name || `địa điểm #${placeOsmId}`,
         rating: Number(newRating),
         comment: newComment.trim(),
         anonymous: newAnonymous
@@ -396,7 +396,7 @@ export function PlaceDetailPage() {
   // Category name translated
   const langKey = isEn ? "en" : "vi";
   const categoryCodeUpper = (place.categoryCode || "OTHER").toUpperCase();
-  const categoryName = (CATEGORY_NAMES[langKey] && CATEGORY_NAMES[langKey][categoryCodeUpper]) || (isEn ? "Place" : "Địa điểm");
+  const categoryName = (CATEGORY_NAMES[langKey] && CATEGORY_NAMES[langKey][categoryCodeUpper]) || (isEn ? "Place" : "địa điểm");
 
   // Amenities: use real amenities if array, else category-based by language
   const amenitiesList = useMemo(() => {
@@ -430,7 +430,7 @@ export function PlaceDetailPage() {
     if (score >= 4.8) return isEn ? "Excellent" : "Xuất sắc";
     if (score >= 4.0) return isEn ? "Very Good" : "Rất tốt";
     if (score >= 3.0) return isEn ? "Good" : "Tốt";
-    return isEn ? "Guest rating" : "Đánh giá của khách";
+    return isEn ? "Guest rating" : "đánh giá của khách";
   }, [averageRatingScore, isEn]);
 
   // Google Maps embed URL using coordinates or name + address
@@ -547,7 +547,7 @@ export function PlaceDetailPage() {
               type="button"
               onClick={() => {
                 navigator.clipboard?.writeText(window.location.href);
-                alert(t("places.detail.copied", isEn ? "Link copied to clipboard!" : "Đã sao chép liên kết địa điểm!"));
+                alert(t("places.detail.copied", isEn ? "Link copied to clipboard!" : "đã sao chép liên kết địa điểm!"));
               }}
               className="w-10 h-10 rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-sky-500 cursor-pointer shadow-2xs transition-transform hover:scale-105"
               title={t("places.detail.share", isEn ? "Share" : "Chia sẻ")}
@@ -565,7 +565,7 @@ export function PlaceDetailPage() {
                   : "bg-[#0b2545] hover:bg-[#102f58] dark:bg-sky-500 dark:hover:bg-sky-600 text-white dark:text-slate-950"
               }`}
             >
-              <span>{isAdded ? t("places.detail.addedToTrip", isEn ? "Added ✓" : "Đã thêm ✓") : t("places.detail.addToTrip", isEn ? "Add to trip +" : "Thêm vào lịch trình +")}</span>
+              <span>{isAdded ? t("places.detail.addedToTrip", isEn ? "Added ✓" : "đã thêm ✓") : t("places.detail.addToTrip", isEn ? "Add to trip +" : "Thêm vào lịch trình +")}</span>
             </button>
           </div>
         </div>
@@ -605,7 +605,7 @@ export function PlaceDetailPage() {
             ) : (
               <p className={showFullDesc ? "" : "line-clamp-3"}>
                 {place.name} là một địa điểm thuộc danh mục {categoryName.toLowerCase()} nổi bật tại {place.address || "Việt Nam"}.
-                {place.openingHours ? ` Địa điểm mở cửa phục vụ trong khung giờ: ${place.openingHours}.` : ""}
+                {place.openingHours ? ` địa điểm mở cửa phục vụ trong khung giờ: ${place.openingHours}.` : ""}
                 {place.phone ? ` Số điện thoại liên hệ: ${place.phone}.` : ""}
                 {place.website ? ` Quý khách có thể xem thêm thông tin tại website: ${place.website}.` : ""}
                 {showFullDesc && (
@@ -675,10 +675,10 @@ export function PlaceDetailPage() {
         </section>
 
         {/* SECTION 4: Reviews (Real reviews with breakdown & cards matching Image 2 & translated) */}
-        <section aria-label="Đánh giá từ khách hàng" className="space-y-6">
+        <section aria-label="đánh giá từ khách hàng" className="space-y-6">
           <div className="flex items-center justify-between flex-wrap gap-3">
             <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-              {t("places.detail.reviewsTitle", isEn ? "Reviews" : "Đánh giá")}
+              {t("places.detail.reviewsTitle", isEn ? "Reviews" : "đánh giá")}
             </h2>
             <button
               type="button"
@@ -719,7 +719,7 @@ export function PlaceDetailPage() {
           {/* Real Reviews Cards Grid (3 columns matching Image 2) */}
           {reviewsLoading ? (
             <div className="py-8 text-center text-xs text-slate-400 animate-pulse">
-              {isEn ? "Loading reviews from system..." : "Đang tải đánh giá từ hệ thống..."}
+              {isEn ? "Loading reviews from system..." : "đang tải đánh giá từ hệ thống..."}
             </div>
           ) : reviewsList.length === 0 ? (
             <div className="p-6 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 text-center space-y-2 bg-slate-50/50 dark:bg-slate-900/30">
@@ -882,7 +882,7 @@ export function PlaceDetailPage() {
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-xl space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                {t("places.detail.reviewModalTitle", isEn ? "Review this place" : "Đánh giá địa điểm")}
+                {t("places.detail.reviewModalTitle", isEn ? "Review this place" : "đánh giá địa điểm")}
               </h3>
               <button
                 type="button"
@@ -896,7 +896,7 @@ export function PlaceDetailPage() {
             <form onSubmit={handleSubmitReview} className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  {t("places.detail.ratingStarsLabel", isEn ? "Star rating" : "Đánh giá số sao")}
+                  {t("places.detail.ratingStarsLabel", isEn ? "Star rating" : "đánh giá số sao")}
                 </label>
                 <div className="flex items-center gap-2">
                   {[1, 2, 3, 4, 5].map((star) => (
@@ -938,7 +938,7 @@ export function PlaceDetailPage() {
                   className="rounded border-slate-300 text-sky-600 focus:ring-sky-500"
                 />
                 <label htmlFor="anonymousCheck" className="text-xs text-slate-600 dark:text-slate-300 cursor-pointer">
-                  {t("places.detail.anonymousLabel", isEn ? "Post anonymously" : "Đánh giá ẩn danh")}
+                  {t("places.detail.anonymousLabel", isEn ? "Post anonymously" : "đánh giá ẩn danh")}
                 </label>
               </div>
 
@@ -959,7 +959,7 @@ export function PlaceDetailPage() {
                   disabled={submittingReview}
                   className="px-5 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold shadow-sm disabled:opacity-50 cursor-pointer"
                 >
-                  {submittingReview ? t("places.detail.submitting", isEn ? "Submitting..." : "Đang gửi...") : t("places.detail.submitReview", isEn ? "Submit review" : "Gửi đánh giá")}
+                  {submittingReview ? t("places.detail.submitting", isEn ? "Submitting..." : "đang gửi...") : t("places.detail.submitReview", isEn ? "Submit review" : "Gửi đánh giá")}
                 </button>
               </div>
             </form>

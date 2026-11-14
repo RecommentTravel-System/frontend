@@ -27,7 +27,7 @@ function StatusBadge({ status, confirmed, hasItinerary }) {
   if (status === 'cancelled' || status === 'CANCELLED') {
     return (
       <span className="trip-badge trip-badge-cancelled">
-        ✕ Đã hủy
+        ✕ đã hủy
       </span>
     );
   }
@@ -35,7 +35,7 @@ function StatusBadge({ status, confirmed, hasItinerary }) {
   if (status === 'completed' || status === 'COMPLETED') {
     return (
       <span className="trip-badge trip-badge-completed">
-        ✓ Đã hoàn thành
+        ✓ đã hoàn thành
       </span>
     );
   }
@@ -43,7 +43,7 @@ function StatusBadge({ status, confirmed, hasItinerary }) {
   if (status === 'ongoing' || status === 'IN_PROGRESS') {
     return (
       <span className="trip-badge trip-badge-ongoing">
-        <span className="trip-badge-dot"></span> Đang diễn ra
+        <span className="trip-badge-dot"></span> đang diễn ra
       </span>
     );
   }
@@ -58,7 +58,7 @@ function StatusBadge({ status, confirmed, hasItinerary }) {
 
   return (
     <span className={`trip-badge${confirmed ? ' trip-badge-confirmed' : ' trip-badge-pending'}`}>
-      {confirmed ? 'Đã xác nhận' : 'Đang chờ'}
+      {confirmed ? 'đã xác nhận' : 'đang chờ'}
     </span>
   );
 }
@@ -306,7 +306,7 @@ function TripDetail({ trip, filter, user, onCreateItinerary, onCancelTrip }) {
 
         <div className="trip-destinations">
           <div>
-            <h2>Địa điểm đã lưu ({trip.places ? trip.places.length : 0})</h2>
+            <h2>địa điểm đã lưu ({trip.places ? trip.places.length : 0})</h2>
             <ul>
               {(trip.places || []).map((place) => (
                 <li key={place}>📍 {place}</li>
@@ -430,7 +430,7 @@ export default function Itineraries() {
               start: startStr,
               end: endStr,
               time: '08:00 – 18:00',
-              duration: '4N / 3Đ',
+              duration: '4N / 3đ',
               guests: 2,
               summary: '2 người · Lịch trình đồng bộ từ tài khoản',
               description: `Chuyến đi ${beTrip.tripName} đã được lưu vào hệ thống của bạn.`,
@@ -481,7 +481,7 @@ export default function Itineraries() {
     setLocalTrips((prev) =>
       prev.map((t) => (String(t.id) === String(trip.id) ? { ...t, status: 'cancelled' } : t))
     );
-    setNotice(`Đã hủy lịch trình "${trip.title}" thành công.`);
+    setNotice(`đã hủy lịch trình "${trip.title}" thành công.`);
   }, []);
 
   const handleCreateItinerary = (trip) => {
@@ -541,4 +541,4 @@ export default function Itineraries() {
       <AppFooter />
     </div>
   );
-}
+}

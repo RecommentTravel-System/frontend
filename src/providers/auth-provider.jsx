@@ -1,11 +1,13 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { loginApi, signupApi, verifyEmailApi, logoutApi, getMyProfileApi } from "~/features/auth/services/auth-api";
+import { signInWithGoogle, signOutFirebase, onFirebaseAuthStateChanged, formatFirebaseUser } from "~/features/auth/services/firebase-auth";
 
 const AuthContext = createContext({
   user: null,
   token: null,
   isAuthenticated: false,
   login: async () => {},
+  loginWithGoogle: async () => {},
   signup: async () => {},
   verifyEmail: async () => {},
   logout: () => {},
@@ -44,6 +46,11 @@ export function AuthProvider({ children }) {
 
   const refreshUser = async () => {
     if (!token) return null;
+    // Bỏ qua gọi backend /me nếu phiên đăng nhập hiện tại là tài khoản Google
+    // (tránh 401 unauthenticated do backend kiểm tra HMAC token riêng)
+    if (user?.authProvider === "google" || user?.isGoogleUser) {
+      return user;
+    }
     try {
       const res = await getMyProfileApi();
       const profileData = res?.data || res;
@@ -62,6 +69,28 @@ export function AuthProvider({ children }) {
       refreshUser();
     }
   }, [token]);
+
+  // Đồng bộ phiên đăng nhập Firebase Auth
+  useEffect(() => {
+    const unsubscribe = onFirebaseAuthStateChanged(async (fbUser) => {
+      if (fbUser) {
+        const isCurrentGoogleUser = user?.authProvider === "google" || user?.isGoogleUser;
+        if (isCurrentGoogleUser || !user) {
+          try {
+            const freshToken = await fbUser.getIdToken();
+            const formatted = formatFirebaseUser(fbUser);
+            setToken(freshToken);
+            setUser((prev) => ({ ...(prev || {}), ...formatted }));
+            localStorage.setItem("wayvee_token", freshToken);
+            localStorage.setItem("wayvee_user", JSON.stringify(formatted));
+          } catch (e) {
+            console.warn("Could not sync Firebase token:", e);
+          }
+        }
+      }
+    });
+    return () => unsubscribe();
+  }, [user?.authProvider, user?.isGoogleUser]);
 
   useEffect(() => {
     const handleUnauthorized = () => {
@@ -93,6 +122,19 @@ export function AuthProvider({ children }) {
     return response;
   };
 
+  const loginWithGoogle = async () => {
+    const { user: googleUser, token: googleToken } = await signInWithGoogle();
+    if (googleToken) {
+      setToken(googleToken);
+      localStorage.setItem("wayvee_token", googleToken);
+    }
+    if (googleUser) {
+      setUser(googleUser);
+      localStorage.setItem("wayvee_user", JSON.stringify(googleUser));
+    }
+    return googleUser;
+  };
+
   const signup = async ({ email, password, fullName, phone }) => {
     return await signupApi({ email, password, fullName, phone });
   };
@@ -103,8 +145,11 @@ export function AuthProvider({ children }) {
 
   const logout = () => {
     if (token) {
-      logoutApi(token).catch(() => {});
+      if (user?.authProvider !== "google" && !user?.isGoogleUser) {
+        logoutApi(token).catch(() => {});
+      }
     }
+    signOutFirebase().catch(() => {});
     setToken(null);
     setUser(null);
     localStorage.removeItem("wayvee_token");
@@ -118,6 +163,7 @@ export function AuthProvider({ children }) {
         token,
         isAuthenticated: !!token,
         login,
+        loginWithGoogle,
         signup,
         verifyEmail,
         logout,

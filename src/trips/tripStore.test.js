@@ -7,7 +7,7 @@ function memoryStorage() {
   return { getItem: key => data.get(key) ?? null, setItem: (key, value) => data.set(key, value) };
 }
 const sample = () => ({
-  id: 'trip-1', title: 'Đà Lạt cuối tuần', destination: 'Đà Lạt',
+  id: 'trip-1', title: 'đà Lạt cuối tuần', destination: 'đà Lạt',
   startDate: '2026-10-01', endDate: '2026-10-01', travelers: 2, budget: '2000000', style: 'Khám phá', notes: 'Mang áo ấm',
   days: [{ date: '2026-10-01', activities: [{ id: 'a1', time: '09:00', title: 'Ăn sáng', location: 'Trung tâm', notes: 'Quán yêu thích' }] }],
 });
@@ -26,10 +26,10 @@ test('saved details survive rereading, edits replace the same trip and retain ot
   assert.deepEqual(readTrips(storage), [first]);
   saveTrip({ ...sample(), id: 'trip-2' }, storage);
   const edited = sample();
-  edited.days[0].activities[0].notes = 'Đổi giờ nếu trời mưa';
+  edited.days[0].activities[0].notes = 'đổi giờ nếu trời mưa';
   saveTrip(edited, storage);
   assert.equal(readTrips(storage).length, 2);
-  assert.equal(readTrips(storage)[0].days[0].activities[0].notes, 'Đổi giờ nếu trời mưa');
+  assert.equal(readTrips(storage)[0].days[0].activities[0].notes, 'đổi giờ nếu trời mưa');
 });
 
 test('date range includes both endpoints across months and rejects inverted or excessive ranges', () => {

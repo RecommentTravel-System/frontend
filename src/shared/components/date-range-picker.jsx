@@ -306,7 +306,7 @@ export function DateRangePicker({
             onClick={() => setActivePicker(null)}
             className="text-[#0b2545] dark:text-sky-400 font-bold hover:underline cursor-pointer"
           >
-            Đóng
+            đóng
           </button>
         </div>
       </div>

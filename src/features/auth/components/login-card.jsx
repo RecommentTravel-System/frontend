@@ -58,7 +58,7 @@ export function LoginCard({ onClose, onSubmit, onSignUp, onRegister }) {
       <div className="bg-white dark:bg-[#111a2e] text-slate-900 dark:text-slate-100 rounded-3xl shadow-2xl max-w-md w-full p-6 sm:p-8 border border-gray-200 dark:border-slate-800 my-8 animate-in fade-in zoom-in duration-200">
         <div className="flex items-center justify-between pb-3">
           <h2 className="text-base font-bold text-slate-800 dark:text-slate-200">
-            {t("auth.loginTitle") || "Đăng nhập tài khoản"}
+            {t("auth.loginTitle") || "đăng nhập tài khoản"}
           </h2>
           <button
             type="button"
@@ -81,7 +81,7 @@ export function LoginCard({ onClose, onSubmit, onSignUp, onRegister }) {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1">
             <label className="text-xs font-semibold text-gray-600 dark:text-gray-300">
-              {t("auth.emailLabel") || "Địa chỉ Email"}
+              {t("auth.emailLabel") || "địa chỉ Email"}
             </label>
             <input
               type="email"
@@ -142,10 +142,10 @@ export function LoginCard({ onClose, onSubmit, onSignUp, onRegister }) {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                 </svg>
-                <span>{t("auth.loggingIn") || "Đang đăng nhập..."}</span>
+                <span>{t("auth.loggingIn") || "đang đăng nhập..."}</span>
               </>
             ) : (
-              t("auth.loginButton") || "Đăng nhập"
+              t("auth.loginButton") || "đăng nhập"
             )}
           </button>
         </form>
@@ -157,7 +157,7 @@ export function LoginCard({ onClose, onSubmit, onSignUp, onRegister }) {
             className="font-bold text-[#002d54] dark:text-sky-400 hover:underline cursor-pointer"
             onClick={handleRegisterClick}
           >
-            {t("auth.signUpNow") || "Đăng ký ngay"}
+            {t("auth.signUpNow") || "đăng ký ngay"}
           </button>
         </div>
       </div>

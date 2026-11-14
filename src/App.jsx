@@ -1,7 +1,8 @@
-import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useMemo } from 'react';
+import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useMemo, useState } from 'react';
 import { Link, Navigate, Outlet, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { AppProviders } from '~/providers/app-providers';
+import { SplashScreen } from '~/shared/components';
 import { useAuth } from './auth/useAuth.js';
 import Login from './login/Login.jsx';
 import Register from './register/Register.jsx';
@@ -43,7 +44,7 @@ function RequireAuth() {
 }
 
 function AccountPage({ register = false }) {
-  const { user, login } = useAuth();
+  const { user, login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -79,13 +80,19 @@ function AccountPage({ register = false }) {
   // Nếu đã đăng nhập, redirect ngay
   if (user) return <Navigate to={getDestination(user)} replace />;
 
-  const socialLogin = () => { throw new Error('Đăng nhập mạng xã hội chưa được kết nối. Vui lòng dùng email và mật khẩu.'); };
+  const handleGoogleLogin = async () => {
+    const googleUser = await loginWithGoogle();
+    if (googleUser) {
+      navigate(getDestination(googleUser), { replace: true });
+    }
+  };
+
   const backDestination = requestedDestination || '/';
-  const shared = { onClose: () => navigate(backDestination), onGoogle: socialLogin };
+  const shared = { onClose: () => navigate(backDestination), onGoogle: handleGoogleLogin };
 
   if (register) return <Register {...shared} onLogin={() => navigate('/login', { state: location.state })} onSubmit={(values) => {
     const dest = requestedDestination || '/';
-    navigate('/login', { replace: true, state: { from: dest, message: 'Đăng ký tài khoản thành công! Vui lòng đăng nhập để tiếp tục.' } });
+    navigate('/login', { replace: true, state: { from: dest, message: 'đăng ký tài khoản thành công! Vui lòng đăng nhập để tiếp tục.' } });
   }} />;
 
   return <Login {...shared} message={location.state?.message} onSignUp={() => navigate('/register', { state: location.state })} onSubmit={async (values) => {
@@ -112,8 +119,8 @@ function AppRoutes() {
   useEffect(() => {
     const titles = {
       '/': 'Trang chủ',
-      '/login': 'Đăng nhập',
-      '/register': 'Đăng ký',
+      '/login': 'đăng nhập',
+      '/register': 'đăng ký',
       '/profile': 'Thông tin cá nhân',
       '/payment': 'Premium',
       '/reviews': 'Bài đánh giá',
@@ -134,7 +141,7 @@ function AppRoutes() {
       '/admin': 'Quản trị viên',
       '/admin/dashboard': 'Dashboard - Quản trị',
       '/admin/categories': 'Danh mục - Quản trị',
-      '/admin/reviews': 'Đánh giá - Quản trị',
+      '/admin/reviews': 'đánh giá - Quản trị',
       '/admin/users': 'Người dùng - Quản trị',
       '/admin/revenue': 'Báo cáo & Doanh thu - Quản trị',
     };
@@ -144,7 +151,7 @@ function AppRoutes() {
       (path.startsWith('/locations/') ? 'Chi tiết địa điểm' :
        path.startsWith('/places/') ? 'Chi tiết địa điểm' :
        path.startsWith('/itineraries') ? 'Lịch trình' :
-       path.startsWith('/favorites') ? 'Địa điểm yêu thích' :
+       path.startsWith('/favorites') ? 'địa điểm yêu thích' :
        path.startsWith('/trip/') ? 'Lịch trình' :
        path.startsWith('/admin/') ? 'Quản trị viên' :
        'Không tìm thấy trang');
@@ -219,11 +226,34 @@ function AppRoutes() {
   </div>;
 }
 
+function AppContent() {
+  const [isAppReady, setIsAppReady] = useState(false);
+  const [isSplashDone, setIsSplashDone] = useState(false);
+
+  return (
+    <>
+      {!isSplashDone && (
+        <SplashScreen
+          onReady={() => setIsAppReady(true)}
+          onFinish={() => setIsSplashDone(true)}
+        />
+      )}
+      <div
+        className={`w-full min-h-screen transition-opacity duration-300 ${
+          isAppReady ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+      >
+        <AppRoutes />
+      </div>
+    </>
+  );
+}
+
 export default function App() {
   return (
     <AppProviders>
       <BrowserRouter>
-        <AppRoutes />
+        <AppContent />
       </BrowserRouter>
     </AppProviders>
   );
