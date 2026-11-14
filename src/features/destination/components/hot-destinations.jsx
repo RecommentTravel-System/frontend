@@ -2,13 +2,22 @@ import { useState } from "react";
 import { Pill } from "~/shared/ui/pill";
 import { useTranslation } from "~/providers/i18n-provider";
 
-const img = (seed, w = 400, h = 500) => `https://picsum.photos/seed/${seed}/${w}/${h}`;
+const MOCK_IMAGES = {
+  mocchau: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
+  hagiang: "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=800&q=80",
+  hue: "https://images.unsplash.com/photo-1569154941061-e231b4725ef1?auto=format&fit=crop&w=800&q=80",
+  dalat: "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80"
+};
+
+const DEFAULT_FALLBACK_IMAGE = "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=800&q=80";
+
+const img = (seed) => MOCK_IMAGES[seed] || DEFAULT_FALLBACK_IMAGE;
 
 const hotDestinations = [
   { name: "Mộc Châu", tag: "Hoa mận, hoa đào nở khắp lối", seed: "mocchau" },
   { name: "Hà Giang", tag: "Núi đá + hoa anh đào, vẻ đẹp hùng vĩ", seed: "hagiang" },
   { name: "Huế", tag: "Thời tiết dễ chịu, cảnh cổ kính rất bình yên", seed: "hue" },
-  { name: "đà Lạt", tag: "Mùa mai anh đào khoe sắc rực rỡ", seed: "dalat" }
+  { name: "Đà Lạt", tag: "Mùa mai anh đào khoe sắc rực rỡ", seed: "dalat" }
 ];
 
 export function HotDestinations() {
@@ -47,6 +56,7 @@ export function HotDestinations() {
             <img
               src={img(d.seed)}
               alt={d.name}
+              onError={(e) => { e.currentTarget.src = DEFAULT_FALLBACK_IMAGE; }}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />

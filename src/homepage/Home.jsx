@@ -9,9 +9,44 @@ import { useDelayedLoading } from "~/shared/lib/use-delayed-loading";
 import PremiumWeather from "./PremiumWeather.jsx";
 
 /* ------------------------------------------------------------------ */
-/* Placeholder image helper                                           */
+/* Curated, reliable mock images for Vietnam travel destinations       */
 /* ------------------------------------------------------------------ */
-const img = (seed, w = 600, h = 400) => `https://picsum.photos/seed/${seed}/${w}/${h}`;
+const MOCK_IMAGES = {
+  // Hot Destinations
+  mocchau: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
+  hagiang: "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=800&q=80",
+  hue: "https://images.unsplash.com/photo-1569154941061-e231b4725ef1?auto=format&fit=crop&w=800&q=80",
+  dalat: "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=800&q=80",
+
+  // Travel Blog Cities
+  hanoi: "https://images.unsplash.com/photo-1559592413-7cec4d0cae2b?auto=format&fit=crop&w=600&q=80",
+  nhatrang: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80",
+  dalat2: "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=600&q=80",
+  hcmc: "https://images.unsplash.com/photo-1583417319070-4a69db38a482?auto=format&fit=crop&w=600&q=80",
+  cantho: "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=600&q=80",
+  vungtau: "https://images.unsplash.com/photo-1512100356356-de1b84283e18?auto=format&fit=crop&w=600&q=80",
+
+  // Reviews
+  "review-0": "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=600&q=80",
+  "review-1": "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80",
+  "review-2": "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=600&q=80",
+  "review-3": "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=600&q=80",
+
+  // Explore
+  sunsetbeach: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
+  danang: "https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?auto=format&fit=crop&w=600&q=80",
+  nhatrang2: "https://images.unsplash.com/photo-1512100356356-de1b84283e18?auto=format&fit=crop&w=600&q=80",
+  phuquoc: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=600&q=80"
+};
+
+const DEFAULT_FALLBACK_IMAGE = "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=800&q=80";
+
+const img = (seed, w = 600, h = 400) => {
+  if (seed && MOCK_IMAGES[seed]) {
+    return MOCK_IMAGES[seed];
+  }
+  return DEFAULT_FALLBACK_IMAGE;
+};
 
 /* ------------------------------------------------------------------ */
 /* Small building blocks                                               */
@@ -282,7 +317,12 @@ function HotDestinations() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {hotDestinations.map((d) => (
           <div key={d.name} className="rounded-xl overflow-hidden relative h-64 group shadow-xs">
-            <img src={img(d.seed, 400, 500)} alt={d.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            <img
+              src={img(d.seed, 400, 500)}
+              alt={d.name}
+              onError={(e) => { e.currentTarget.src = DEFAULT_FALLBACK_IMAGE; }}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
             <div className="absolute bottom-3 left-3 right-3 text-white">
               <p className="font-semibold text-base">{d.name}</p>
@@ -332,7 +372,12 @@ function TravelBlog() {
           {blogCities.map((c) => (
             <div key={c.name} className="text-center group cursor-pointer">
               <div className="rounded-xl overflow-hidden h-20 mb-2 border border-gray-200 dark:border-slate-800 group-hover:border-sky-400 transition-colors">
-                <img src={img(c.seed, 200, 200)} alt={c.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                <img
+                  src={img(c.seed, 200, 200)}
+                  alt={c.name}
+                  onError={(e) => { e.currentTarget.src = DEFAULT_FALLBACK_IMAGE; }}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
               </div>
               <p className="text-xs font-medium text-gray-700 dark:text-slate-300">{c.name}</p>
             </div>
@@ -367,7 +412,12 @@ function TripReviews() {
         {reviews.map((r) => (
           <div key={r.id} className="rounded-xl overflow-hidden border border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs">
             <div className="relative h-40">
-              <img src={img(r.seed, 300, 300)} alt={r.title} className="w-full h-full object-cover" />
+              <img
+                src={img(r.seed, 300, 300)}
+                alt={r.title}
+                onError={(e) => { e.currentTarget.src = DEFAULT_FALLBACK_IMAGE; }}
+                className="w-full h-full object-cover"
+              />
               <button
                 aria-label={t("tripReviews.favorite", "Yêu thích")}
                 className="absolute top-2 right-2 w-7 h-7 rounded-full bg-white/90 dark:bg-slate-900/90 text-slate-700 dark:text-slate-200 flex items-center justify-center text-xs shadow-xs cursor-pointer"
@@ -421,7 +471,12 @@ function ExploreNow() {
         <div className="flex flex-col gap-4">
           {exploreSidebar.map((s) => (
             <div key={s.name} className="relative rounded-2xl overflow-hidden h-[84px] shadow-xs">
-              <img src={img(s.seed, 400, 200)} alt={s.name} className="w-full h-full object-cover" />
+              <img
+                src={img(s.seed, 400, 200)}
+                alt={s.name}
+                onError={(e) => { e.currentTarget.src = DEFAULT_FALLBACK_IMAGE; }}
+                className="w-full h-full object-cover"
+              />
               <div className="absolute inset-0 bg-black/40 flex flex-col justify-center px-4">
                 <p className="text-white text-sm font-semibold">{s.name}</p>
                 <div className="flex gap-0.5">
