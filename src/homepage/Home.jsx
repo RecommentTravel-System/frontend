@@ -155,7 +155,7 @@ function Hero() {
 
           <div className="home-planner bg-white dark:bg-slate-900 rounded-2xl shadow-xl max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-5 divide-y md:divide-y-0 md:divide-x divide-gray-100 dark:divide-slate-800 overflow-hidden text-left border border-slate-100 dark:border-slate-800">
             <Field
-              label={t("hero.destination", "địa điểm")}
+              label={t("hero.destination", "Địa điểm")}
               {...fieldProps('destination')}
               placeholder={t("hero.destinationPlaceholder", "Bạn đi đâu thế?")}
             />
@@ -265,7 +265,7 @@ function TravelYourWay() {
 
   const travelWays = [
     { title: t("travelYourWay.costOptimizationTitle", "Tối ưu chi phí"), desc: t("travelYourWay.costOptimizationDesc", "Gợi ý hành trình phù hợp ngân sách, thành tối ưu không lãng phí.") },
-    { title: t("travelYourWay.bestPlacesTitle", "địa điểm tốt nhất"), desc: t("travelYourWay.bestPlacesDesc", "Tổng hợp các địa điểm nổi bật với trải nghiệm mà bạn mong muốn.") },
+    { title: t("travelYourWay.bestPlacesTitle", "Địa điểm tốt nhất"), desc: t("travelYourWay.bestPlacesDesc", "Tổng hợp các địa điểm nổi bật với trải nghiệm mà bạn mong muốn.") },
     { title: t("travelYourWay.weekendPlanTitle", "Lên kế hoạch nhanh cho cuối tuần"), desc: t("travelYourWay.weekendPlanDesc", "Tạo lịch trình nhanh phù hợp cho các chuyến đi ngắn ngày.") },
     { title: t("travelYourWay.customSuggestionsTitle", "Gợi ý cho bạn"), desc: t("travelYourWay.customSuggestionsDesc", "Mỗi hành trình được chỉnh dựa trên phong cách du lịch của riêng bạn.") }
   ];
@@ -301,12 +301,12 @@ function HotDestinations() {
     { name: "Mộc Châu", tag: "Hoa mận, hoa đào nở khắp lối", seed: "mocchau" },
     { name: "Hà Giang", tag: "Núi đá + hoa anh đào, vẻ đẹp hùng vĩ", seed: "hagiang" },
     { name: "Huế", tag: "Thời tiết dễ chịu, cảnh cổ kính rất bình yên", seed: "hue" },
-    { name: "đà Lạt", tag: "Mùa mai anh đào, mai đào khoe sắc", seed: "dalat" }
+    { name: "Đà Lạt", tag: "Mùa mai anh đào, mai đào khoe sắc", seed: "dalat" }
   ];
 
   return (
     <section className="max-w-6xl mx-auto px-6 py-10">
-      <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-4">{t("destinations.sectionTitle", "điểm đến đang hot")}</h2>
+      <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-4">{t("destinations.sectionTitle", "Điểm đến đang hot")}</h2>
       <div className="flex gap-2 mb-6 overflow-x-auto">
         {seasonTabs.map((s) => (
           <Pill key={s.id} active={s.id === activeSeason} onClick={() => setActiveSeason(s.id)}>
@@ -351,7 +351,7 @@ function TravelBlog() {
   const blogCities = [
     { name: "Hà Nội", seed: "hanoi" },
     { name: "Nha Trang", seed: "nhatrang" },
-    { name: "đà Lạt", seed: "dalat2" },
+    { name: "Đà Lạt", seed: "dalat2" },
     { name: "Hồ Chí Minh", seed: "hcmc" },
     { name: "Cần Thơ", seed: "cantho" },
     { name: "Vũng Tàu", seed: "vungtau" }
@@ -394,7 +394,7 @@ function TripReviews() {
   const reviews = Array.from({ length: 4 }).map((_, i) => ({
     id: i,
     title: t("tripReviews.dalatTrip", "Chuyến đi đà Lạt"),
-    subtitle: t("tripReviews.dalatSub", "đà Lạt, 3 ngày, Vui vẻ"),
+    subtitle: t("tripReviews.dalatSub", "Đà Lạt, 3 ngày, Vui vẻ"),
     rating: "5.0",
     seed: `review-${i}`
   }));
@@ -402,7 +402,7 @@ function TripReviews() {
   return (
     <section className="max-w-6xl mx-auto px-6 py-10">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-bold text-slate-900 dark:text-white">{t("tripReviews.sectionTitle", "đánh giá chuyến đi")}</h2>
+        <h2 className="text-lg font-bold text-slate-900 dark:text-white">{t("tripReviews.sectionTitle", "Đánh giá chuyến đi")}</h2>
         <div className="flex gap-2">
           <button className="w-8 h-8 rounded-full border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-center text-gray-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer">‹</button>
           <button className="w-8 h-8 rounded-full border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-center text-gray-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer">›</button>
@@ -446,7 +446,7 @@ function ExploreNow() {
   const { t } = useTranslation();
 
   const exploreSidebar = [
-    { name: "đà Nẵng", rating: 5, seed: "danang" },
+    { name: "Đà Nẵng", rating: 5, seed: "danang" },
     { name: "Nha Trang", rating: 5, seed: "nhatrang2" },
     { name: "Phú Quốc", rating: 5, seed: "phuquoc" }
   ];
@@ -511,7 +511,7 @@ export default function Home() {
       localStorage.setItem("wayvee-home-preview", next ? "premium" : "free");
       setVersionNote("");
     } catch {
-      setVersionNote("đã đổi giao diện, nhưng trình duyệt không lưu được lựa chọn.");
+      setVersionNote("Đã đổi giao diện, nhưng trình duyệt không lưu được lựa chọn.");
     }
   }
 

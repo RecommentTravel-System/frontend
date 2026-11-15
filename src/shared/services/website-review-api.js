@@ -42,7 +42,7 @@ export async function submitWebsiteReview(data) {
   } catch (err) {
     console.warn("Backend submit failed, falling back to local storage:", err);
     const local = saveLocalReview(data);
-    return { data: local, success: true, message: "đánh giá trang web đã được lưu thành công." };
+    return { data: local, success: true, message: "Đánh giá trang web đã được lưu thành công." };
   }
 }
 

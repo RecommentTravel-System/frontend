@@ -66,7 +66,7 @@ export default function Register({
     if (!trimmedEmail) {
       nextErrors.email = t('auth.emailRequired', 'Vui lòng nhập địa chỉ email');
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
-      nextErrors.email = t('auth.emailInvalid', 'địa chỉ email không đúng định dạng');
+      nextErrors.email = t('auth.emailInvalid', 'Địa chỉ email không đúng định dạng');
     }
 
     if (!password) {
@@ -222,7 +222,7 @@ export default function Register({
       const normalizedEmail = email.trim().toLowerCase();
       await resendOtpApi(normalizedEmail);
       setResendCooldown(60);
-      setInfoMessage(`đã gửi lại mã xác thực tới ${normalizedEmail}`);
+      setInfoMessage(`Đã gửi lại mã xác thực tới ${normalizedEmail}`);
     } catch (err) {
       setError(
         getLocalizedErrorMessage(err) ||
@@ -247,7 +247,7 @@ export default function Register({
     <div className="login-page">
       <div className="login-card register-card">
         <div className="login-header">
-          <h2>{t('auth.registerTitle', 'đăng ký tài khoản')}</h2>
+          <h2>{t('auth.registerTitle', 'Đăng ký tài khoản')}</h2>
           <button
             type="button"
             className="close-btn"
@@ -267,7 +267,7 @@ export default function Register({
           <>
             <h1>{t('auth.createAccountTitle', 'Tạo tài khoản Wayvee')}</h1>
             <p className="auth-note">
-              {t('auth.registerNote', 'đăng ký tài khoản để bắt đầu trải nghiệm và lên lịch trình du lịch cùng Wayvee.')}
+              {t('auth.registerNote', 'Đăng ký tài khoản để bắt đầu trải nghiệm và lên lịch trình du lịch cùng Wayvee.')}
             </p>
 
             {error && <p role="alert" className="auth-feedback auth-error">{error}</p>}
@@ -313,7 +313,7 @@ export default function Register({
               </div>
 
               <div className="field-group">
-                <label htmlFor="register-email">{t('auth.emailLabel', 'địa chỉ Email')}</label>
+                <label htmlFor="register-email">{t('auth.emailLabel', 'Địa chỉ Email')}</label>
                 <input
                   id="register-email"
                   autoComplete="username"
@@ -435,7 +435,7 @@ export default function Register({
                 {pending ? (
                   <span className="btn-loading-content">
                     <span className="spinner" />
-                    {t('auth.processing', 'đang xử lý...')}
+                    {t('auth.processing', 'Đang xử lý...')}
                   </span>
                 ) : (
                   t('auth.createAccountButton', 'Tạo tài khoản')
@@ -469,9 +469,9 @@ export default function Register({
               />
             </div>
 
-            <p className="signup-text">{t('auth.alreadyHaveAccount', 'đã có tài khoản?')}</p>
+            <p className="signup-text">{t('auth.alreadyHaveAccount', 'Đã có tài khoản?')}</p>
             <button type="button" className="link-btn" onClick={onLogin}>
-              {t('auth.logIn', 'đăng nhập')}
+              {t('auth.logIn', 'Đăng nhập')}
             </button>
           </>
         ) : (
@@ -547,9 +547,9 @@ export default function Register({
               </div>
             </form>
 
-            <p className="signup-text">{t('auth.alreadyHaveAccount', 'đã có tài khoản?')}</p>
+            <p className="signup-text">{t('auth.alreadyHaveAccount', 'Đã có tài khoản?')}</p>
             <button type="button" className="link-btn" onClick={onLogin}>
-              {t('auth.logIn', 'đăng nhập')}
+              {t('auth.logIn', 'Đăng nhập')}
             </button>
           </>
         )}
@@ -566,7 +566,7 @@ export default function Register({
               </svg>
             </div>
 
-            <h2>đăng ký thành công!</h2>
+            <h2>Đăng ký thành công!</h2>
             <p>
               Tài khoản của bạn đã được kích hoạt thành công. Vui lòng đăng nhập để bắt đầu trải nghiệm các tính năng tuyệt vời của Wayvee.
             </p>

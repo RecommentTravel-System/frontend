@@ -27,17 +27,17 @@ function SecurityDialog({ mode, user, onClose, onSaved, onDeleted }) {
     setBusy(true);
     try {
       if (deleting) { await deleteLocalAccount(user, currentPassword); onDeleted(); }
-      else { await changeAccountPassword(user, currentPassword, password); onSaved('đã cập nhật mật khẩu tài khoản trên trình duyệt.'); dialog.current.close(); }
+      else { await changeAccountPassword(user, currentPassword, password); onSaved('Đã cập nhật mật khẩu tài khoản trên trình duyệt.'); dialog.current.close(); }
     } catch (failure) { setError(failure.message || 'Không thể lưu thay đổi. Vui lòng thử lại.'); }
     finally { setBusy(false); }
   }
   return <dialog ref={dialog} className="settings-dialog" aria-labelledby="settings-dialog-title" onClose={onClose} onCancel={event => { if (busy) event.preventDefault(); }}><form onSubmit={submit}>
-    <div className="settings-dialog-heading"><h2 id="settings-dialog-title">{deleting ? 'Xóa tài khoản' : 'Đổi mật khẩu'}</h2><button type="button" disabled={busy} onClick={() => dialog.current.close()} aria-label="đóng">×</button></div>
+    <div className="settings-dialog-heading"><h2 id="settings-dialog-title">{deleting ? 'Xóa tài khoản' : 'Đổi mật khẩu'}</h2><button type="button" disabled={busy} onClick={() => dialog.current.close()} aria-label="Đóng">×</button></div>
     {deleting ? <p>Thao tác này xóa thông tin hồ sơ, avatar đã lưu, bộ sưu tập, bài đánh giá và cài đặt của tài khoản này trên trình duyệt, rồi đăng xuất.</p> : demo && <p>Bạn đang dùng Continue để test, chưa có mật khẩu để thay đổi. Chức năng này sẽ dùng được khi bật đăng nhập bằng tài khoản.</p>}
     {deleting && demo && <p>Bấm Continue lần nữa sẽ tạo lại phiên demo mới.</p>}
     {!demo && <label>Mật khẩu hiện tại<input type="password" value={currentPassword} onChange={event => setCurrentPassword(event.target.value)} autoComplete="current-password" required disabled={busy} /></label>}
     {deleting ? <label>Nhập XÓA để xác nhận<input value={deletionText} onChange={event => setDeletionText(event.target.value)} autoComplete="off" required disabled={busy} /></label> : !demo && <><label>Mật khẩu mới<input type="password" value={password} onChange={event => setPassword(event.target.value)} autoComplete="new-password" minLength={8} required disabled={busy} /></label><label>Xác nhận mật khẩu mới<input type="password" value={confirmation} onChange={event => setConfirmation(event.target.value)} autoComplete="new-password" minLength={8} required disabled={busy} /></label></>}
-    <p className="settings-error" role="alert">{error}</p><div className="settings-dialog-actions"><button type="button" disabled={busy} onClick={() => dialog.current.close()}>{!deleting && demo ? 'đã hiểu' : 'Hủy'}</button>{(deleting || !demo) && <button type="submit" disabled={busy || (deleting && deletionText.trim() !== 'XÓA')} className={deleting ? 'settings-danger' : 'settings-primary'}>{busy ? 'đang xử lý…' : deleting ? 'Xóa tài khoản' : 'Lưu mật khẩu'}</button>}</div>
+    <p className="settings-error" role="alert">{error}</p><div className="settings-dialog-actions"><button type="button" disabled={busy} onClick={() => dialog.current.close()}>{!deleting && demo ? 'Đã hiểu' : 'Hủy'}</button>{(deleting || !demo) && <button type="submit" disabled={busy || (deleting && deletionText.trim() !== 'XÓA')} className={deleting ? 'settings-danger' : 'settings-primary'}>{busy ? 'Đang xử lý…' : deleting ? 'Xóa tài khoản' : 'Lưu mật khẩu'}</button>}</div>
   </form></dialog>;
 }
 
@@ -48,7 +48,7 @@ export default function Settings() {
   const [notice, setNotice] = useState('');
   const [dialog, setDialog] = useState(null);
   function toggle(key) {
-    try { update(key, !preferences[key]); setNotice(key === 'notifications' ? 'đã lưu lựa chọn thông báo. Dịch vụ gửi thông báo chưa được kết nối.' : 'đã cập nhật hiệu ứng chuyển động.'); }
+    try { update(key, !preferences[key]); setNotice(key === 'notifications' ? 'Đã lưu lựa chọn thông báo. Dịch vụ gửi thông báo chưa được kết nối.' : 'Đã cập nhật hiệu ứng chuyển động.'); }
     catch { setNotice('Không thể lưu cài đặt. Vui lòng kiểm tra quyền lưu trữ của trình duyệt.'); }
   }
   return <div className="settings-page"><AppHeader /><main className="account-layout settings-layout"><AccountSidebar onNotice={setNotice} /><section className="settings-panel" aria-labelledby="settings-heading">

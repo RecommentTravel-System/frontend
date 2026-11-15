@@ -66,7 +66,7 @@ export function ScreenWidthControl() {
 
             {/* Current Effective Status */}
             <div className="bg-slate-50 dark:bg-slate-900 rounded-2xl p-3.5 mb-5 flex items-center justify-between">
-              <span className="text-xs text-gray-600 dark:text-gray-400 font-medium">độ rộng đang áp dụng:</span>
+              <span className="text-xs text-gray-600 dark:text-gray-400 font-medium">Độ rộng đang áp dụng:</span>
               <Badge variant="cyan" className="text-xs font-bold px-3 py-1">
                 {typeof effectiveWidthPx === "number" ? `${effectiveWidthPx}px` : effectiveWidthPx}
               </Badge>

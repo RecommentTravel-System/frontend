@@ -92,7 +92,7 @@ function AccountPage({ register = false }) {
 
   if (register) return <Register {...shared} onLogin={() => navigate('/login', { state: location.state })} onSubmit={(values) => {
     const dest = requestedDestination || '/';
-    navigate('/login', { replace: true, state: { from: dest, message: 'đăng ký tài khoản thành công! Vui lòng đăng nhập để tiếp tục.' } });
+    navigate('/login', { replace: true, state: { from: dest, message: 'Đăng ký tài khoản thành công! Vui lòng đăng nhập để tiếp tục.' } });
   }} />;
 
   return <Login {...shared} message={location.state?.message} onSignUp={() => navigate('/register', { state: location.state })} onSubmit={async (values) => {
@@ -119,8 +119,8 @@ function AppRoutes() {
   useEffect(() => {
     const titles = {
       '/': 'Trang chủ',
-      '/login': 'đăng nhập',
-      '/register': 'đăng ký',
+      '/login': 'Đăng nhập',
+      '/register': 'Đăng ký',
       '/profile': 'Thông tin cá nhân',
       '/payment': 'Premium',
       '/reviews': 'Bài đánh giá',
@@ -141,7 +141,7 @@ function AppRoutes() {
       '/admin': 'Quản trị viên',
       '/admin/dashboard': 'Dashboard - Quản trị',
       '/admin/categories': 'Danh mục - Quản trị',
-      '/admin/reviews': 'đánh giá - Quản trị',
+      '/admin/reviews': 'Đánh giá - Quản trị',
       '/admin/users': 'Người dùng - Quản trị',
       '/admin/revenue': 'Báo cáo & Doanh thu - Quản trị',
     };
@@ -151,7 +151,7 @@ function AppRoutes() {
       (path.startsWith('/locations/') ? 'Chi tiết địa điểm' :
        path.startsWith('/places/') ? 'Chi tiết địa điểm' :
        path.startsWith('/itineraries') ? 'Lịch trình' :
-       path.startsWith('/favorites') ? 'địa điểm yêu thích' :
+       path.startsWith('/favorites') ? 'Địa điểm yêu thích' :
        path.startsWith('/trip/') ? 'Lịch trình' :
        path.startsWith('/admin/') ? 'Quản trị viên' :
        'Không tìm thấy trang');

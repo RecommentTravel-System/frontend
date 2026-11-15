@@ -168,7 +168,7 @@ export default function FeedbackForm({ user, draft, onDraftChange, onClose }) {
               để sau
             </button>
             <button type="submit" className="support-primary cursor-pointer" disabled={busy}>
-              {busy ? 'đang gửi…' : 'Gửi đánh giá'}
+              {busy ? 'Đang gửi…' : 'Gửi đánh giá'}
             </button>
           </div>
         </form>

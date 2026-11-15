@@ -128,13 +128,13 @@ export default function CheckoutDialog({ plan, onClose }) {
       <div className="checkout-heading">
         <h2 id="checkout-title">
           {paymentData
-            ? t('paymentPage.checkout.processingTitle', 'đang thực hiện thanh toán')
+            ? t('paymentPage.checkout.processingTitle', 'Đang thực hiện thanh toán')
             : t('paymentPage.checkout.title', 'Hoàn tất giao dịch mua')}
         </h2>
         <button
           type="button"
           className="checkout-close"
-          aria-label={t('paymentPage.checkout.closeLabel', 'đóng thanh toán')}
+          aria-label={t('paymentPage.checkout.closeLabel', 'Đóng thanh toán')}
           onClick={() => {
             handleCancelPayment();
             if (dialog.current) dialog.current.close();
@@ -148,7 +148,7 @@ export default function CheckoutDialog({ plan, onClose }) {
       {/* When waiting for payment / webhook */}
       {paymentData ? (
         <WayveeTravelLoader
-          title={t('paymentPage.loader.title', 'đang chờ xác nhận thanh toán')}
+          title={t('paymentPage.loader.title', 'Đang chờ xác nhận thanh toán')}
           subtitle={t('paymentPage.loader.subtitle', 'Vui lòng quét mã QR ngân hàng hoặc nhấn nút bên dưới để thanh toán qua PayOS.')}
           showQR={true}
           qrCode={paymentData.qrCode}
@@ -220,7 +220,7 @@ export default function CheckoutDialog({ plan, onClose }) {
               onClick={handleStartPayment}
             >
               {loading
-                ? t('paymentPage.checkout.creatingTx', 'đang tạo giao dịch...')
+                ? t('paymentPage.checkout.creatingTx', 'Đang tạo giao dịch...')
                 : t('paymentPage.checkout.payBtn', 'Thanh toán')}
             </button>
           </div>

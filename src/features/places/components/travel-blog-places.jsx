@@ -7,7 +7,7 @@ const img = (seed, w = 200, h = 200) => `https://picsum.photos/seed/${seed}/${w}
 const blogCities = [
   { name: "Hà Nội", seed: "hanoi" },
   { name: "Nha Trang", seed: "nhatrang" },
-  { name: "đà Lạt", seed: "dalat2" },
+  { name: "Đà Lạt", seed: "dalat2" },
   { name: "Hồ Chí Minh", seed: "hcmc" },
   { name: "Cần Thơ", seed: "cantho" },
   { name: "Vũng Tàu", seed: "vungtau" }

@@ -219,7 +219,7 @@ export default function PaymentCheckout() {
             <div>
               <h1>
                 {isWaitingWebhook
-                  ? t('paymentPage.checkout.processingTitle', 'đang xác nhận thanh toán')
+                  ? t('paymentPage.checkout.processingTitle', 'Đang xác nhận thanh toán')
                   : paymentData
                     ? 'Thanh toán qua PayOS'
                     : t('paymentPage.checkout.title', 'Hoàn tất giao dịch mua')}
@@ -372,7 +372,7 @@ export default function PaymentCheckout() {
                   onClick={handleStartPayment}
                 >
                   {loading
-                    ? t('paymentPage.checkout.creatingTx', 'đang tạo giao dịch...')
+                    ? t('paymentPage.checkout.creatingTx', 'Đang tạo giao dịch...')
                     : t('paymentPage.checkout.payBtn', 'Thanh toán')}
                 </button>
               </div>

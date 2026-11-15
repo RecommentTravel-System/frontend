@@ -52,7 +52,7 @@ export default function SearchPage() {
         <div className="search-view" role="group" aria-label="Kiểu hiển thị"><button aria-label="Danh sách" aria-pressed={!grid && !map} onClick={() => change('view', 'list')}>☷</button><button aria-label="Lưới" aria-pressed={grid} onClick={() => change('view', 'grid')}>▦</button>{premium && <button aria-label="Bản đồ" aria-pressed={map} onClick={() => showOnMap(selected?.id)}>⌖</button>}</div></div>
       <p className="search-result-count" role="status">{results.length} địa điểm · Dữ liệu, giá và ảnh minh họa{params.has('maxPrice') && ` · Ngân sách tối đa: ${Number(params.get('maxPrice')).toLocaleString('vi-VN')}đ`}</p>
       <div className={`search-results ${grid ? 'is-grid' : ''}`}>{results.map(place => <SearchCard key={place.id} place={place} onMap={premium ? () => showOnMap(place.id) : undefined} selected={map && selected?.id === place.id} />)}</div>
-      {!results.length && <div className="search-empty"><h2>Chưa tìm thấy địa điểm phù hợp</h2><p>Thử từ khóa khác hoặc bỏ bớt bộ lọc.</p><button className="search-outline" onClick={clearFilters}>Xóa bộ lọc</button><button className="search-outline" onClick={() => setSearchOpen(true)}>đổi tìm kiếm</button></div>}
+      {!results.length && <div className="search-empty"><h2>Chưa tìm thấy địa điểm phù hợp</h2><p>Thử từ khóa khác hoặc bỏ bớt bộ lọc.</p><button className="search-outline" onClick={clearFilters}>Xóa bộ lọc</button><button className="search-outline" onClick={() => setSearchOpen(true)}>Đổi tìm kiếm</button></div>}
     </section>
     {map && <MapResize controller={resize} />}
     {map && <SearchMap results={results} selected={selected} onSelect={id => change("place", id)} onClose={closeMap} />}

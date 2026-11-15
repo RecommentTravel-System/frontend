@@ -301,7 +301,7 @@ export function ItineraryBuilder({
                         )}
                       </div>
                       <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
-                        {place.location || place.address || "địa điểm khám phá"}
+                        {place.location || place.address || "Địa điểm khám phá"}
                       </p>
                     </div>
 
@@ -384,7 +384,7 @@ export function ItineraryBuilder({
                           {place.name}
                         </h5>
                         <p className="text-[10px] text-slate-500 truncate">
-                          {place.location || place.address || "địa điểm"}
+                          {place.location || place.address || "Địa điểm"}
                         </p>
                       </div>
                     </div>

@@ -7,7 +7,7 @@ export function LanguageSwitcher() {
     <button
       type="button"
       onClick={() => setLanguage(language === "vi" ? "en" : "vi")}
-      title="đổi ngôn ngữ"
+      title="Đổi ngôn ngữ"
       className="px-2.5 py-1 rounded-full border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-800 active:scale-95 transition-all duration-150 cursor-pointer"
     >
       {language === "vi" ? "🇻🇳 VI" : "🇺🇸 EN"}

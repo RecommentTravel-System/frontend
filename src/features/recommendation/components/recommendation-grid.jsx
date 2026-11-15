@@ -4,9 +4,9 @@ import { useTranslation } from "~/providers/i18n-provider";
 const img = (seed, w = 900, h = 500) => `https://picsum.photos/seed/${seed}/${w}/${h}`;
 
 const exploreSidebar = [
-  { name: "đà Nẵng", rating: "5.0", category: "điểm đến biển", seed: "danang" },
+  { name: "Đà Nẵng", rating: "5.0", category: "Điểm đến biển", seed: "danang" },
   { name: "Nha Trang", rating: "5.0", category: "Nghỉ dưỡng & Lặn biển", seed: "nhatrang2" },
-  { name: "Phú Quốc", rating: "5.0", category: "đảo ngọc & Resort", seed: "phuquoc" }
+  { name: "Phú Quốc", rating: "5.0", category: "Đảo ngọc & Resort", seed: "phuquoc" }
 ];
 
 export function RecommendationGrid() {

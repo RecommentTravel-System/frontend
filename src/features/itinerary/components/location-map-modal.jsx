@@ -577,7 +577,7 @@ export function LocationMapModal({ initialQuery = "", onConfirm, onClose }) {
         {/* Selected Location Summary & Actions */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
           <div className="text-xs text-slate-600 dark:text-slate-400 line-clamp-1 w-full sm:w-auto">
-            <span className="font-semibold text-slate-800 dark:text-slate-200">đã chọn:</span>{" "}
+            <span className="font-semibold text-slate-800 dark:text-slate-200">Đã chọn:</span>{" "}
             {selectedLocation.fullName || selectedLocation.name || "Chưa có địa điểm"}
           </div>
 

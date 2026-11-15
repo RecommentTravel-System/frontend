@@ -43,7 +43,7 @@ function StatusBadge({ status, confirmed, hasItinerary }) {
   if (status === 'ongoing' || status === 'IN_PROGRESS') {
     return (
       <span className="trip-badge trip-badge-ongoing">
-        <span className="trip-badge-dot"></span> đang diễn ra
+        <span className="trip-badge-dot"></span> Đang diễn ra
       </span>
     );
   }
@@ -58,7 +58,7 @@ function StatusBadge({ status, confirmed, hasItinerary }) {
 
   return (
     <span className={`trip-badge${confirmed ? ' trip-badge-confirmed' : ' trip-badge-pending'}`}>
-      {confirmed ? 'đã xác nhận' : 'đang chờ'}
+      {confirmed ? 'Đã xác nhận' : 'Đang chờ'}
     </span>
   );
 }
@@ -306,7 +306,7 @@ function TripDetail({ trip, filter, user, onCreateItinerary, onCancelTrip }) {
 
         <div className="trip-destinations">
           <div>
-            <h2>địa điểm đã lưu ({trip.places ? trip.places.length : 0})</h2>
+            <h2>Địa điểm đã lưu ({trip.places ? trip.places.length : 0})</h2>
             <ul>
               {(trip.places || []).map((place) => (
                 <li key={place}>📍 {place}</li>
@@ -481,7 +481,7 @@ export default function Itineraries() {
     setLocalTrips((prev) =>
       prev.map((t) => (String(t.id) === String(trip.id) ? { ...t, status: 'cancelled' } : t))
     );
-    setNotice(`đã hủy lịch trình "${trip.title}" thành công.`);
+    setNotice(`Đã hủy lịch trình "${trip.title}" thành công.`);
   }, []);
 
   const handleCreateItinerary = (trip) => {

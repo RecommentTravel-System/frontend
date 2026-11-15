@@ -6,8 +6,8 @@ export const freeDestinations = [
   ['lake-cafe', 'Cà phê bên hồ', 'Tây Hồ, Hà Nội', 'Café', 85000, 2.2, 4.5, 4, 32],
   ['hanoi-hotel', 'Hanoi Garden Hotel', 'Hoàn Kiếm, Hà Nội', 'Hotel', 1200000, .8, 4.8, 5, 45],
   ['saigon-rooftop', 'Sài Gòn Rooftop', 'Quận 1, Hồ Chí Minh', 'Restaurant', 350000, 1.5, 4.2, 4, 28],
-  ['danang-resort', 'đà Nẵng Beach Resort', 'Sơn Trà, đà Nẵng', 'Resort', 2400000, 4, 4.9, 5, 65],
-  ['dalat-home', 'đà Lạt Pine House', 'đà Lạt, Lâm đồng', 'Homestay', 650000, 3.1, 3.8, 3, 36],
+  ['danang-resort', 'Đà Nẵng Beach Resort', 'Sơn Trà, Đà Nẵng', 'Resort', 2400000, 4, 4.9, 5, 65],
+  ['dalat-home', 'Đà Lạt Pine House', 'Đà Lạt, Lâm Đồng', 'Homestay', 650000, 3.1, 3.8, 3, 36],
   ['old-quarter', 'Old Quarter Stay', 'Hoàn Kiếm, Hà Nội', 'Homestay', 450000, 1.2, 3, 2, 22],
   ['river-kitchen', 'River Kitchen', 'Hội An, Quảng Nam', 'Restaurant', 180000, 6, 4, 0, 50],
 ].map(([id, name, address, type, price, distance, rating, stars, size], index) => ({
@@ -24,14 +24,14 @@ export const premiumDestinations = [
   ['trang-tien', 'Tràng Tiền Coffee', 'Tràng Tiền, Hoàn Kiếm, Hà Nội', 1],
   ['westlake-garden', 'Westlake Garden Stay', 'Tây Hồ, Hà Nội', 2],
   ['hanoi-rooftop', 'Hanoi Sunset Rooftop', 'Hoàn Kiếm, Hà Nội', 3],
-  ['danang-garden', 'đà Nẵng Garden Resort', 'Sơn Trà, đà Nẵng', 4],
-  ['pine-retreat', 'đà Lạt Pine Retreat', 'đà Lạt, Lâm đồng', 5],
+  ['danang-garden', 'Đà Nẵng Garden Resort', 'Sơn Trà, Đà Nẵng', 4],
+  ['pine-retreat', 'Đà Lạt Pine Retreat', 'Đà Lạt, Lâm Đồng', 5],
   ['heritage-house', 'Hanoi Heritage House', 'Ba đình, Hà Nội', 6],
   ['hoian-table', 'Hội An Riverside Table', 'Hội An, Quảng Nam', 7],
   ['saigon-coffee', 'Sài Gòn Corner Coffee', 'Quận 1, Hồ Chí Minh', 0],
-  ['danang-coffee', 'đà Nẵng Sea Coffee', 'Ngũ Hành Sơn, đà Nẵng', 1],
+  ['danang-coffee', 'Đà Nẵng Sea Coffee', 'Ngũ Hành Sơn, Đà Nẵng', 1],
   ['saigon-stay', 'Sài Gòn City Stay', 'Quận 3, Hồ Chí Minh', 2],
-  ['dalat-kitchen', 'đà Lạt Garden Kitchen', 'đà Lạt, Lâm đồng', 3],
+  ['dalat-kitchen', 'Đà Lạt Garden Kitchen', 'Đà Lạt, Lâm Đồng', 3],
 ].map(([id, name, address, base], index) => ({ ...freeDestinations[base], id, name, address, premium: true, price: freeDestinations[base].price + (index + 1) * 5000, distance: (index % 7 + 1) * .6, recommended: 92 - index }));
 export const destinations = [...freeDestinations, ...premiumDestinations];
 export const searchCatalog = premium => premium ? destinations : freeDestinations;

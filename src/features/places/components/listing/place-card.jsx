@@ -113,12 +113,12 @@ export function PlaceCard({
     FAST_FOOD: t("places.categories.fastFood") || "Thức ăn nhanh",
     BAR: t("places.categories.bar") || "Quán bar / Pub",
     HOTEL: t("places.categories.hotel") || "Khách sạn / Lưu trú",
-    ATTRACTION: t("places.categories.attraction") || "điểm tham quan",
+    ATTRACTION: t("places.categories.attraction") || "Điểm tham quan",
     SHOPPING: t("places.categories.shopping") || "Mua sắm",
     ENTERTAINMENT: t("places.categories.entertainment") || "Khu vui chơi",
-    OTHER: t("places.categories.other") || "địa điểm khác"
+    OTHER: t("places.categories.other") || "Địa điểm khác"
   };
-  const categoryLabel = categoryMap[categoryCodeUpper] || place.categoryCode || t("places.categories.other", "địa điểm");
+  const categoryLabel = categoryMap[categoryCodeUpper] || place.categoryCode || t("places.categories.other", "Địa điểm");
 
   // LIST VIEW: Horizontal layout — icon category thay ảnh
   if (variant === "list") {
@@ -175,7 +175,7 @@ export function PlaceCard({
                   {ratingVal ?? "-"}
                 </span>
                 <span className="text-[11px] text-slate-400">
-                  {reviewCount ? `(${reviewCount} ${t("places.card.reviews") || "đánh giá"})` : ""}
+                  {reviewCount ? `(${reviewCount} ${t("places.card.reviews") || "Đánh giá"})` : ""}
                 </span>
               </div>
             </div>
@@ -192,7 +192,7 @@ export function PlaceCard({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-            <span>{distanceKm} km từ trung tâm • {place.address || "địa điểm trung tâm thành phố"}</span>
+            <span>{distanceKm} km từ trung tâm • {place.address || "Địa điểm trung tâm thành phố"}</span>
           </p>
 
           {/* Opening hours & info */}
@@ -218,7 +218,7 @@ export function PlaceCard({
                   <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
                   </svg>
-                  <span>{t("places.card.added") || "đã thêm"}</span>
+                  <span>{t("places.card.added") || "Đã thêm"}</span>
                 </>
               ) : (
                 <>
@@ -297,7 +297,7 @@ export function PlaceCard({
 
           {/* Distance & Address */}
           <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2">
-            📍 {distanceKm} km • {place.address || "địa điểm trung tâm"}
+            📍 {distanceKm} km • {place.address || "Địa điểm trung tâm"}
           </p>
         </div>
 
@@ -317,7 +317,7 @@ export function PlaceCard({
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
                 </svg>
-                <span>{t("places.card.added") || "đã thêm"}</span>
+                <span>{t("places.card.added") || "Đã thêm"}</span>
               </>
             ) : (
               <>

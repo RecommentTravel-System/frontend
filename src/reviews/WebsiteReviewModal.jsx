@@ -125,7 +125,7 @@ export default function WebsiteReviewModal({ isOpen, onClose, user, onSuccess })
             type="button"
             onClick={handleReset}
             className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-            aria-label="đóng"
+            aria-label="Đóng"
           >
             ✕
           </button>
@@ -300,7 +300,7 @@ export default function WebsiteReviewModal({ isOpen, onClose, user, onSuccess })
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
                     </svg>
-                    <span>đang gửi...</span>
+                    <span>Đang gửi...</span>
                   </>
                 ) : (
                   <span>Gửi đánh giá</span>

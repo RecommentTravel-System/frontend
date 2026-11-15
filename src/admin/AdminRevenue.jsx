@@ -74,8 +74,8 @@ const STATUS_CONFIG = {
     ),
   },
   PENDING: {
-    label: "đang chờ thanh toán",
-    shortLabel: "đang chờ",
+    label: "Đang chờ thanh toán",
+    shortLabel: "Đang chờ",
     pillClass: "bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border-amber-200 dark:border-amber-800",
     dotClass: "bg-amber-500 animate-pulse",
     icon: (
@@ -86,8 +86,8 @@ const STATUS_CONFIG = {
     ),
   },
   CANCELLED: {
-    label: "đã hủy giao dịch",
-    shortLabel: "đã hủy",
+    label: "Đã hủy giao dịch",
+    shortLabel: "Đã hủy",
     pillClass: "bg-slate-100 text-slate-600 dark:bg-slate-800/60 dark:text-slate-400 border-slate-200 dark:border-slate-700",
     dotClass: "bg-slate-400",
     icon: (
@@ -260,7 +260,7 @@ export default function AdminRevenue() {
   const handleCopy = (text) => {
     navigator.clipboard?.writeText(String(text));
     setCopiedCode(text);
-    showToast(`đã sao chép mã: ${text}`);
+    showToast(`Đã sao chép mã: ${text}`);
     setTimeout(() => setCopiedCode(null), 2000);
   };
 
@@ -333,7 +333,7 @@ export default function AdminRevenue() {
     setSyncingId(paymentId);
     try {
       const updated = await syncPaymentStatusApi(paymentId);
-      showToast("đã đồng bộ trạng thái giao dịch với PayOS!");
+      showToast("Đã đồng bộ trạng thái giao dịch với PayOS!");
       fetchSummary();
       fetchPayments();
       if (selectedPayment && selectedPayment.paymentId === paymentId) {
@@ -374,9 +374,9 @@ export default function AdminRevenue() {
           : p.status === "FAILED"
             ? "Thất bại"
             : p.status === "PENDING"
-              ? "đang chờ"
+              ? "Đang chờ"
               : p.status === "CANCELLED"
-                ? "đã hủy"
+                ? "Đã hủy"
                 : p.status;
 
       return [
@@ -403,7 +403,7 @@ export default function AdminRevenue() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    showToast("đã tải xuống file báo cáo doanh thu CSV thành công!");
+    showToast("Đã tải xuống file báo cáo doanh thu CSV thành công!");
   };
 
   // Calculated rate
@@ -445,7 +445,7 @@ export default function AdminRevenue() {
                   fetchSummary();
                   fetchChart(chartPeriod);
                   fetchPayments();
-                  showToast("đã làm mới dữ liệu báo cáo!");
+                  showToast("Đã làm mới dữ liệu báo cáo!");
                 }}
                 className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-xl bg-[#00a3e0] hover:bg-[#0089bd] text-white shadow-sm transition-all active:scale-95"
                 title="Làm mới dữ liệu từ máy chủ"
@@ -632,12 +632,12 @@ export default function AdminRevenue() {
                     <div
                       className="bg-amber-500 transition-all duration-500"
                       style={{ width: `${summary.totalCount ? (summary.pendingCount / summary.totalCount) * 100 : 0}%` }}
-                      title={`đang chờ: ${summary.pendingCount} đơn`}
+                      title={`Đang chờ: ${summary.pendingCount} đơn`}
                     />
                     <div
                       className="bg-slate-400 transition-all duration-500"
                       style={{ width: `${summary.totalCount ? (summary.cancelledCount / summary.totalCount) * 100 : 0}%` }}
-                      title={`đã hủy: ${summary.cancelledCount} đơn`}
+                      title={`Đã hủy: ${summary.cancelledCount} đơn`}
                     />
                   </div>
                 </div>
@@ -671,7 +671,7 @@ export default function AdminRevenue() {
                   <div className="flex items-center justify-between p-2 rounded-xl bg-amber-50/60 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30">
                     <div className="flex items-center gap-2">
                       <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
-                      <span className="font-semibold text-slate-700 dark:text-slate-200">đang chờ quét QR</span>
+                      <span className="font-semibold text-slate-700 dark:text-slate-200">Đang chờ quét QR</span>
                     </div>
                     <div className="text-right">
                       <span className="font-bold text-amber-700 dark:text-amber-400">{summary.pendingCount} đơn</span>
@@ -758,8 +758,8 @@ export default function AdminRevenue() {
                   { id: "ALL", label: "Tất cả", count: summary.totalCount },
                   { id: "PAID", label: "Thành công", count: summary.successCount, dot: "bg-emerald-500" },
                   { id: "FAILED", label: "Thất bại", count: summary.failedCount, dot: "bg-rose-500" },
-                  { id: "PENDING", label: "đang chờ", count: summary.pendingCount, dot: "bg-amber-500" },
-                  { id: "CANCELLED", label: "đã hủy", count: summary.cancelledCount, dot: "bg-slate-400" },
+                  { id: "PENDING", label: "Đang chờ", count: summary.pendingCount, dot: "bg-amber-500" },
+                  { id: "CANCELLED", label: "Đã hủy", count: summary.cancelledCount, dot: "bg-slate-400" },
                 ].map((tab) => (
                   <button
                     key={tab.id}
@@ -811,7 +811,7 @@ export default function AdminRevenue() {
                             <polyline points="23 4 23 10 17 10" />
                             <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
                           </svg>
-                          <span>đang tải danh sách giao dịch...</span>
+                          <span>Đang tải danh sách giao dịch...</span>
                         </div>
                       </td>
                     </tr>
@@ -956,7 +956,7 @@ export default function AdminRevenue() {
                                   onClick={() => handleSyncPayment(p.paymentId)}
                                   disabled={syncingId === p.paymentId}
                                   className="p-1.5 text-xs rounded-lg border border-amber-300 text-amber-700 dark:border-amber-700 dark:text-amber-300 hover:bg-amber-50 dark:hover:bg-amber-950/50 transition-colors disabled:opacity-50"
-                                  title="đồng bộ ngay với PayOS xem tiền đã vào chưa"
+                                  title="Đồng bộ ngay với PayOS xem tiền đã vào chưa"
                                 >
                                   {syncingId === p.paymentId ? (
                                     <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -1185,7 +1185,7 @@ export default function AdminRevenue() {
                     <polyline points="1 20 1 14 7 14" />
                     <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
                   </svg>
-                  <span>đồng bộ PayOS ngay</span>
+                  <span>Đồng bộ PayOS ngay</span>
                 </button>
               ) : (
                 <div />

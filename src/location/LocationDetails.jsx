@@ -14,7 +14,7 @@ const readPreview = () => { try { return localStorage.getItem('wayvee-home-previ
 function Modal({ title, children, onClose }) {
   const ref = useRef(null);
   useEffect(() => { if (!ref.current.open) ref.current.showModal(); }, []);
-  return <dialog ref={ref} className="location-dialog" aria-label={title} onClose={onClose}><div className="location-dialog-heading"><h2>{title}</h2><button aria-label="đóng" onClick={() => ref.current.close()}>×</button></div>{children}</dialog>;
+  return <dialog ref={ref} className="location-dialog" aria-label={title} onClose={onClose}><div className="location-dialog-heading"><h2>{title}</h2><button aria-label="Đóng" onClick={() => ref.current.close()}>×</button></div>{children}</dialog>;
 }
 function Photo({ src, alt }) {
   const [failed, setFailed] = useState(false);
@@ -39,7 +39,7 @@ export default function LocationDetails() {
   const [shareUrl, setShareUrl] = useState('');
   const [collections, setCollections] = useState(() => { try { return user ? readFavorites(user.email) : []; } catch { return []; } });
   const [collectionId, setCollectionId] = useState('');
-  const [newName, setNewName] = useState('địa điểm muốn ghé');
+  const [newName, setNewName] = useState('Địa điểm muốn ghé');
   const back = typeof location.state?.from === 'string' && /^\/search(?:\?|$)/.test(location.state.from) ? location.state.from : '/search';
   if (!place) return <><SiteHeader /><main className="location-page"><h1>Không tìm thấy địa điểm</h1><Link to="/search">Quay lại tìm kiếm</Link></main><SiteFooter /></>;
   const cafe = place.id === 'cong-cafe';
@@ -60,19 +60,19 @@ export default function LocationDetails() {
       }
       if (!target.placeIds.includes(place.id)) target.placeIds.push(place.id);
       localStorage.setItem(favoritesKey(user.email), JSON.stringify(current));
-      setCollections(current); setModal(null); setNotice(`đã thêm vào “${target.name}”. Xem trong mục Yêu thích.`);
+      setCollections(current); setModal(null); setNotice(`Đã thêm vào “${target.name}”. Xem trong mục Yêu thích.`);
     } catch { setNotice('Không thể lưu bộ sưu tập. Hãy kiểm tra quyền lưu trữ của trình duyệt.'); }
   }
   async function share() {
     const url = new URL(`/locations/${place.id}`, window.location.origin).href;
     try {
       if (navigator.share) await navigator.share({ title: place.name, url });
-      else { await navigator.clipboard.writeText(url); setNotice('đã sao chép liên kết địa điểm.'); }
+      else { await navigator.clipboard.writeText(url); setNotice('Đã sao chép liên kết địa điểm.'); }
     } catch (error) { if (error.name !== 'AbortError') { setShareUrl(url); setNotice('Sao chép liên kết bên dưới để chia sẻ.'); } }
   }
   return <><SiteHeader /><main className="location-page">
     <Link className="location-back" to={back}>‹ Quay lại tìm kiếm</Link>
-    <header className="location-heading"><div><h1>{place.name} <span className="location-stars" aria-label={`${place.stars} sao`}>{'★'.repeat(place.stars)}</span></h1><p>{place.address}</p></div><div className="location-actions"><button aria-label={saved ? 'đã lưu; thêm vào bộ sưu tập' : 'Lưu địa điểm yêu thích'} aria-pressed={saved} onClick={() => setModal('save')}>{saved ? '♥' : '♡'}</button><button aria-label="Chia sẻ địa điểm" onClick={share}><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m9 10 6-4M9 14l6 4"/></svg></button></div></header>
+    <header className="location-heading"><div><h1>{place.name} <span className="location-stars" aria-label={`${place.stars} sao`}>{'★'.repeat(place.stars)}</span></h1><p>{place.address}</p></div><div className="location-actions"><button aria-label={saved ? 'Đã lưu; thêm vào bộ sưu tập' : 'Lưu địa điểm yêu thích'} aria-pressed={saved} onClick={() => setModal('save')}>{saved ? '♥' : '♡'}</button><button aria-label="Chia sẻ địa điểm" onClick={share}><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m9 10 6-4M9 14l6 4"/></svg></button></div></header>
     <div className="location-add-row"><span className="location-demo">{premium ? 'Premium' : 'Bản free'} · Nội dung và ảnh minh họa</span><button className="location-primary" title="Thêm vào bộ sưu tập yêu thích" onClick={() => setModal('save')}>Thêm +</button></div>
     <p role="status" className="location-notice">{notice}</p>{shareUrl && <label className="location-share">Liên kết chia sẻ<input readOnly value={shareUrl} onFocus={event => event.target.select()} /></label>}
     <div className="location-gallery">{photos.slice(0, 5).map((src, index) => <button key={src} className={index === 0 ? 'location-gallery-main' : ''} aria-label={`Xem ảnh ${index + 1} của ${place.name}`} onClick={() => { setPhotoIndex(index); setModal('gallery'); }}><Photo src={src} alt={`Ảnh minh họa ${place.name} — ${index + 1}`} />{index === 4 && <span className="location-photo-count">▧ {photos.length} ảnh</span>}</button>)}</div>
@@ -84,7 +84,7 @@ export default function LocationDetails() {
     {premium && <PremiumSuggestions key={place.id} place={place} />}
   </main><SiteFooter />
     {modal === 'gallery' && <Modal title={`Ảnh ${photoIndex + 1} / ${photos.length}`} onClose={() => setModal(null)}><div className="location-lightbox"><Photo key={photos[photoIndex]} src={photos[photoIndex]} alt={`Ảnh minh họa ${place.name} ${photoIndex + 1}`} /></div><div className="location-gallery-nav"><button className="location-outline" onClick={() => setPhotoIndex((photoIndex + photos.length - 1) % photos.length)}>‹ Ảnh trước</button><button className="location-outline" onClick={() => setPhotoIndex((photoIndex + 1) % photos.length)}>Ảnh tiếp ›</button></div></Modal>}
-    {modal === 'reviews' && <Modal title="đánh giá minh họa" onClose={() => setModal(null)}><div className="location-review-grid">{reviews.map(review => <Review key={review.name} review={review} />)}</div></Modal>}
-    {modal === 'save' && <Modal title="Thêm vào yêu thích" onClose={() => setModal(null)}>{user ? <form className="location-save-form" onSubmit={savePlace}><label>Bộ sưu tập<select value={collectionId} onChange={event => setCollectionId(event.target.value)}><option value="">Tạo bộ sưu tập mới</option>{collections.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>{!collectionId && <label>Tên bộ sưu tập<input value={newName} onChange={event => setNewName(event.target.value)} required maxLength={60} /></label>}<p role="status">{notice}</p><button className="location-primary" type="submit">Lưu địa điểm</button></form> : <div className="location-save-form"><p>đăng nhập để lưu địa điểm vào bộ sưu tập cá nhân.</p><Link className="location-primary" to="/login" state={{ from: location.pathname + location.search }}>đăng nhập</Link></div>}</Modal>}
+    {modal === 'reviews' && <Modal title="Đánh giá minh họa" onClose={() => setModal(null)}><div className="location-review-grid">{reviews.map(review => <Review key={review.name} review={review} />)}</div></Modal>}
+    {modal === 'save' && <Modal title="Thêm vào yêu thích" onClose={() => setModal(null)}>{user ? <form className="location-save-form" onSubmit={savePlace}><label>Bộ sưu tập<select value={collectionId} onChange={event => setCollectionId(event.target.value)}><option value="">Tạo bộ sưu tập mới</option>{collections.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>{!collectionId && <label>Tên bộ sưu tập<input value={newName} onChange={event => setNewName(event.target.value)} required maxLength={60} /></label>}<p role="status">{notice}</p><button className="location-primary" type="submit">Lưu địa điểm</button></form> : <div className="location-save-form"><p>Đăng nhập để lưu địa điểm vào bộ sưu tập cá nhân.</p><Link className="location-primary" to="/login" state={{ from: location.pathname + location.search }}>Đăng nhập</Link></div>}</Modal>}
   </>;
 }

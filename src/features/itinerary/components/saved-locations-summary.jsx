@@ -30,7 +30,7 @@ export function SavedLocationsSummary({
             <p className="text-xs sm:text-sm text-emerald-700 dark:text-emerald-300 font-medium mt-0.5">
               {t("tripCreate.savedLocations.message", {
                 count: placesList.length,
-                destination: destination || "điểm đến"
+                destination: destination || "Điểm đến"
               })}
             </p>
           </div>
@@ -98,7 +98,7 @@ export function SavedLocationsSummary({
                         )}
                       </div>
                       <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
-                        {place.location || place.address || "địa điểm"}
+                        {place.location || place.address || "Địa điểm"}
                       </p>
                     </div>
                   </div>

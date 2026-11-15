@@ -1,6 +1,6 @@
 import { destinations } from '../search/searchData.js';
 
-const cities = ['Hà Nội', 'Hồ Chí Minh', 'đà Nẵng', 'đà Lạt', 'Hội An'];
+const cities = ['Hà Nội', 'Hồ Chí Minh', 'Đà Nẵng', 'Đà Lạt', 'Hội An'];
 export const cityOf = place => cities.find(city => place.address.includes(city)) || '';
 export function suggestionsFor(place) {
   const city = cityOf(place);
