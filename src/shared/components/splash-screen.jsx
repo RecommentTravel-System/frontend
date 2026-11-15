@@ -24,7 +24,7 @@ export function SplashScreen({ onReady, onFinish, minDuration = 1000, maxTimeout
   const { refreshUser } = useAuth();
 
   const [phase, setPhase] = useState("initializing"); // "initializing" | "ready" | "exiting" | "error"
-  const [statusText, setStatusText] = useState(() => t("splash.starting", "đang khởi động Wayvee..."));
+  const [statusText, setStatusText] = useState(() => t("splash.starting", "Đang khởi động Wayvee..."));
   const [errorMessage, setErrorMessage] = useState("");
 
   const startTimeRef = useRef(Date.now());
@@ -43,14 +43,14 @@ export function SplashScreen({ onReady, onFinish, minDuration = 1000, maxTimeout
     startTimeRef.current = Date.now();
     setPhase("initializing");
     setErrorMessage("");
-    setStatusText(t("splash.starting", "đang khởi động Wayvee..."));
+    setStatusText(t("splash.starting", "Đang khởi động Wayvee..."));
 
     // Task 1: Check localStorage and restore session if authenticated
     const sessionPromise = (async () => {
       try {
         const token = localStorage.getItem("wayvee_token");
         if (token && refreshUser) {
-          setStatusText(t("splash.syncing", "đang đồng bộ phiên đăng nhập..."));
+          setStatusText(t("splash.syncing", "Đang đồng bộ phiên đăng nhập..."));
           await Promise.race([
             refreshUser(),
             new Promise((res) => setTimeout(res, 3500)) // Cap profile sync to 3.5s

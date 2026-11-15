@@ -48,7 +48,7 @@ export default function WayveeTravelLoader({
     }
   };
 
-  const displayTitle = title || t('paymentPage.loader.title', 'đang chờ xác nhận thanh toán');
+  const displayTitle = title || t('paymentPage.loader.title', 'Đang chờ xác nhận thanh toán');
   const displaySubtitle = subtitle || t('paymentPage.loader.subtitleGeneric', 'Vui lòng hoàn tất thanh toán trên ứng dụng ngân hàng hoặc cổng PayOS');
 
   return (

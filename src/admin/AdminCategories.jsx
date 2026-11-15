@@ -163,7 +163,7 @@ export default function AdminCategories() {
     setCategories((prev) =>
       prev.map((cat) => (cat.id === id ? { ...cat, active: !cat.active } : cat))
     );
-    setNotice(t("adminCategories.statusToggleSuccess", "đã cập nhật trạng thái hiển thị danh mục!"));
+    setNotice(t("adminCategories.statusToggleSuccess", "Đã cập nhật trạng thái hiển thị danh mục!"));
     setTimeout(() => setNotice(""), 3000);
   };
 
@@ -179,7 +179,7 @@ export default function AdminCategories() {
           await deleteCategoryApi(catId);
         }
         await fetchCategories();
-        setNotice(t("adminCategories.deleteSuccess", "đã xóa danh mục thành công!"));
+        setNotice(t("adminCategories.deleteSuccess", "Đã xóa danh mục thành công!"));
       } catch (err) {
         console.error("Delete category failed:", err);
         setNotice("Lỗi khi xóa danh mục.");
@@ -219,7 +219,7 @@ export default function AdminCategories() {
       }
       await fetchCategories();
       setDrawerOpen(false);
-      setNotice(t("adminCategories.saveSuccess", "đã lưu thông tin danh mục thành công!"));
+      setNotice(t("adminCategories.saveSuccess", "Đã lưu thông tin danh mục thành công!"));
     } catch (err) {
       console.error("Save category failed:", err);
       setNotice("Lỗi khi lưu danh mục.");
@@ -313,7 +313,7 @@ export default function AdminCategories() {
               <div className="mt-3 flex items-baseline space-x-2">
                 <span className="text-3xl font-extrabold text-slate-900 dark:text-white">{totalCount}</span>
                 <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-0.5 rounded-full">
-                  {t("adminCategories.kpiActive", "đang kích hoạt")}
+                  {t("adminCategories.kpiActive", "Đang kích hoạt")}
                 </span>
               </div>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 flex items-center space-x-1">
@@ -428,8 +428,8 @@ export default function AdminCategories() {
                 className="px-3.5 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-[#00a3e0] min-w-[150px]"
               >
                 <option value="all">{t("adminCategories.allStatus", "Tất cả trạng thái")}</option>
-                <option value="active">{t("adminCategories.statusActive", "đang hiển thị")}</option>
-                <option value="inactive">{t("adminCategories.statusInactive", "đang ẩn")}</option>
+                <option value="active">{t("adminCategories.statusActive", "Đang hiển thị")}</option>
+                <option value="inactive">{t("adminCategories.statusInactive", "Đang ẩn")}</option>
               </select>
 
               {/* Hierarchy Dropdown */}
@@ -573,7 +573,7 @@ export default function AdminCategories() {
                               <span className="text-sm font-bold text-slate-900 dark:text-white">
                                 {cat.placesCount.toLocaleString()}
                               </span>
-                              <span className="text-xs text-slate-400">địa điểm</span>
+                              <span className="text-xs text-slate-400">Địa điểm</span>
                             </div>
                             <div className="w-24 bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full mt-1.5 overflow-hidden">
                               <div
@@ -959,7 +959,7 @@ export default function AdminCategories() {
                 <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-900">
                   <div>
                     <p className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                      {t("adminCategories.labelFeatured", "đánh dấu Danh mục nổi bật (Featured)")}
+                      {t("adminCategories.labelFeatured", "Đánh dấu Danh mục nổi bật (Featured)")}
                     </p>
                     <p className="text-[11px] text-slate-500">
                       {t("adminCategories.descFeatured", "Ghim lên thanh Quick Bar trang chủ")}

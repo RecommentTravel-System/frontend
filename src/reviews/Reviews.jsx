@@ -91,7 +91,7 @@ function ReviewEditor({ review, onSave, onClose }) {
       <form onSubmit={submit}>
         <div className="review-editor-heading">
           <h2 id="review-editor-title">Chỉnh sửa bài đánh giá</h2>
-          <button type="button" onClick={() => dialog.current.close()} aria-label="đóng">
+          <button type="button" onClick={() => dialog.current.close()} aria-label="Đóng">
             ×
           </button>
         </div>
@@ -134,7 +134,7 @@ function ReviewCard({ review, onEdit, onDelete }) {
   const menu = useRef(null);
   const date = new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(new Date(`${review.date}T00:00:00Z`));
   return (
-    <article className="review-card shadow-xs border border-slate-100 dark:border-slate-800" aria-label={`đánh giá ${review.hotel}`}>
+    <article className="review-card shadow-xs border border-slate-100 dark:border-slate-800" aria-label={`Đánh giá ${review.hotel}`}>
       <ReviewPhoto review={review} />
       <div className="review-body">
         <div className="review-card-top">
@@ -323,13 +323,13 @@ export default function Reviews() {
 
   function savePlaceReview(review) {
     const error = persistPlaceReviews(placeReviews.map((item) => (item.id === review.id ? review : item)));
-    if (!error) setNotice('đã lưu bản chỉnh sửa trên trình duyệt.');
+    if (!error) setNotice('Đã lưu bản chỉnh sửa trên trình duyệt.');
     return error;
   }
 
   function removePlaceReview(review) {
     if (!window.confirm(`Xóa bài đánh giá về ${review.hotel}?`)) return;
-    setNotice(persistPlaceReviews(placeReviews.filter((item) => item.id !== review.id)) || 'đã xóa bài đánh giá.');
+    setNotice(persistPlaceReviews(placeReviews.filter((item) => item.id !== review.id)) || 'Đã xóa bài đánh giá.');
   }
 
   const handleModalClose = () => {

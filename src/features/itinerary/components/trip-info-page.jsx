@@ -348,7 +348,7 @@ export function TripInfoPage({ initialData: propInitialData }) {
               <div data-purpose="destination-input-group">
                 <div className="flex items-center justify-between mb-2">
                   <label className="block text-sm font-bold text-slate-800" htmlFor="destination-input">
-                    {t("tripInfo.destinationDetails.destinationLabel", "đi đâu?")} <span className="text-rose-500">*</span>
+                    {t("tripInfo.destinationDetails.destinationLabel", "Đi đâu?")} <span className="text-rose-500">*</span>
                   </label>
                 </div>
 
@@ -391,7 +391,7 @@ export function TripInfoPage({ initialData: propInitialData }) {
                 {/* Companions Dropdown */}
                 <div>
                   <label className="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2" htmlFor="companion-select">
-                    {t("tripInfo.destinationDetails.companionsLabel", "đi cùng ai?")} <span className="text-rose-500">*</span>
+                    {t("tripInfo.destinationDetails.companionsLabel", "Đi cùng ai?")} <span className="text-rose-500">*</span>
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -411,8 +411,8 @@ export function TripInfoPage({ initialData: propInitialData }) {
                       <option value="friends">{t("tripInfo.companions.friends", "Bạn bè thân thiết")}</option>
                       <option value="family">{t("tripInfo.companions.family", "Gia đình")}</option>
                       <option value="couple">{t("tripInfo.companions.couple", "Cặp đôi / Người yêu")}</option>
-                      <option value="solo">{t("tripInfo.companions.solo", "đi một mình (Solo)")}</option>
-                      <option value="colleagues">{t("tripInfo.companions.colleagues", "đồng nghiệp")}</option>
+                      <option value="solo">{t("tripInfo.companions.solo", "Đi một mình (Solo)")}</option>
+                      <option value="colleagues">{t("tripInfo.companions.colleagues", "Đồng nghiệp")}</option>
                     </select>
                     <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-slate-400">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -472,7 +472,7 @@ export function TripInfoPage({ initialData: propInitialData }) {
                     {t("tripInfo.destinationDetails.travelStyleLabel", "Phong cách & Sở thích chuyến đi?")} <span className="text-rose-500">*</span>
                   </label>
                   <span className="text-xs font-semibold text-slate-400">
-                    {t("tripInfo.destinationDetails.selectedCount", "đã chọn:")}{" "}
+                    {t("tripInfo.destinationDetails.selectedCount", "Đã chọn:")}{" "}
                     <strong className="text-[#00a3e0]">{selectedStyles.length}</strong>
                   </span>
                 </div>
@@ -521,7 +521,7 @@ export function TripInfoPage({ initialData: propInitialData }) {
               type="submit"
               disabled={isSubmitting}
             >
-              <span>{isSubmitting ? "đang xử lý..." : t("tripInfo.actions.nextStep", "Bước tiếp theo")}</span>
+              <span>{isSubmitting ? "Đang xử lý..." : t("tripInfo.actions.nextStep", "Bước tiếp theo")}</span>
               <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path d="M14 5l7 7m0 0l-7 7m7-7H3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
               </svg>
@@ -536,7 +536,7 @@ export function TripInfoPage({ initialData: propInitialData }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500 dark:text-slate-400">
           <p>© 2025 WAYVEE Navigation Platform. Giữ bản quyền hành trình khám phá.</p>
           <div className="flex items-center gap-6">
-            <a className="hover:text-[#00a3e0] transition-colors" href="#">{t("footer.terms", "điều khoản")}</a>
+            <a className="hover:text-[#00a3e0] transition-colors" href="#">{t("footer.terms", "Điều khoản")}</a>
             <a className="hover:text-[#00a3e0] transition-colors" href="#">{t("footer.privacy", "Chính sách bảo mật")}</a>
             <a className="hover:text-[#00a3e0] transition-colors" href="#">{t("footer.helpCenter", "Trung tâm trợ giúp")}</a>
           </div>

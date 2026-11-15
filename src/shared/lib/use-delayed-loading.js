@@ -16,7 +16,7 @@ export function useDelayedLoading(isLoading, options = {}) {
   const {
     delay = 250,
     initialText = "",
-    longText = "đang xử lý...",
+    longText = "Đang xử lý...",
     timeoutText = "Quá trình này đang mất nhiều thời gian hơn dự kiến...",
     longThreshold = 2500,
     timeoutThreshold = 5500

@@ -1,9 +1,9 @@
 // Sample content for the itinerary UI; replace with the signed-in user's trips API.
 export const filters = [
   { id: 'all', label: 'Tất cả', title: 'Tất cả lịch trình' },
-  { id: 'ongoing', label: 'đang diễn ra', title: 'Lịch trình đang diễn ra' },
-  { id: 'completed', label: 'đã hoàn thành', title: 'Lịch trình đã hoàn thành' },
-  { id: 'cancelled', label: 'đã hủy', title: 'Lịch trình đã hủy' },
+  { id: 'ongoing', label: 'Đang diễn ra', title: 'Lịch trình đang diễn ra' },
+  { id: 'completed', label: 'Đã hoàn thành', title: 'Lịch trình đã hoàn thành' },
+  { id: 'cancelled', label: 'Đã hủy', title: 'Lịch trình đã hủy' },
 ];
 
 export const trips = [
@@ -13,9 +13,9 @@ export const trips = [
     status: 'ongoing', confirmed: true, hasItinerary: false, start: '2030-10-05', end: '2030-10-08', time: '08:00 – 17:00', duration: '4N / 3đ', guests: 2,
     summary: '2 người · Khám phá văn hóa & ẩm thực',
     description: 'Chuyến đi Huế với các địa điểm di tích lịch sử và ẩm thực đặc sản đã được lưu, sẵn sàng để sắp xếp lịch trình chi tiết.',
-    places: ['đại Nội Huế', 'Chùa Thiên Mụ', 'Lăng Khải định', 'Chợ đông Ba', 'Sông Hương'],
+    places: ['Đại Nội Huế', 'Chùa Thiên Mụ', 'Lăng Khải Định', 'Chợ Đông Ba', 'Sông Hương'],
     placesList: [
-      { id: 'h-1', name: 'đại Nội Huế', location: 'TP. Huế', rating: 4.8, score: '4.8', image: 'https://images.unsplash.com/photo-1583417319070-4a69db38a482?auto=format&fit=crop&w=500&q=80' },
+      { id: 'h-1', name: 'Đại Nội Huế', location: 'TP. Huế', rating: 4.8, score: '4.8', image: 'https://images.unsplash.com/photo-1583417319070-4a69db38a482?auto=format&fit=crop&w=500&q=80' },
       { id: 'h-2', name: 'Chùa Thiên Mụ', location: 'Kim Long, TP. Huế', rating: 4.7, score: '4.7', image: 'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=500&q=80' },
       { id: 'h-3', name: 'Lăng Khải định', location: 'Thủy Bằng, TP. Huế', rating: 4.9, score: '4.9', image: 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=500&q=80' },
       { id: 'h-4', name: 'Chợ đông Ba', location: 'Phú Hòa, TP. Huế', rating: 4.5, score: '4.5', image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=500&q=80' }
@@ -23,7 +23,7 @@ export const trips = [
     amenities: ['WiFi', 'Check-in', 'Bản đồ số', 'Hướng dẫn viên'],
   },
   {
-    id: 'da-nang-hoi-an', title: 'đà Nẵng – Hội An 4N3đ', destination: 'đà Nẵng, Việt Nam',
+    id: 'da-nang-hoi-an', title: 'Đà Nẵng – Hội An 4N3Đ', destination: 'Đà Nẵng, Việt Nam',
     image: 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=500&q=80',
     status: 'ongoing', confirmed: true, hasItinerary: true, start: '2030-08-14', end: '2030-08-17', time: '08:00 – 10:00', duration: '4N / 3đ', guests: 2,
     summary: '2 người · Du lịch khám phá & nghỉ dưỡng',

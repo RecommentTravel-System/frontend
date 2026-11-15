@@ -82,7 +82,7 @@ export default function AdminUsers() {
           trustPercent: isActive ? 100 : 50,
           trustLevel: isActive ? "high" : "warning",
           createdDate: u.createdAt ? new Date(u.createdAt).toLocaleDateString("vi-VN") : "N/A",
-          lastActiveVi: isActive ? "đang hoạt động" : isPending ? "Chờ xác thực" : "đã khóa",
+          lastActiveVi: isActive ? "Đang hoạt động" : isPending ? "Chờ xác thực" : "Đã khóa",
           lastActiveEn: isActive ? "Active" : isPending ? "Pending" : "Locked",
           status: isActive ? "active" : isPending ? "pending" : "locked",
           avatar: u.avatarUrl || null,
@@ -206,7 +206,7 @@ export default function AdminUsers() {
           await deleteUserApi(user.userId);
         }
         await fetchUsers();
-        showToast("đã xóa tài khoản người dùng thành công!");
+        showToast("Đã xóa tài khoản người dùng thành công!");
       } catch (err) {
         console.error("Delete user failed:", err);
         showToast("Lỗi khi xóa người dùng.");
@@ -425,8 +425,8 @@ export default function AdminUsers() {
                 className="px-3.5 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-[#00a3e0] min-w-[160px]"
               >
                 <option value="">{t("adminUsers.allStatuses", "Tất cả trạng thái")}</option>
-                <option value="active">{t("adminUsers.active", "đang hoạt động")}</option>
-                <option value="locked">{t("adminUsers.locked", "đã khóa")}</option>
+                <option value="active">{t("adminUsers.active", "Đang hoạt động")}</option>
+                <option value="locked">{t("adminUsers.locked", "Đã khóa")}</option>
                 <option value="pending">{t("adminUsers.pending", "Chờ xác thực")}</option>
               </select>
 
@@ -591,7 +591,7 @@ export default function AdminUsers() {
                                   {user.verified && (
                                     <span
                                       className="material-symbols-outlined text-[#00a3e0] text-sm"
-                                      title={t("adminUsers.kycVerified", "đã xác thực KYC")}
+                                      title={t("adminUsers.kycVerified", "Đã xác thực KYC")}
                                     >
                                       verified
                                     </span>
@@ -646,12 +646,12 @@ export default function AdminUsers() {
                             {user.status === "active" ? (
                               <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60">
                                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                                {t("adminUsers.active", "đang hoạt động")}
+                                {t("adminUsers.active", "Đang hoạt động")}
                               </span>
                             ) : user.status === "locked" ? (
                               <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-50 dark:bg-red-950/60 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-900/60">
                                 <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
-                                {t("adminUsers.locked", "đã khóa")}
+                                {t("adminUsers.locked", "Đã khóa")}
                               </span>
                             ) : (
                               <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-900/60">
@@ -869,8 +869,8 @@ export default function AdminUsers() {
                     onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                     className="w-full px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-[#00a3e0] cursor-pointer"
                   >
-                    <option value="active">{t("adminUsers.active", "đang hoạt động")}</option>
-                    <option value="locked">{t("adminUsers.locked", "đã khóa")}</option>
+                    <option value="active">{t("adminUsers.active", "Đang hoạt động")}</option>
+                    <option value="locked">{t("adminUsers.locked", "Đã khóa")}</option>
                     <option value="pending">{t("adminUsers.pending", "Chờ xác thực")}</option>
                   </select>
                 </div>
@@ -1000,7 +1000,7 @@ export default function AdminUsers() {
                 onClick={() => setIsRoleModalOpen(false)}
                 className="px-5 py-2 rounded-xl bg-[#00a3e0] text-white text-xs font-bold transition-all hover:bg-[#008ec4] cursor-pointer"
               >
-                {t("adminUsers.close", "đóng")}
+                {t("adminUsers.close", "Đóng")}
               </button>
             </div>
           </div>
@@ -1075,7 +1075,7 @@ export default function AdminUsers() {
                   </span>
                 </div>
                 <div>
-                  <span className="text-slate-500 dark:text-slate-400 block">độ uy tín</span>
+                  <span className="text-slate-500 dark:text-slate-400 block">Độ uy tín</span>
                   <span className="font-bold text-emerald-600 dark:text-emerald-400">
                     {activeDetailUser.trustPercent ? `${activeDetailUser.trustPercent}%` : "Chưa có"}
                   </span>
@@ -1120,7 +1120,7 @@ export default function AdminUsers() {
                   <div className="flex justify-between">
                     <span>• Trạng thái KYC:</span>
                     <span className="font-semibold text-[#00a3e0]">
-                      {activeDetailUser.verified ? "đã xác thực CCCD/Passport" : "Chưa xác minh"}
+                      {activeDetailUser.verified ? "Đã xác thực CCCD/Passport" : "Chưa xác minh"}
                     </span>
                   </div>
                 </div>
@@ -1133,7 +1133,7 @@ export default function AdminUsers() {
                 onClick={() => setIsDetailModalOpen(false)}
                 className="px-5 py-2 rounded-xl bg-[#00a3e0] text-white text-xs font-bold transition-all hover:bg-[#008ec4] cursor-pointer"
               >
-                {t("adminUsers.close", "đóng")}
+                {t("adminUsers.close", "Đóng")}
               </button>
             </div>
           </div>

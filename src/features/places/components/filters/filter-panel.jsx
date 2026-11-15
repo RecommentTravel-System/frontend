@@ -177,7 +177,7 @@ export function FilterPanel({
           {categoriesToRender.length === 0 ? (
             <div className="flex items-center gap-2 py-1 text-xs text-slate-400">
               <span className="inline-block w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-600 animate-pulse" />
-              <span>đang tải danh mục...</span>
+              <span>Đang tải danh mục...</span>
             </div>
           ) : (
             categoriesToRender.map((cat) => {
@@ -241,7 +241,7 @@ export function FilterPanel({
       {/* 3. Rating Section (Common Filter) */}
       <div className="space-y-2">
         <label className="block text-xs font-bold text-slate-800 dark:text-slate-300 uppercase tracking-wider">
-          {t("places.filter.rating") || "đánh giá sao"}
+          {t("places.filter.rating") || "Đánh giá sao"}
         </label>
         <div className="grid grid-cols-2 gap-2">
           {RATING_OPTIONS.map((item) => {
@@ -322,7 +322,7 @@ export function FilterPanel({
           className="w-full py-2.5 px-4 bg-[#0b2545] hover:bg-[#102f58] dark:bg-sky-500 dark:hover:bg-sky-600 text-white dark:text-slate-950 font-bold text-xs rounded-xl shadow-md transition-all duration-150 active:scale-[0.98] flex items-center justify-center space-x-2 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {isLoading ? (
-            <span>{t("places.filter.searching") || "đang tìm kiếm..."}</span>
+            <span>{t("places.filter.searching") || "Đang tìm kiếm..."}</span>
           ) : (
             <>
               <span>{t("places.filter.applyButton") || "Áp dụng bộ lọc"}</span>

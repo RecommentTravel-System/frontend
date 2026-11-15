@@ -9,8 +9,8 @@ import { getWebsiteReviews, getWebsiteReviewStats } from "~/shared/services/webs
 const statusLabels = {
   pending: "Chờ duyệt",
   flagged: "Báo cáo khẩn",
-  approved: "đã duyệt",
-  hidden: "đã ẩn"
+  approved: "Đã duyệt",
+  hidden: "Đã ẩn"
 };
 
 function Rating({ value }) {
@@ -65,7 +65,7 @@ function WebsiteReviewDetailModal({ review, onClose }) {
               )}
             </div>
             <div className="text-right">
-              <p className="text-xs text-slate-400">điểm số</p>
+              <p className="text-xs text-slate-400">Điểm số</p>
               <span className="text-base font-extrabold text-amber-500">
                 ★ {num.toFixed(1)} / 5.0
               </span>
@@ -374,13 +374,13 @@ export default function AdminReviews() {
         reviewId: item.reviewId,
         name: item.userFullName || item.username || (item.anonymous ? "Người dùng ẩn danh" : "Thành viên WAYVEE"),
         badge: item.anonymous ? "Ẩn danh" : "Thành viên",
-        place: item.placeName || `địa điểm #${item.osmId}`,
+        place: item.placeName || `Địa điểm #${item.osmId}`,
         rating: item.rating || 5,
         time: item.createdAt ? new Date(item.createdAt).toLocaleString("vi-VN") : "Gần đây",
         status: "approved",
         verified: true,
         avatar: item.userFullName ? item.userFullName.slice(0, 2).toUpperCase() : "WV",
-        content: item.comment || "đánh giá không có nội dung văn bản.",
+        content: item.comment || "Đánh giá không có nội dung văn bản.",
         evidence: `OSM ID: ${item.osmId} · User ID: ${item.userId || "N/A"}`
       }));
       setPlaceReviews(mapped);
@@ -438,9 +438,9 @@ export default function AdminReviews() {
     try {
       if (nextStatus === "hidden") {
         await deleteReview(id);
-        setNotice("đã xóa/ẩn bài đánh giá địa điểm thành công.");
+        setNotice("Đã xóa/ẩn bài đánh giá địa điểm thành công.");
       } else {
-        setNotice("đã cập nhật trạng thái đánh giá địa điểm thành công.");
+        setNotice("Đã cập nhật trạng thái đánh giá địa điểm thành công.");
       }
       await fetchPlaceReviews();
     } catch (err) {
@@ -490,11 +490,11 @@ export default function AdminReviews() {
                 <span>Kiểm duyệt &amp; đánh giá</span>
                 <span className="text-slate-400">›</span>
                 <span className="text-[#00a3e0]">
-                  {activeTab === "website" ? "đánh giá trang web" : "đánh giá địa điểm"}
+                  {activeTab === "website" ? "Đánh giá trang web" : "Đánh giá địa điểm"}
                 </span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-extrabold text-[#002d54] dark:text-white tracking-tight">
-                {activeTab === "website" ? "đánh giá trang web WAYVEE" : "Quản lý đánh giá địa điểm"}
+                {activeTab === "website" ? "Đánh giá trang web WAYVEE" : "Quản lý đánh giá địa điểm"}
               </h1>
               <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
                 {activeTab === "website"
@@ -543,7 +543,7 @@ export default function AdminReviews() {
               }`}
             >
               <span className="text-base">★</span>
-              <span>đánh giá trang web ({websiteReviews.length})</span>
+              <span>Đánh giá trang web ({websiteReviews.length})</span>
               <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-100 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-900">
                 Chỉ xem
               </span>
@@ -559,7 +559,7 @@ export default function AdminReviews() {
               }`}
             >
               <span>📍</span>
-              <span>đánh giá địa điểm ({placeReviews.length})</span>
+              <span>Đánh giá địa điểm ({placeReviews.length})</span>
             </button>
           </div>
 
@@ -578,7 +578,7 @@ export default function AdminReviews() {
                     Chế độ chỉ xem (Read-Only) dành cho Quản trị viên
                   </h2>
                   <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
-                    Theo quy định bảo mật &amp; tính khách quan của hệ thống WAYVEE, mục <strong>đánh giá trang web</strong> chỉ cho phép quản trị viên theo dõi mức độ hài lòng, đọc ý kiến đóng góp và xem thống kê. 
+                    Theo quy định bảo mật &amp; tính khách quan của hệ thống WAYVEE, mục <strong>Đánh giá trang web</strong> chỉ cho phép quản trị viên theo dõi mức độ hài lòng, đọc ý kiến đóng góp và xem thống kê. 
                     <span className="text-blue-700 dark:text-blue-300 font-bold ml-1">
                       Hệ thống không cung cấp chức năng thêm mới, chỉnh sửa hoặc xóa đánh giá trang web của người dùng.
                     </span>
@@ -630,7 +630,7 @@ export default function AdminReviews() {
                   </div>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 flex items-center space-x-1">
                     <span className="text-amber-500">★</span>
-                    <span>điểm trung bình thời gian thực</span>
+                    <span>Điểm trung bình thời gian thực</span>
                   </p>
                 </div>
 
@@ -752,7 +752,7 @@ export default function AdminReviews() {
                     <option value="all">Tất cả chủ đề</option>
                     <option value="Giao diện">Giao diện (UI/UX)</option>
                     <option value="lịch trình">Lịch trình</option>
-                    <option value="địa điểm">địa điểm</option>
+                    <option value="địa điểm">Địa điểm</option>
                     <option value="Hiệu năng">Hiệu năng &amp; Tốc độ</option>
                     <option value="Chung">Trải nghiệm chung</option>
                   </select>
@@ -904,7 +904,7 @@ export default function AdminReviews() {
                   </div>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 flex items-center space-x-1">
                     <span className="text-[#00a3e0]">●</span>
-                    <span>đồng bộ trực tiếp qua REST API</span>
+                    <span>Đồng bộ trực tiếp qua REST API</span>
                   </p>
                 </div>
               </section>
@@ -934,7 +934,7 @@ export default function AdminReviews() {
                     className="px-3.5 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-[#00a3e0] min-w-[150px]"
                   >
                     <option value="all">Tất cả trạng thái</option>
-                    <option value="approved">đã duyệt / Công khai</option>
+                    <option value="approved">Đã duyệt / Công khai</option>
                     <option value="pending">Chờ duyệt</option>
                     <option value="flagged">Báo cáo khẩn</option>
                   </select>

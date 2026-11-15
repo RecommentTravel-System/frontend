@@ -391,7 +391,7 @@ export function PlacesPage({ initialMode = "all" }) {
                   : t("places.header.title") || "Khám phá địa điểm"}
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-              {totalElements} {t("places.header.countFound") || "địa điểm được tìm thấy phù hợp"}
+              {totalElements} {t("places.header.countFound") || "Địa điểm được tìm thấy phù hợp"}
             </p>
           </div>
 
@@ -419,7 +419,7 @@ export function PlacesPage({ initialMode = "all" }) {
                 className="py-2 px-3 text-xs font-semibold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl outline-none text-slate-700 dark:text-slate-300 cursor-pointer"
               >
                 <option value="popular">{t("places.sort.popular") || "Phổ biến nhất"}</option>
-                <option value="rating">{t("places.sort.rating") || "đánh giá cao nhất"}</option>
+                <option value="rating">{t("places.sort.rating") || "Đánh giá cao nhất"}</option>
                 <option value="distance">{t("places.sort.distance") || "Gần trung tâm nhất"}</option>
               </select>
             )}
@@ -558,7 +558,7 @@ export function PlacesPage({ initialMode = "all" }) {
                       onClick={handleResetFilters}
                       className="px-4 py-2 bg-[#0b2545] text-white text-xs font-semibold rounded-xl hover:bg-[#102f58] transition-colors cursor-pointer"
                     >
-                      {t("places.filter.clearAll") || "đặt lại bộ lọc"}
+                      {t("places.filter.clearAll") || "Đặt lại bộ lọc"}
                     </button>
                   </div>
                 )}
@@ -709,7 +709,7 @@ export function PlacesPage({ initialMode = "all" }) {
                   <strong className="text-slate-800 dark:text-slate-200">≤ {pendingFilters.distanceKm} km</strong>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">đánh giá tối thiểu:</span>
+                  <span className="text-slate-500">Đánh giá tối thiểu:</span>
                   <strong className="text-slate-800 dark:text-slate-200">★ {pendingFilters.minRating || 4.0}+</strong>
                 </div>
                 <div className="flex justify-between">
@@ -930,7 +930,7 @@ export function PlacesPage({ initialMode = "all" }) {
               {addedPlacesMap.size}
             </div>
             <span className="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200">
-              {addedPlacesMap.size} {t("places.footer.placesSelected") || "địa điểm đã được chọn vào lịch trình"}
+              {addedPlacesMap.size} {t("places.footer.placesSelected") || "Địa điểm đã được chọn vào lịch trình"}
             </span>
           </div>
 

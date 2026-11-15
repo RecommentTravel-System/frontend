@@ -44,7 +44,7 @@ export default function Favorites() {
         await removeFavoriteByOsmId(fav.osmId);
       }
       setFavorites((prev) => prev.filter((item) => item.favoriteId !== fav.favoriteId && item.osmId !== fav.osmId));
-      setNotice('đã xóa địa điểm khỏi danh sách yêu thích.');
+      setNotice('Đã xóa địa điểm khỏi danh sách yêu thích.');
       setTimeout(() => setNotice(''), 3000);
     } catch (err) {
       console.error("Failed to remove favorite:", err);
@@ -59,10 +59,10 @@ export default function Favorites() {
       <main className="account-layout favorites-layout">
         <AccountSidebar onNotice={setNotice} />
         <div className="favorites-content">
-          <section className={`favorites-panel${!favorites.length ? ' favorites-panel-empty' : ''}`} aria-label="địa điểm yêu thích">
+          <section className={`favorites-panel${!favorites.length ? ' favorites-panel-empty' : ''}`} aria-label="Địa điểm yêu thích">
             <header className="favorites-heading">
               <div>
-                <h1>địa điểm yêu thích</h1>
+                <h1>Địa điểm yêu thích</h1>
               </div>
               <Link to="/places" className="favorites-outline-button">
                 <span aria-hidden="true">⌕</span> Khám phá địa điểm mới
@@ -71,12 +71,12 @@ export default function Favorites() {
 
             {loading ? (
               <div className="py-12 text-center text-slate-500">
-                <p>đang tải danh sách địa điểm yêu thích...</p>
+                <p>Đang tải danh sách địa điểm yêu thích...</p>
               </div>
             ) : favorites.length > 0 ? (
               <div className="favorites-places">
                 {favorites.map((fav) => {
-                  const placeName = fav.placeName || `địa điểm #${fav.osmId}`;
+                  const placeName = fav.placeName || `Địa điểm #${fav.osmId}`;
                   const coordsText = fav.latitude && fav.longitude
                     ? `${fav.latitude.toFixed(4)}, ${fav.longitude.toFixed(4)}`
                     : 'Việt Nam';
@@ -90,7 +90,7 @@ export default function Favorites() {
                     imageUrl: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=800&q=80",
                     address: fav.latitude && fav.longitude ? `Tọa độ: ${fav.latitude.toFixed(4)}, ${fav.longitude.toFixed(4)}` : "Việt Nam",
                     categoryCode: "ATTRACTION",
-                    description: "địa điểm yêu thích đã lưu trên hệ thống WAYVEE."
+                    description: "Địa điểm yêu thích đã lưu trên hệ thống WAYVEE."
                   };
 
                   return (

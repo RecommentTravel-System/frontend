@@ -52,7 +52,7 @@ export default function Login({
         </div>
         <h1>Welcome to Wayvee</h1>
         <p className="auth-note">
-          đăng nhập để khám phá các địa điểm và quản lý lịch trình của bạn.
+          Đăng nhập để khám phá các địa điểm và quản lý lịch trình của bạn.
         </p>
 
         {message && (
@@ -120,7 +120,7 @@ export default function Login({
             {pending ? (
               <span className="btn-loading-content">
                 <span className="spinner" />
-                đang đăng nhập…
+                Đang đăng nhập…
               </span>
             ) : (
               'Continue'

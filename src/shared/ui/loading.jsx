@@ -25,7 +25,7 @@ export function Spinner({
   return (
     <div
       role="status"
-      aria-label="đang tải..."
+      aria-label="Đang tải..."
       className={cn(
         "rounded-full animate-spin shrink-0 select-none pointer-events-none",
         sizeStyles[size] || sizeStyles.md,
@@ -49,7 +49,7 @@ export function TopBarProgress({ active = false, className = "" }) {
     <div
       role="progressbar"
       aria-busy="true"
-      aria-label="đang xử lý..."
+      aria-label="Đang xử lý..."
       className={cn(
         "fixed top-0 left-0 right-0 h-[2.5px] z-[9999] overflow-hidden pointer-events-none bg-transparent animate-fade-in",
         className
@@ -66,7 +66,7 @@ export function TopBarProgress({ active = false, className = "" }) {
  */
 export function LoadingOverlay({
   active = false,
-  message = "đang xử lý...",
+  message = "Đang xử lý...",
   submessage,
   onCancel,
   className = ""

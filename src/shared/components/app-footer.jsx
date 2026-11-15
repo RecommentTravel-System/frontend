@@ -9,11 +9,14 @@ export function AppFooter() {
     switch (link) {
       case "Trang chủ":
         return "/";
-      case "điểm đến hot":
+      case "Điểm đến hot":
+      case "Điểm đến hot":
       case "Khám phá ngay":
-      case "địa điểm nổi bật":
+      case "Địa điểm nổi bật":
+      case "Địa điểm nổi bật":
         return "/places";
-      case "đánh giá chuyến đi":
+      case "Đánh giá chuyến đi":
+      case "Đánh giá chuyến đi":
         return "/reviews";
       case "Trung tâm hỗ trợ":
         return "/support?view=help";
@@ -31,11 +34,11 @@ export function AppFooter() {
   const footerColumns = [
     {
       title: t("footer.navigation"),
-      links: ["Trang chủ", "điểm đến hot", "Blog du lịch", "đánh giá chuyến đi", "Khám phá ngay"]
+      links: ["Trang chủ", "Điểm đến hot", "Blog du lịch", "Đánh giá chuyến đi", "Khám phá ngay"]
     },
     {
       title: t("footer.explore"),
-      links: ["địa điểm nổi bật", "Quản lý chuyến đi thích", "Xu hướng du lịch", "Gợi ý theo mùa"]
+      links: ["Địa điểm nổi bật", "Quản lý chuyến đi thích", "Xu hướng du lịch", "Gợi ý theo mùa"]
     },
     {
       title: t("footer.support"),

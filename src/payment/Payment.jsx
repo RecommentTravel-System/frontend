@@ -71,7 +71,7 @@ export default function Payment() {
               <p>
                 {activeSub ? (
                   <span className="active-sub-tag">
-                    {t('paymentPage.activePlan', 'đang hoạt động')}: <strong>{activeSub.planName || 'Gói Premium'}</strong>
+                    {t('paymentPage.activePlan', 'Đang hoạt động')}: <strong>{activeSub.planName || 'Gói Premium'}</strong>
                   </span>
                 ) : (
                   t('paymentPage.oneTimePlan', 'Gói 1 lần')

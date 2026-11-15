@@ -46,7 +46,7 @@ const INITIAL_SAMPLE_PLACES = [
   {
     id: "sample-2",
     name: "Chùa Trấn Quốc",
-    address: "đường Thanh Niên, Yên Phụ, Tây Hồ",
+    address: "Đường Thanh Niên, Yên Phụ, Tây Hồ",
     category: "Văn hóa tâm linh",
     icon: "temple_buddhist",
     duration: "~60 phút",
@@ -146,7 +146,7 @@ export function TripCreatePage() {
       id: `place-${Date.now()}`,
       name: destinationInput.split(",")[0] || destinationInput,
       address: destinationInput,
-      category: "điểm đã chọn",
+      category: "Điểm đã chọn",
       duration: "~45 phút",
       image: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=400&q=80"
     };
@@ -428,7 +428,7 @@ export function TripCreatePage() {
               {/* Input đi đâu? */}
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-slate-800 flex items-center justify-between">
-                  <span>{t("tripCreate.locationDetails.destinationLabel", "đi đâu? (địa điểm, quán cafe, di tích...)")}</span>
+                  <span>{t("tripCreate.locationDetails.destinationLabel", "Đi đâu? (Địa điểm, quán cafe, di tích...)")}</span>
                   <span
                     onClick={() => {
                       if (navigator.geolocation) {
@@ -474,7 +474,7 @@ export function TripCreatePage() {
                 {/* đi cùng ai */}
                 <div className="space-y-1.5">
                   <label className="block text-xs font-bold text-slate-800">
-                    {t("tripCreate.locationDetails.companionsLabel", "đi cùng ai?")}
+                    {t("tripCreate.locationDetails.companionsLabel", "Đi cùng ai?")}
                   </label>
                   <div className="relative">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
@@ -490,8 +490,8 @@ export function TripCreatePage() {
                       <option value="friends">{t("tripInfo.companions.friends", "Bạn bè thân thiết")}</option>
                       <option value="family">{t("tripInfo.companions.family", "Gia đình")}</option>
                       <option value="couple">{t("tripInfo.companions.couple", "Cặp đôi / Người yêu")}</option>
-                      <option value="solo">{t("tripInfo.companions.solo", "đi một mình (Solo)")}</option>
-                      <option value="colleagues">{t("tripInfo.companions.colleagues", "đồng nghiệp")}</option>
+                      <option value="solo">{t("tripInfo.companions.solo", "Đi một mình (Solo)")}</option>
+                      <option value="colleagues">{t("tripInfo.companions.colleagues", "Đồng nghiệp")}</option>
                     </select>
                   </div>
                 </div>
@@ -536,7 +536,7 @@ export function TripCreatePage() {
                 <label className="text-xs font-bold text-slate-800 flex items-center justify-between">
                   <span>{t("tripCreate.locationDetails.travelStyleLabel", "Phong cách & Sở thích chuyến đi")}</span>
                   <span className="text-xs text-slate-400 font-normal">
-                    {t("tripCreate.locationDetails.selectedCount", "đã chọn")} {selectedStyles.length}
+                    {t("tripCreate.locationDetails.selectedCount", "Đã chọn")} {selectedStyles.length}
                   </span>
                 </label>
                 <div className="flex flex-wrap gap-2 pt-1">
@@ -655,7 +655,7 @@ export function TripCreatePage() {
 
                         <div className="flex items-center gap-2 mt-2">
                           <span className="inline-flex items-center gap-1 text-[11px] font-semibold bg-[#e6f6fd] text-[#00a3e0] px-2 py-0.5 rounded">
-                            {place.category || "điểm tham quan"}
+                            {place.category || "Điểm tham quan"}
                           </span>
                           <span className="text-xs text-slate-400">{place.duration || "~45 phút"}</span>
                         </div>
@@ -800,7 +800,7 @@ export function TripCreatePage() {
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p>© 2025 WAYVEE Navigation Platform. Giữ bản quyền hành trình khám phá.</p>
           <div className="flex items-center gap-6">
-            <a className="hover:text-[#00a3e0] transition-colors" href="#">{t("footer.terms", "điều khoản")}</a>
+            <a className="hover:text-[#00a3e0] transition-colors" href="#">{t("footer.terms", "Điều khoản")}</a>
             <a className="hover:text-[#00a3e0] transition-colors" href="#">{t("footer.privacy", "Chính sách bảo mật")}</a>
             <a className="hover:text-[#00a3e0] transition-colors" href="#">{t("footer.helpCenter", "Trung tâm trợ giúp")}</a>
           </div>

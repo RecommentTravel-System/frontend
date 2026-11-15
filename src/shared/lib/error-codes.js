@@ -6,7 +6,7 @@ export const ERROR_CODE_MAP = {
   // 1000 - 1099: Hệ thống, Tài khoản, Xác thực
   9999: {
     key: 'UNCATEGORIZED_EXCEPTION',
-    vi: 'đã xảy ra lỗi hệ thống chưa được phân loại. Vui lòng thử lại sau.',
+    vi: 'Đã xảy ra lỗi hệ thống chưa được phân loại. Vui lòng thử lại sau.',
     en: 'An unexpected system error occurred. Please try again later.'
   },
   1001: {
@@ -56,7 +56,7 @@ export const ERROR_CODE_MAP = {
   },
   1010: {
     key: 'INVALID_EMAIL',
-    vi: 'địa chỉ email không đúng định dạng.',
+    vi: 'Địa chỉ email không đúng định dạng.',
     en: 'Email format is invalid.'
   },
   1011: {
@@ -105,7 +105,7 @@ export const ERROR_CODE_MAP = {
   },
   3003: {
     key: 'OTP_MAX_ATTEMPT',
-    vi: 'đã nhập sai OTP quá số lần cho phép. Vui lòng thử lại sau.',
+    vi: 'Đã nhập sai OTP quá số lần cho phép. Vui lòng thử lại sau.',
     en: 'Too many OTP attempts. Please try again later.'
   },
   3004: {
@@ -182,7 +182,7 @@ export const ERROR_CODE_MAP = {
   },
   4007: {
     key: 'FAVORITE_ALREADY_EXISTS',
-    vi: 'địa điểm này đã có trong danh sách yêu thích của bạn.',
+    vi: 'Địa điểm này đã có trong danh sách yêu thích của bạn.',
     en: 'Location is already in your favorites.'
   },
   4008: {
@@ -227,7 +227,7 @@ export const ERROR_CODE_MAP = {
   },
   4021: {
     key: 'FILE_PATH_REQUIRED',
-    vi: 'đường dẫn tệp là bắt buộc.',
+    vi: 'Đường dẫn tệp là bắt buộc.',
     en: 'File path is required.'
   },
   4022: {
@@ -259,7 +259,7 @@ export const ERROR_CODE_MAP = {
   },
   5003: {
     key: 'DESTINATION_REQUIRED',
-    vi: 'điểm đến không được để trống.',
+    vi: 'Điểm đến không được để trống.',
     en: 'Destination is required.'
   },
   5004: {
@@ -289,7 +289,7 @@ export const ERROR_CODE_MAP = {
   },
   5009: {
     key: 'REPLAN_PROPOSAL_EXPIRED',
-    vi: 'đề xuất lập lại lịch trình đã hết hạn hoặc không tồn tại. Vui lòng tạo bản xem trước mới.',
+    vi: 'Đề xuất lập lại lịch trình đã hết hạn hoặc không tồn tại. Vui lòng tạo bản xem trước mới.',
     en: 'Replan proposal has expired or does not exist. Please request a new preview.'
   },
   5010: {
@@ -368,7 +368,7 @@ export function getLocalizedErrorMessage(errorOrCode, lang) {
   const currentLang = (lang || getCurrentLanguage()).toLowerCase().startsWith('en') ? 'en' : 'vi';
 
   if (!errorOrCode) {
-    return currentLang === 'en' ? 'An unexpected error occurred.' : 'đã có lỗi xảy ra.';
+    return currentLang === 'en' ? 'An unexpected error occurred.' : 'Đã có lỗi xảy ra.';
   }
 
   let code = null;
@@ -417,5 +417,5 @@ export function getLocalizedErrorMessage(errorOrCode, lang) {
   // 4. Fallback mặc định
   return currentLang === 'en'
     ? 'An error occurred. Please try again.'
-    : 'đã có lỗi xảy ra. Vui lòng thử lại.';
+    : 'Đã có lỗi xảy ra. Vui lòng thử lại.';
 }

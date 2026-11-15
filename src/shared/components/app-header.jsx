@@ -248,7 +248,7 @@ export function AppHeader({ onLogin, onRegister }) {
               }}
               className="px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 hover:text-[#00a3e0] dark:hover:text-[#00a3e0] hover:bg-sky-50 dark:hover:bg-slate-800 transition-all border border-transparent hover:border-sky-200 dark:hover:border-slate-700 cursor-pointer"
             >
-              {t("login", "đăng nhập")}
+              {t("login", "Đăng nhập")}
             </button>
             <button
               type="button"
@@ -258,7 +258,7 @@ export function AppHeader({ onLogin, onRegister }) {
               }}
               className="px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold text-white bg-[#00a3e0] hover:bg-[#008ec4] transition-all shadow-xs active:scale-95 cursor-pointer"
             >
-              {t("register", "đăng ký")}
+              {t("register", "Đăng ký")}
             </button>
           </div>
         ) : (
