@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { loginApi, signupApi, verifyEmailApi, logoutApi, getMyProfileApi } from "~/features/auth/services/auth-api";
-import { signInWithGoogle, signOutFirebase, onFirebaseAuthStateChanged, formatFirebaseUser } from "~/features/auth/services/firebase-auth";
+import { loginApi, signupApi, verifyEmailApi, logoutApi, getMyProfileApi, googleLoginApi } from "~/features/auth/services/auth-api";
+import { signInWithGoogle, signOutFirebase, onFirebaseAuthStateChanged, isFirebaseToken } from "~/features/auth/services/firebase-auth";
 
 const AuthContext = createContext({
   user: null,
@@ -18,13 +18,24 @@ const AuthContext = createContext({
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(() => {
     try {
-      return localStorage.getItem("wayvee_token") || null;
+      const savedToken = localStorage.getItem("wayvee_token") || null;
+      // Tự động phát hiện và xóa token Firebase cũ (nếu có trong localStorage)
+      // Backend Wayvee chỉ xác thực HMAC HS256 token được cấp bởi server
+      if (savedToken && isFirebaseToken(savedToken)) {
+        localStorage.removeItem("wayvee_token");
+        localStorage.removeItem("wayvee_user");
+        return null;
+      }
+      return savedToken;
     } catch {
       return null;
     }
   });
+
   const [user, setUser] = useState(() => {
     try {
+      const savedToken = localStorage.getItem("wayvee_token");
+      if (!savedToken || isFirebaseToken(savedToken)) return null;
       const savedUser = localStorage.getItem("wayvee_user");
       if (!savedUser || savedUser === "undefined" || savedUser === "null") return null;
       return JSON.parse(savedUser);
@@ -46,16 +57,17 @@ export function AuthProvider({ children }) {
 
   const refreshUser = async () => {
     if (!token) return null;
-    // Bỏ qua gọi backend /me nếu phiên đăng nhập hiện tại là tài khoản Google
-    // (tránh 401 unauthenticated do backend kiểm tra HMAC token riêng)
-    if (user?.authProvider === "google" || user?.isGoogleUser) {
-      return user;
-    }
     try {
       const res = await getMyProfileApi();
       const profileData = res?.data || res;
       if (profileData) {
-        updateUser(profileData);
+        updateUser((prev) => ({
+          ...(prev || {}),
+          ...profileData,
+          id: profileData.userId ? `WV-${String(profileData.userId).padStart(5, "0")}` : (prev?.id || `WV-00000`),
+          authProvider: profileData.authProvider || prev?.authProvider || "LOCAL",
+          isGoogleUser: profileData.authProvider === "GOOGLE" || prev?.isGoogleUser || false
+        }));
         return profileData;
       }
     } catch (err) {
@@ -74,23 +86,47 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const unsubscribe = onFirebaseAuthStateChanged(async (fbUser) => {
       if (fbUser) {
-        const isCurrentGoogleUser = user?.authProvider === "google" || user?.isGoogleUser;
-        if (isCurrentGoogleUser || !user) {
-          try {
-            const freshToken = await fbUser.getIdToken();
-            const formatted = formatFirebaseUser(fbUser);
-            setToken(freshToken);
-            setUser((prev) => ({ ...(prev || {}), ...formatted }));
-            localStorage.setItem("wayvee_token", freshToken);
-            localStorage.setItem("wayvee_user", JSON.stringify(formatted));
-          } catch (e) {
-            console.warn("Could not sync Firebase token:", e);
+        const existingToken = localStorage.getItem("wayvee_token");
+        // Nếu đã có token backend Wayvee hợp lệ (không phải Firebase token), giữ nguyên token backend
+        if (existingToken && !isFirebaseToken(existingToken)) {
+          return;
+        }
+
+        // Nếu chưa có token backend hoặc token cũ là Firebase token,
+        // tiến hành trao đổi Firebase ID token lấy JWT token backend Wayvee
+        try {
+          const firebaseIdToken = await fbUser.getIdToken();
+          const beResponse = await googleLoginApi({
+            email: fbUser.email,
+            fullName: fbUser.displayName || fbUser.email?.split("@")[0] || "User",
+            avatarUrl: fbUser.photoURL || null,
+            googleId: fbUser.uid,
+            idToken: firebaseIdToken
+          });
+
+          const responseData = beResponse?.data || beResponse;
+          const userResponse = responseData?.userResponse;
+          const accessToken = responseData?.accessToken;
+
+          if (userResponse && accessToken) {
+            const backendUser = {
+              ...userResponse,
+              id: `WV-${String(userResponse.userId).padStart(5, "0")}`,
+              authProvider: userResponse.authProvider || "GOOGLE",
+              isGoogleUser: true
+            };
+            setToken(accessToken);
+            setUser(backendUser);
+            localStorage.setItem("wayvee_token", accessToken);
+            localStorage.setItem("wayvee_user", JSON.stringify(backendUser));
           }
+        } catch (e) {
+          console.warn("Could not exchange Firebase token with backend:", e);
         }
       }
     });
     return () => unsubscribe();
-  }, [user?.authProvider, user?.isGoogleUser]);
+  }, []);
 
   useEffect(() => {
     const handleUnauthorized = () => {
@@ -115,8 +151,13 @@ export function AuthProvider({ children }) {
         localStorage.setItem("wayvee_token", accessToken);
       }
       if (userResponse) {
-        setUser(userResponse);
-        localStorage.setItem("wayvee_user", JSON.stringify(userResponse));
+        const backendUser = {
+          ...userResponse,
+          id: `WV-${String(userResponse.userId).padStart(5, "0")}`,
+          authProvider: userResponse.authProvider || "LOCAL"
+        };
+        setUser(backendUser);
+        localStorage.setItem("wayvee_user", JSON.stringify(backendUser));
       }
     }
     return response;
@@ -145,9 +186,7 @@ export function AuthProvider({ children }) {
 
   const logout = () => {
     if (token) {
-      if (user?.authProvider !== "google" && !user?.isGoogleUser) {
-        logoutApi(token).catch(() => {});
-      }
+      logoutApi(token).catch(() => {});
     }
     signOutFirebase().catch(() => {});
     setToken(null);
