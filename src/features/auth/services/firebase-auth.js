@@ -3,6 +3,29 @@ import { auth, googleProvider, isFirebaseConfigured } from "../../../shared/lib/
 import { googleLoginApi } from "./auth-api.js";
 
 /**
+ * Checks whether a raw token string is a Firebase ID Token (RS256 with Google securetoken issuer)
+ * rather than a Wayvee HMAC HS256 JWT backend token.
+ */
+export function isFirebaseToken(rawToken) {
+  if (!rawToken || typeof rawToken !== "string") return false;
+  try {
+    const parts = rawToken.split(".");
+    if (parts.length !== 3) return false;
+    let base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+    while (base64.length % 4) {
+      base64 += "=";
+    }
+    const jsonStr = typeof atob === "function"
+      ? atob(base64)
+      : Buffer.from(base64, "base64").toString("utf-8");
+    const payload = JSON.parse(jsonStr);
+    return Boolean(payload?.iss && payload.iss.includes("securetoken.google.com"));
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Friendly error messages for Firebase Authentication
  */
 export function getFirebaseErrorMessage(error) {
@@ -78,7 +101,6 @@ export async function signInWithGoogle() {
     const result = await signInWithPopup(auth, googleProvider);
     const fbUser = result.user;
     const firebaseIdToken = await fbUser.getIdToken();
-    const fallbackUser = formatFirebaseUser(fbUser);
 
     // Lưu / đồng bộ người dùng Google vào database backend Wayvee
     try {
@@ -108,6 +130,11 @@ export async function signInWithGoogle() {
       }
       throw new Error("Không nhận được dữ liệu tài khoản từ máy chủ Wayvee.");
     } catch (backendError) {
+      try {
+        await signOut(auth);
+      } catch {
+        // no-op
+      }
       console.error("Lỗi đồng bộ tài khoản Google vào backend:", backendError);
       throw new Error(
         backendError.message ||

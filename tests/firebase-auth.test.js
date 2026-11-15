@@ -2,7 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   formatFirebaseUser,
-  getFirebaseErrorMessage
+  getFirebaseErrorMessage,
+  isFirebaseToken
 } from '../src/features/auth/services/firebase-auth.js';
 
 test('formatFirebaseUser formats Google user to Wayvee profile schema', () => {
@@ -68,5 +69,29 @@ test('getFirebaseErrorMessage maps common error codes to friendly messages', () 
     getFirebaseErrorMessage({ code: 'auth/operation-not-allowed' }),
     /chưa được kích hoạt/
   );
+});
+
+test('isFirebaseToken accurately detects Firebase ID tokens vs Wayvee tokens', () => {
+  function makeMockJwt(payload) {
+    const header = Buffer.from(JSON.stringify({ alg: 'RS256' })).toString('base64url');
+    const body = Buffer.from(JSON.stringify(payload)).toString('base64url');
+    return `${header}.${body}.mock-signature`;
+  }
+
+  const firebaseToken = makeMockJwt({
+    iss: 'https://securetoken.google.com/wayvee-travel',
+    sub: 'fb-user-12345'
+  });
+  const wayveeToken = makeMockJwt({
+    iss: 'wayvee.com',
+    sub: '1',
+    scope: 'ROLE_USER'
+  });
+
+  assert.equal(isFirebaseToken(firebaseToken), true);
+  assert.equal(isFirebaseToken(wayveeToken), false);
+  assert.equal(isFirebaseToken(null), false);
+  assert.equal(isFirebaseToken(''), false);
+  assert.equal(isFirebaseToken('random-invalid-token'), false);
 });
 
