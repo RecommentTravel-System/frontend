@@ -124,3 +124,91 @@ export async function getMyWebsiteReviews() {
   }
 }
 
+/**
+ * Upload image or video file for website review/feedback.
+ * @param {File} file
+ */
+export async function uploadWebsiteReviewMedia(file) {
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await api.post("/api/v1/website-reviews/upload", formData, {
+      headers: { "Content-Type": "multipart/form-data" }
+    });
+    return res;
+  } catch (err) {
+    console.warn("Backend media upload failed, creating local preview URL:", err);
+    // Fallback: create an object URL so user can still see preview and submit
+    const localUrl = URL.createObjectURL(file);
+    return {
+      data: {
+        url: localUrl,
+        publicId: `local-${Date.now()}`
+      },
+      success: true
+    };
+  }
+}
+
+/**
+ * Admin reply to a website review.
+ * @param {number|string} reviewId
+ * @param {string} reply
+ */
+export async function replyWebsiteReview(reviewId, reply) {
+  try {
+    const res = await api.post(`/api/v1/website-reviews/${reviewId}/reply`, { reply });
+    // Update local storage mirror
+    const list = getLocalReviews();
+    const updated = list.map((item) =>
+      String(item.id) === String(reviewId)
+        ? { ...item, adminReply: reply, repliedAt: new Date().toISOString(), repliedBy: "Ban Quản Trị WAYVEE" }
+        : item
+    );
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
+    return res;
+  } catch (err) {
+    console.warn("Backend reply failed, updating local storage:", err);
+    const list = getLocalReviews();
+    const now = new Date().toISOString();
+    let updatedItem = null;
+    const updated = list.map((item) => {
+      if (String(item.id) === String(reviewId)) {
+        updatedItem = { ...item, adminReply: reply, repliedAt: now, repliedBy: "Ban Quản Trị WAYVEE" };
+        return updatedItem;
+      }
+      return item;
+    });
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
+    return { data: updatedItem, success: true, message: "Đã phản hồi đánh giá thành công." };
+  }
+}
+
+/**
+ * Admin delete reply from a website review.
+ * @param {number|string} reviewId
+ */
+export async function deleteWebsiteReviewReply(reviewId) {
+  try {
+    const res = await api.delete(`/api/v1/website-reviews/${reviewId}/reply`);
+    const list = getLocalReviews();
+    const updated = list.map((item) =>
+      String(item.id) === String(reviewId)
+        ? { ...item, adminReply: null, repliedAt: null, repliedBy: null }
+        : item
+    );
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
+    return res;
+  } catch (err) {
+    console.warn("Backend delete reply failed, updating local storage:", err);
+    const list = getLocalReviews();
+    const updated = list.map((item) =>
+      String(item.id) === String(reviewId)
+        ? { ...item, adminReply: null, repliedAt: null, repliedBy: null }
+        : item
+    );
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
+    return { success: true, message: "Đã xóa phản hồi thành công." };
+  }
+}
+

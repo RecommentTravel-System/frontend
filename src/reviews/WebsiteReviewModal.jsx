@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { submitWebsiteReview } from "~/shared/services/website-review-api";
+import { useState, useEffect, useRef } from "react";
+import { submitWebsiteReview, uploadWebsiteReviewMedia } from "~/shared/services/website-review-api";
 
 const CATEGORIES = [
   "Trải nghiệm chung",
@@ -29,6 +29,8 @@ export default function WebsiteReviewModal({ isOpen, onClose, user, onSuccess })
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [mediaList, setMediaList] = useState([]);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (user) {
@@ -49,6 +51,63 @@ export default function WebsiteReviewModal({ isOpen, onClose, user, onSuccess })
 
   if (!isOpen) return null;
 
+  const handleFileChange = async (e) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+
+    for (const file of files) {
+      const isVideo = file.type.startsWith("video/");
+      const isImage = file.type.startsWith("image/");
+      if (!isImage && !isVideo) {
+        setError("Chỉ chấp nhận tệp hình ảnh (JPG, PNG, WebP) hoặc video (MP4, WebM).");
+        continue;
+      }
+      if (file.size > 30 * 1024 * 1024) {
+        setError(`Tệp "${file.name}" vượt quá dung lượng cho phép (tối đa 30MB).`);
+        continue;
+      }
+
+      const tempId = `media-${Date.now()}-${Math.random()}`;
+      const previewUrl = URL.createObjectURL(file);
+
+      setMediaList((prev) => [
+        ...prev,
+        {
+          id: tempId,
+          url: previewUrl,
+          type: isVideo ? "video" : "image",
+          name: file.name,
+          uploading: true
+        }
+      ]);
+
+      try {
+        const res = await uploadWebsiteReviewMedia(file);
+        const uploadedUrl = res.data?.url || previewUrl;
+        setMediaList((prev) =>
+          prev.map((item) =>
+            item.id === tempId
+              ? { ...item, url: uploadedUrl, uploading: false }
+              : item
+          )
+        );
+      } catch (uploadErr) {
+        console.warn("Upload failed, retaining preview:", uploadErr);
+        setMediaList((prev) =>
+          prev.map((item) =>
+            item.id === tempId ? { ...item, uploading: false } : item
+          )
+        );
+      }
+    }
+
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const removeMedia = (idToRemove) => {
+    setMediaList((prev) => prev.filter((item) => item.id !== idToRemove));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!comment.trim()) {
@@ -60,17 +119,24 @@ export default function WebsiteReviewModal({ isOpen, onClose, user, onSuccess })
       return;
     }
 
+    if (mediaList.some((m) => m.uploading)) {
+      setError("Đang trong quá trình tải tệp lên. Vui lòng đợi trong giây lát...");
+      return;
+    }
+
     setSubmitting(true);
     setError("");
 
     try {
+      const mediaUrls = mediaList.map((m) => m.url);
       const payload = {
         rating,
         category,
         comment: comment.trim(),
         userFullName: anonymous ? "Người dùng ẩn danh" : userFullName.trim(),
         userEmail: anonymous ? "" : userEmail.trim(),
-        anonymous
+        anonymous,
+        mediaUrls
       };
 
       const res = await submitWebsiteReview(payload);
@@ -91,6 +157,7 @@ export default function WebsiteReviewModal({ isOpen, onClose, user, onSuccess })
     setComment("");
     setRating(5);
     setCategory("Trải nghiệm chung");
+    setMediaList([]);
     setError("");
     onClose();
   };
@@ -224,6 +291,99 @@ export default function WebsiteReviewModal({ isOpen, onClose, user, onSuccess })
                 placeholder="Chia sẻ chi tiết trải nghiệm của bạn khi sử dụng trang web (điều bạn thích, khó khăn gặp phải, tính năng bạn mong muốn có thêm)..."
                 className="w-full p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-sm placeholder:text-slate-400 focus:outline-none focus:border-[#00a3e0] resize-y"
               />
+            </div>
+
+            {/* Media Upload Section (Images & Videos) */}
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                  Ảnh &amp; Video minh họa <span className="text-slate-400 font-normal">(tùy chọn)</span>
+                </label>
+                <span className="text-[11px] text-slate-400">
+                  {mediaList.length} tệp đã chọn
+                </span>
+              </div>
+
+              {/* Upload trigger button */}
+              <div className="flex items-center gap-2 mb-2">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  multiple
+                  accept="image/*,video/*"
+                  onChange={handleFileChange}
+                  className="hidden"
+                  id="website-review-media-input"
+                />
+                <label
+                  htmlFor="website-review-media-input"
+                  className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border border-dashed border-sky-300 dark:border-sky-800 bg-sky-50/60 dark:bg-sky-950/30 text-[#00a3e0] text-xs font-bold hover:bg-sky-100/70 transition-all cursor-pointer"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span>+ Đính kèm ảnh / video</span>
+                </label>
+                <span className="text-[11px] text-slate-400">
+                  Hỗ trợ PNG, JPG, WebP, MP4 (tối đa 30MB)
+                </span>
+              </div>
+
+              {/* Previews grid */}
+              {mediaList.length > 0 && (
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5 p-2.5 bg-slate-50 dark:bg-slate-900/40 rounded-2xl border border-slate-100 dark:border-slate-800">
+                  {mediaList.map((item) => (
+                    <div
+                      key={item.id}
+                      className="relative group rounded-xl overflow-hidden aspect-video bg-black/5 dark:bg-white/5 border border-slate-200 dark:border-slate-800 flex items-center justify-center"
+                    >
+                      {item.type === "video" ? (
+                        <div className="w-full h-full relative flex items-center justify-center bg-slate-900">
+                          <video
+                            src={item.url}
+                            className="w-full h-full object-cover opacity-80"
+                          />
+                          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <span className="w-6 h-6 rounded-full bg-black/60 text-white flex items-center justify-center text-xs">
+                              ▶
+                            </span>
+                          </div>
+                          <span className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-black/70 text-white">
+                            VIDEO
+                          </span>
+                        </div>
+                      ) : (
+                        <img
+                          src={item.url}
+                          alt="preview"
+                          className="w-full h-full object-cover"
+                        />
+                      )}
+
+                      {/* Loading spinner */}
+                      {item.uploading && (
+                        <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white text-[10px] gap-1">
+                          <svg className="w-4 h-4 animate-spin text-white" viewBox="0 0 24 24" fill="none">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                          </svg>
+                          <span>Đang tải...</span>
+                        </div>
+                      )}
+
+                      {/* Remove button */}
+                      <button
+                        type="button"
+                        onClick={() => removeMedia(item.id)}
+                        className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/70 hover:bg-red-600 text-white flex items-center justify-center text-xs transition-colors cursor-pointer shadow-sm"
+                        title="Xóa tệp này"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Author info (Name & Email) */}

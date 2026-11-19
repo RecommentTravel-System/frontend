@@ -221,6 +221,9 @@ function WebsiteReviewCard({ item }) {
   const dateStr = item.createdAt ? new Date(item.createdAt).toLocaleDateString('vi-VN', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Vừa xong';
   const name = item.anonymous ? 'Bạn (Đánh giá ẩn danh)' : (item.userFullName || 'Đánh giá của bạn');
   const initial = item.anonymous ? '?' : (name.slice(0, 2).toUpperCase() || 'WV');
+  const [selectedMedia, setSelectedMedia] = useState(null);
+
+  const mediaList = Array.isArray(item.mediaUrls) ? item.mediaUrls : [];
 
   return (
     <article className="bg-white dark:bg-[#0f172a] p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs hover:shadow-md transition-shadow space-y-3">
@@ -230,7 +233,7 @@ function WebsiteReviewCard({ item }) {
             {initial}
           </div>
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <h3 className="text-sm font-bold text-slate-900 dark:text-white">{name}</h3>
               {item.anonymous ? (
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500">
@@ -239,6 +242,11 @@ function WebsiteReviewCard({ item }) {
               ) : (
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-sky-50 dark:bg-sky-950/60 text-[#00a3e0] border border-sky-200 dark:border-sky-900">
                   Đánh giá của bạn
+                </span>
+              )}
+              {item.adminReply && (
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 flex items-center gap-1">
+                  <span>✓</span> Đã có phản hồi từ Admin
                 </span>
               )}
             </div>
@@ -264,6 +272,103 @@ function WebsiteReviewCard({ item }) {
       <p className="text-sm text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-900/60 p-3.5 rounded-xl border border-slate-100 dark:border-slate-800/80 leading-relaxed italic">
         “{item.comment}”
       </p>
+
+      {/* Attached Media Gallery (Images & Videos) */}
+      {mediaList.length > 0 && (
+        <div className="space-y-1.5 pt-1">
+          <p className="text-xs font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+            <span>📎</span> Tệp đính kèm ({mediaList.length})
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-2.5">
+            {mediaList.map((url, idx) => {
+              const isVideo = url.endsWith('.mp4') || url.endsWith('.webm') || url.includes('/video/');
+              return (
+                <div
+                  key={idx}
+                  onClick={() => setSelectedMedia({ url, isVideo })}
+                  className="relative group rounded-xl overflow-hidden aspect-video bg-black/5 dark:bg-white/5 border border-slate-200 dark:border-slate-800 cursor-pointer hover:border-[#00a3e0] transition-colors"
+                >
+                  {isVideo ? (
+                    <div className="w-full h-full relative flex items-center justify-center bg-slate-900">
+                      <video src={url} className="w-full h-full object-cover opacity-80" />
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <span className="w-8 h-8 rounded-full bg-black/70 text-white flex items-center justify-center text-sm shadow-md">
+                          ▶
+                        </span>
+                      </div>
+                      <span className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded text-[9px] font-bold bg-black/70 text-white">
+                        VIDEO
+                      </span>
+                    </div>
+                  ) : (
+                    <img
+                      src={url}
+                      alt={`Đính kèm ${idx + 1}`}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      loading="lazy"
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Admin Reply Section */}
+      {item.adminReply && (
+        <div className="mt-3 p-4 bg-gradient-to-r from-sky-50/80 to-blue-50/60 dark:from-sky-950/40 dark:to-blue-950/30 border border-sky-200 dark:border-sky-900/60 rounded-2xl space-y-2">
+          <div className="flex items-center justify-between flex-wrap gap-2 text-xs font-bold text-[#002d54] dark:text-sky-300">
+            <span className="flex items-center gap-1.5">
+              <span className="text-sm">🛡️</span>
+              <span>Phản hồi từ {item.repliedBy || 'Ban Quản Trị WAYVEE'}</span>
+            </span>
+            {item.repliedAt && (
+              <span className="text-[11px] text-slate-400 font-normal">
+                {new Date(item.repliedAt).toLocaleString('vi-VN')}
+              </span>
+            )}
+          </div>
+          <p className="text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed bg-white/70 dark:bg-slate-900/70 p-3 rounded-xl border border-sky-100 dark:border-sky-900/40">
+            {item.adminReply}
+          </p>
+        </div>
+      )}
+
+      {/* Media Lightbox Modal */}
+      {selectedMedia && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs animate-fade-in"
+          onClick={() => setSelectedMedia(null)}
+        >
+          <div
+            className="relative max-w-3xl w-full max-h-[85vh] flex flex-col items-center justify-center p-2"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setSelectedMedia(null)}
+              className="absolute -top-10 right-0 w-8 h-8 rounded-full bg-white/20 hover:bg-white/40 text-white flex items-center justify-center text-base cursor-pointer"
+            >
+              ✕
+            </button>
+            {selectedMedia.isVideo ? (
+              <video
+                src={selectedMedia.url}
+                controls
+                autoPlay
+                className="max-w-full max-h-[80vh] rounded-2xl shadow-2xl"
+              />
+            ) : (
+              <img
+                src={selectedMedia.url}
+                alt="Đính kèm phóng to"
+                className="max-w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl"
+              />
+            )}
+          </div>
+        </div>
+      )}
     </article>
   );
 }
@@ -397,22 +502,20 @@ export default function Reviews() {
             <button
               type="button"
               onClick={() => setActiveTab('website')}
-              className={`pb-3 px-3 text-xs sm:text-sm font-bold transition-all relative cursor-pointer ${
-                activeTab === 'website'
+              className={`pb-3 px-3 text-xs sm:text-sm font-bold transition-all relative cursor-pointer ${activeTab === 'website'
                   ? 'text-[#00a3e0] border-b-2 border-[#00a3e0]'
                   : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
-              }`}
+                }`}
             >
               Đánh giá của bạn ({websiteReviews.length})
             </button>
             <button
               type="button"
               onClick={() => setActiveTab('places')}
-              className={`pb-3 px-3 text-xs sm:text-sm font-bold transition-all relative cursor-pointer ${
-                activeTab === 'places'
+              className={`pb-3 px-3 text-xs sm:text-sm font-bold transition-all relative cursor-pointer ${activeTab === 'places'
                   ? 'text-[#00a3e0] border-b-2 border-[#00a3e0]'
                   : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
-              }`}
+                }`}
             >
               đánh giá địa điểm ({placeReviews.length})
             </button>

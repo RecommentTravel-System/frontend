@@ -297,19 +297,39 @@ State được pass qua React Router state hoặc `tripStore.js`.
 
 ---
 
-## 10. Admin Panel
+## 10. Admin Panel & Moderation
 
 Admin guard (`routes/admin-guard.jsx`) check `user.role === ADMIN`.  
 Các trang admin:
-- **Dashboard**: Analytics summary (users, revenue, reviews)
-- **Categories**: CRUD danh mục POI
-- **Reviews**: Duyệt/xóa reviews
-- **Users**: Quản lý tài khoản
-- **Revenue**: Báo cáo doanh thu + payment history
+- **Dashboard (`/admin/dashboard`)**: Analytics summary (users, revenue, reviews, active trips)
+- **Categories (`/admin/categories`)**: CRUD danh mục POI, import dữ liệu OpenStreetMap
+- **Reviews (`/admin/reviews`)**: 
+  - *Đánh giá địa điểm*: Duyệt, xác minh hoặc xóa review POI từ cộng đồng
+  - *Đánh giá trang web*: Xem toàn bộ feedback từ người dùng kèm ảnh/video đính kèm; Admin có quyền trả lời (rep lại) hoặc không trả lời (không bắt buộc trạng thái chờ)
+- **Users (`/admin/users`)**: Quản lý tài khoản, trạng thái khóa/mở, phân quyền
+- **Revenue (`/admin/revenue`)**: Báo cáo doanh thu + lịch sử giao dịch PayOS
 
 ---
 
-## 11. i18n
+## 11. Hệ thống Đánh giá & Góp ý (Reviews & Feedback)
+
+- **API Service**: `src/shared/services/website-review-api.js`
+  - `submitWebsiteReview(data)`: Gửi đánh giá (kèm `mediaUrls`)
+  - `uploadWebsiteReviewMedia(file)`: Upload ảnh (JPG, PNG, WebP) hoặc video (MP4, WebM) lên Cloudinary
+  - `getWebsiteReviews(params)`: Lấy danh sách đánh giá & thống kê
+  - `getMyWebsiteReviews()`: Lấy đánh giá của chính user hiện tại
+  - `replyWebsiteReview(id, reply)`: Admin gửi / cập nhật phản hồi
+  - `deleteWebsiteReviewReply(id)`: Admin xóa phản hồi
+- **Giao diện người dùng**:
+  - `src/reviews/WebsiteReviewModal.jsx`: Modal popup gửi đánh giá kèm đính kèm ảnh/video, hiển thị thumbnail, preview, thanh tiến trình
+  - `src/support/FeedbackForm.jsx`: Form góp ý trong trang Trung tâm hỗ trợ (`/support?view=feedback`) kèm đính kèm ảnh/video
+  - `src/reviews/Reviews.jsx`: Quản lý danh sách đánh giá cá nhân, xem gallery ảnh/video đính kèm, hiển thị phản hồi chính thức từ Admin (`✓ Đã có phản hồi từ Admin`)
+- **Giao diện Admin**:
+  - `src/admin/AdminReviews.jsx`: Hiển thị feedback người dùng kèm ảnh/video, cho phép Admin soạn câu trả lời, chọn mẫu gợi ý nhanh, sửa/xóa phản hồi; lọc theo trạng thái đã phản hồi / chưa phản hồi.
+
+---
+
+## 12. i18n
 
 - Ngôn ngữ: `vi` (mặc định) và `en`
 - File: `locales/vi/common.json`, `locales/en/common.json`

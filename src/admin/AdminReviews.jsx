@@ -4,7 +4,12 @@ import { AppHeader } from "~/shared/components";
 import { useTranslation } from "~/providers/i18n-provider";
 import AdminDashboardRail from "./AdminDashboardRail";
 import { getAllReviews, deleteReview } from "~/shared/services/review-api.js";
-import { getWebsiteReviews, getWebsiteReviewStats } from "~/shared/services/website-review-api.js";
+import {
+  getWebsiteReviews,
+  getWebsiteReviewStats,
+  replyWebsiteReview,
+  deleteWebsiteReviewReply
+} from "~/shared/services/website-review-api.js";
 
 const statusLabels = {
   pending: "Chờ duyệt",
@@ -23,12 +28,72 @@ function Rating({ value }) {
   );
 }
 
-function WebsiteReviewDetailModal({ review, onClose }) {
+function WebsiteReviewDetailModal({ review, onClose, onReplySuccess, onReplyDeleted }) {
   if (!review) return null;
   const num = Number(review.rating || 5);
   const dateStr = review.createdAt
     ? new Date(review.createdAt).toLocaleString("vi-VN")
     : "Gần đây";
+
+  const [replyText, setReplyText] = useState(review.adminReply || "");
+  const [isEditing, setIsEditing] = useState(!review.adminReply);
+  const [submitting, setSubmitting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [error, setError] = useState("");
+  const [activeMedia, setActiveMedia] = useState(null);
+
+  const mediaList = Array.isArray(review.mediaUrls) ? review.mediaUrls : [];
+
+  const replyTemplates = [
+    "Cảm ơn bạn đã đóng góp ý kiến! Đội ngũ WAYVEE đã ghi nhận và sẽ tối ưu trải nghiệm này trong bản cập nhật tới.",
+    "Cảm ơn bạn đã phản hồi! Bộ phận kỹ thuật đang kiểm tra và sẽ sớm khắc phục vấn đề bạn gặp phải.",
+    "Cảm ơn bạn đã tin tưởng và đồng hành cùng WAYVEE! Chúc bạn có những chuyến đi thật trọn vẹn và ý nghĩa."
+  ];
+
+  const handleSendReply = async () => {
+    if (!replyText.trim()) {
+      setError("Vui lòng nhập nội dung phản hồi.");
+      return;
+    }
+    setSubmitting(true);
+    setError("");
+    try {
+      const res = await replyWebsiteReview(review.id, replyText.trim());
+      setIsEditing(false);
+      if (onReplySuccess) {
+        onReplySuccess(
+          res.data || {
+            ...review,
+            adminReply: replyText.trim(),
+            repliedAt: new Date().toISOString(),
+            repliedBy: "Ban Quản Trị WAYVEE"
+          }
+        );
+      }
+    } catch (err) {
+      setError(err?.message || "Không thể gửi phản hồi. Vui lòng thử lại!");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDeleteReply = async () => {
+    if (!window.confirm("Bạn có chắc chắn muốn xóa phản hồi này không?")) return;
+    setDeleting(true);
+    setError("");
+    try {
+      await deleteWebsiteReviewReply(review.id);
+      setReplyText("");
+      setIsEditing(true);
+      if (onReplyDeleted) {
+        onReplyDeleted(review.id);
+      }
+    } catch (err) {
+      setError(err?.message || "Không thể xóa phản hồi. Vui lòng thử lại!");
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   return (
     <div
@@ -36,12 +101,13 @@ function WebsiteReviewDetailModal({ review, onClose }) {
       role="dialog"
       aria-modal="true"
     >
-      <div className="bg-white dark:bg-[#0f172a] rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 w-full max-w-lg overflow-hidden p-6 space-y-4">
+      <div className="bg-white dark:bg-[#0f172a] rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 w-full max-w-xl max-h-[90vh] overflow-y-auto p-6 space-y-4">
+        {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
           <div className="flex items-center gap-2">
             <span className="text-xl">★</span>
             <h3 className="text-base font-extrabold text-[#002d54] dark:text-white">
-              Chi tiết đánh giá trang web
+              Chi tiết đánh giá &amp; Phản hồi
             </h3>
           </div>
           <button
@@ -53,8 +119,9 @@ function WebsiteReviewDetailModal({ review, onClose }) {
           </button>
         </div>
 
-        <div className="space-y-3 text-sm">
-          <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900/60 rounded-xl">
+        <div className="space-y-4 text-sm">
+          {/* User & Rating */}
+          <div className="flex items-center justify-between p-3.5 bg-slate-50 dark:bg-slate-900/60 rounded-2xl border border-slate-100 dark:border-slate-800">
             <div>
               <p className="text-xs text-slate-400">Người đánh giá</p>
               <p className="font-bold text-slate-900 dark:text-white">
@@ -72,43 +139,201 @@ function WebsiteReviewDetailModal({ review, onClose }) {
             </div>
           </div>
 
-          <div>
-            <p className="text-xs text-slate-400 mb-1">Chủ đề / Khía cạnh</p>
-            <span className="inline-block px-3 py-1 rounded-lg text-xs font-semibold bg-sky-50 dark:bg-sky-950/60 text-[#00a3e0] border border-sky-100 dark:border-sky-800">
-              {review.category || "Trải nghiệm chung"}
-            </span>
-          </div>
-
-          <div>
-            <p className="text-xs text-slate-400 mb-1">Thời gian gửi</p>
-            <p className="text-xs font-medium text-slate-700 dark:text-slate-300">
+          <div className="flex items-center justify-between text-xs">
+            <div>
+              <span className="text-slate-400 mr-2">Khía cạnh:</span>
+              <span className="inline-block px-3 py-1 rounded-lg font-semibold bg-sky-50 dark:bg-sky-950/60 text-[#00a3e0] border border-sky-100 dark:border-sky-800">
+                {review.category || "Trải nghiệm chung"}
+              </span>
+            </div>
+            <div className="text-slate-400">
               {dateStr}
-            </p>
+            </div>
           </div>
 
+          {/* Comment */}
           <div>
-            <p className="text-xs text-slate-400 mb-1">Nội dung nhận xét &amp; góp ý</p>
+            <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Nội dung nhận xét &amp; góp ý</p>
             <div className="p-4 bg-slate-50 dark:bg-slate-900/60 rounded-2xl border border-slate-100 dark:border-slate-800 text-slate-800 dark:text-slate-200 leading-relaxed italic">
               “{review.comment}”
             </div>
           </div>
 
-          <div className="p-3 bg-blue-50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/50 rounded-xl text-xs text-blue-700 dark:text-blue-300 flex items-center gap-2">
-            <span>ℹ</span>
-            <span>Chế độ chỉ xem dành cho Admin. Không cho phép xóa, sửa hoặc can thiệp dữ liệu này.</span>
+          {/* Attached Media (Images & Videos) */}
+          {mediaList.length > 0 && (
+            <div className="space-y-2">
+              <p className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                <span>📎</span> Ảnh &amp; Video người dùng đính kèm ({mediaList.length})
+              </p>
+              <div className="grid grid-cols-3 gap-2.5">
+                {mediaList.map((url, idx) => {
+                  const isVideo = url.endsWith(".mp4") || url.endsWith(".webm") || url.includes("/video/");
+                  return (
+                    <div
+                      key={idx}
+                      onClick={() => setActiveMedia({ url, isVideo })}
+                      className="relative group rounded-xl overflow-hidden aspect-video bg-black/5 dark:bg-white/5 border border-slate-200 dark:border-slate-800 cursor-pointer hover:border-[#00a3e0] transition-colors"
+                    >
+                      {isVideo ? (
+                        <div className="w-full h-full relative flex items-center justify-center bg-slate-900">
+                          <video src={url} className="w-full h-full object-cover opacity-80" />
+                          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <span className="w-7 h-7 rounded-full bg-black/70 text-white flex items-center justify-center text-xs">
+                              ▶
+                            </span>
+                          </div>
+                          <span className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded text-[8px] font-bold bg-black/70 text-white">
+                            VIDEO
+                          </span>
+                        </div>
+                      ) : (
+                        <img
+                          src={url}
+                          alt={`Đính kèm ${idx + 1}`}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Admin Reply Section */}
+          <div className="p-4 bg-sky-50/60 dark:bg-sky-950/30 rounded-2xl border border-sky-100 dark:border-sky-900/50 space-y-3">
+            <div className="flex items-center justify-between">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-[#002d54] dark:text-sky-300 flex items-center gap-1.5">
+                <span>🛡️</span> Phản hồi từ Ban Quản Trị
+              </h4>
+              {review.adminReply && !isEditing && (
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsEditing(true)}
+                    className="text-xs font-semibold text-[#00a3e0] hover:underline cursor-pointer"
+                  >
+                    Sửa phản hồi
+                  </button>
+                  <span className="text-slate-300">·</span>
+                  <button
+                    type="button"
+                    disabled={deleting}
+                    onClick={handleDeleteReply}
+                    className="text-xs font-semibold text-red-500 hover:underline cursor-pointer disabled:opacity-50"
+                  >
+                    {deleting ? "Đang xóa..." : "Xóa"}
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {review.adminReply && !isEditing ? (
+              <div className="space-y-1.5">
+                <p className="text-xs sm:text-sm text-slate-800 dark:text-slate-200 bg-white dark:bg-slate-900 p-3.5 rounded-xl border border-sky-200 dark:border-sky-900/60 leading-relaxed">
+                  {review.adminReply}
+                </p>
+                <div className="flex items-center justify-between text-[11px] text-slate-400">
+                  <span>Người trả lời: <strong>{review.repliedBy || "Ban Quản Trị WAYVEE"}</strong></span>
+                  {review.repliedAt && <span>{new Date(review.repliedAt).toLocaleString("vi-VN")}</span>}
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-2.5">
+                <textarea
+                  rows={3}
+                  value={replyText}
+                  onChange={(e) => {
+                    setReplyText(e.target.value);
+                    if (error) setError("");
+                  }}
+                  placeholder="Nhập nội dung phản hồi gửi tới người dùng..."
+                  className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-xs sm:text-sm placeholder:text-slate-400 focus:outline-none focus:border-[#00a3e0] resize-y"
+                />
+
+                {/* Quick Templates */}
+                <div className="space-y-1">
+                  <span className="text-[10px] font-bold uppercase text-slate-400">Gợi ý phản hồi nhanh:</span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {replyTemplates.map((template, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => setReplyText(template)}
+                        className="px-2 py-1 rounded-lg text-[10px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:border-[#00a3e0] hover:text-[#00a3e0] transition-colors cursor-pointer text-left truncate max-w-full"
+                        title={template}
+                      >
+                        {template.slice(0, 45)}...
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {error && (
+                  <p className="text-xs text-red-500 font-medium">⚠ {error}</p>
+                )}
+
+                <div className="flex items-center justify-end gap-2 pt-1">
+                  {review.adminReply && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setReplyText(review.adminReply);
+                        setIsEditing(false);
+                      }}
+                      className="px-3 py-1.5 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                    >
+                      Hủy
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    disabled={submitting}
+                    onClick={handleSendReply}
+                    className="px-4 py-2 bg-[#00a3e0] hover:bg-[#008ec4] text-white text-xs font-bold rounded-xl shadow-xs transition-all cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
+                  >
+                    {submitting ? "Đang gửi..." : review.adminReply ? "Lưu phản hồi" : "Gửi phản hồi"}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
+        {/* Footer */}
         <div className="pt-2 flex justify-end">
           <button
             type="button"
             onClick={onClose}
             className="px-5 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl transition-colors cursor-pointer"
           >
-            đóng
+            Đóng
           </button>
         </div>
       </div>
+
+      {/* Lightbox Preview */}
+      {activeMedia && (
+        <div
+          className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs"
+          onClick={() => setActiveMedia(null)}
+        >
+          <div className="relative max-w-2xl w-full" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              onClick={() => setActiveMedia(null)}
+              className="absolute -top-10 right-0 w-8 h-8 rounded-full bg-white/20 hover:bg-white/40 text-white flex items-center justify-center text-sm cursor-pointer"
+            >
+              ✕
+            </button>
+            {activeMedia.isVideo ? (
+              <video src={activeMedia.url} controls autoPlay className="max-w-full rounded-2xl shadow-2xl" />
+            ) : (
+              <img src={activeMedia.url} alt="Chi tiết đính kèm" className="max-w-full rounded-2xl shadow-2xl" />
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -126,6 +351,7 @@ function WebsiteReviewAdminCard({ review, onViewDetail }) {
 
   const name = review.anonymous ? "Người dùng ẩn danh" : review.userFullName || "Thành viên WAYVEE";
   const initial = review.anonymous ? "?" : (name.slice(0, 2).toUpperCase() || "WV");
+  const mediaList = Array.isArray(review.mediaUrls) ? review.mediaUrls : [];
 
   return (
     <article className="bg-white dark:bg-[#0f172a] p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs hover:shadow-md transition-shadow flex flex-col md:flex-row md:items-start justify-between gap-4">
@@ -148,6 +374,11 @@ function WebsiteReviewAdminCard({ review, onViewDetail }) {
                 Thành viên
               </span>
             )}
+            {review.adminReply && (
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 flex items-center gap-1">
+                <span>✓</span> Đã phản hồi
+              </span>
+            )}
             <span className="text-xs text-slate-400 dark:text-slate-500">
               ID: #{review.id} · {dateStr}
             </span>
@@ -163,14 +394,57 @@ function WebsiteReviewAdminCard({ review, onViewDetail }) {
                 {review.category}
               </span>
             )}
-            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-900/50">
-              Chỉ xem (Read-only)
-            </span>
+            {mediaList.length > 0 && (
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-50 dark:bg-sky-950/40 text-[#00a3e0] border border-sky-200 dark:border-sky-800">
+                📎 {mediaList.length} tệp đính kèm
+              </span>
+            )}
           </div>
 
           <p className="text-sm text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-900/60 p-3.5 rounded-xl border border-slate-100 dark:border-slate-800/80 italic leading-relaxed">
             “{review.comment}”
           </p>
+
+          {/* Media preview strip if present */}
+          {mediaList.length > 0 && (
+            <div className="flex items-center gap-2 pt-0.5">
+              {mediaList.slice(0, 4).map((url, idx) => {
+                const isVideo = url.endsWith(".mp4") || url.endsWith(".webm") || url.includes("/video/");
+                return (
+                  <div
+                    key={idx}
+                    className="w-14 h-10 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 relative"
+                  >
+                    {isVideo ? (
+                      <div className="w-full h-full bg-slate-900 flex items-center justify-center text-[10px] text-white font-bold">
+                        ▶ MP4
+                      </div>
+                    ) : (
+                      <img src={url} alt="thumb" className="w-full h-full object-cover" />
+                    )}
+                  </div>
+                );
+              })}
+              {mediaList.length > 4 && (
+                <span className="text-xs text-slate-400">+{mediaList.length - 4} tệp khác</span>
+              )}
+            </div>
+          )}
+
+          {/* Admin reply snippet */}
+          {review.adminReply && (
+            <div className="p-3 bg-sky-50/50 dark:bg-sky-950/30 rounded-xl border border-sky-200/70 dark:border-sky-900/50 text-xs text-slate-700 dark:text-slate-300 space-y-1">
+              <div className="flex items-center justify-between font-bold text-[#002d54] dark:text-sky-300 text-[11px]">
+                <span>🛡️ Phản hồi từ Ban Quản Trị:</span>
+                {review.repliedAt && (
+                  <span className="font-normal text-slate-400 text-[10px]">
+                    {new Date(review.repliedAt).toLocaleString("vi-VN")}
+                  </span>
+                )}
+              </div>
+              <p className="italic">“{review.adminReply}”</p>
+            </div>
+          )}
 
           {!review.anonymous && review.userEmail && (
             <p className="text-[11px] text-slate-400">
@@ -184,9 +458,13 @@ function WebsiteReviewAdminCard({ review, onViewDetail }) {
         <button
           type="button"
           onClick={() => onViewDetail(review)}
-          className="px-3.5 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-2xs"
+          className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-2xs ${
+            review.adminReply
+              ? "bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200"
+              : "bg-sky-50 dark:bg-sky-950/40 text-[#00a3e0] border border-sky-200 dark:border-sky-900 hover:bg-sky-100"
+          }`}
         >
-          Xem chi tiết
+          {review.adminReply ? "Xem & Sửa phản hồi" : "Xem chi tiết"}
         </button>
       </div>
     </article>
@@ -335,6 +613,7 @@ export default function AdminReviews() {
   const [webQuery, setWebQuery] = useState("");
   const [webRating, setWebRating] = useState("all");
   const [webCategory, setWebCategory] = useState("all");
+  const [webReplyFilter, setWebReplyFilter] = useState("all");
   const [detailModalReview, setDetailModalReview] = useState(null);
 
   // Place Reviews State
@@ -345,6 +624,28 @@ export default function AdminReviews() {
   const [placeQuickFilter, setPlaceQuickFilter] = useState("all");
   const [selectedPlaceReviews, setSelectedPlaceReviews] = useState([]);
   const [notice, setNotice] = useState("");
+
+  const handleReplySuccess = (updatedReview) => {
+    setWebsiteReviews((prev) =>
+      prev.map((r) => (String(r.id) === String(updatedReview.id) ? updatedReview : r))
+    );
+    setDetailModalReview(updatedReview);
+    setNotice("Đã gửi phản hồi thành công đến người dùng!");
+  };
+
+  const handleReplyDeleted = (reviewId) => {
+    setWebsiteReviews((prev) =>
+      prev.map((r) =>
+        String(r.id) === String(reviewId)
+          ? { ...r, adminReply: null, repliedAt: null, repliedBy: null }
+          : r
+      )
+    );
+    setDetailModalReview((prev) =>
+      prev ? { ...prev, adminReply: null, repliedAt: null, repliedBy: null } : null
+    );
+    setNotice("Đã xóa phản hồi của bài đánh giá.");
+  };
 
   const fetchWebsiteReviews = useCallback(async () => {
     setLoadingWebReviews(true);
@@ -397,7 +698,7 @@ export default function AdminReviews() {
     fetchPlaceReviews();
   }, [fetchWebsiteReviews, fetchPlaceReviews]);
 
-  // Filtered Website Reviews (READ ONLY)
+  // Filtered Website Reviews (có lọc theo trạng thái phản hồi)
   const visibleWebsiteReviews = useMemo(() => {
     return websiteReviews.filter((r) => {
       const kw = webQuery.toLowerCase();
@@ -405,7 +706,8 @@ export default function AdminReviews() {
         !kw ||
         (r.userFullName && r.userFullName.toLowerCase().includes(kw)) ||
         (r.userEmail && r.userEmail.toLowerCase().includes(kw)) ||
-        (r.comment && r.comment.toLowerCase().includes(kw));
+        (r.comment && r.comment.toLowerCase().includes(kw)) ||
+        (r.adminReply && r.adminReply.toLowerCase().includes(kw));
 
       const matchesRating =
         webRating === "all" || Number(r.rating) === Number(webRating);
@@ -414,9 +716,14 @@ export default function AdminReviews() {
         webCategory === "all" ||
         (r.category && r.category.toLowerCase().includes(webCategory.toLowerCase()));
 
-      return matchesKw && matchesRating && matchesCat;
+      const matchesReply =
+        webReplyFilter === "all" ||
+        (webReplyFilter === "replied" && Boolean(r.adminReply)) ||
+        (webReplyFilter === "unreplied" && !r.adminReply);
+
+      return matchesKw && matchesRating && matchesCat && matchesReply;
     });
-  }, [websiteReviews, webQuery, webRating, webCategory]);
+  }, [websiteReviews, webQuery, webRating, webCategory, webReplyFilter]);
 
   // Filtered Place Reviews
   const visiblePlaceReviews = useMemo(() => {
@@ -544,8 +851,8 @@ export default function AdminReviews() {
             >
               <span className="text-base">★</span>
               <span>Đánh giá trang web ({websiteReviews.length})</span>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-100 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-900">
-                Chỉ xem
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-sky-100 dark:bg-sky-950/80 text-[#00a3e0] border border-sky-200 dark:border-sky-900">
+                Có thể phản hồi
               </span>
             </button>
 
@@ -564,24 +871,24 @@ export default function AdminReviews() {
           </div>
 
           {/* ========================================================================= */}
-          {/* TAB 1: WEBSITE REVIEWS (CHẾ đỘ CHỈ XEM - KHÔNG XÓA SỬA THÊM)             */}
+          {/* TAB 1: WEBSITE REVIEWS (QUẢN LÝ ĐÁNH GIÁ & PHẢN HỒI NGƯỜI DÙNG)          */}
           {/* ========================================================================= */}
           {activeTab === "website" && (
             <div className="space-y-6">
-              {/* READ-ONLY POLICY BANNER */}
+              {/* FEEDBACK & REPLY POLICY BANNER */}
               <div className="bg-gradient-to-r from-blue-50 via-sky-50 to-indigo-50 dark:from-slate-900 dark:via-sky-950/40 dark:to-slate-900 p-4 sm:p-5 rounded-2xl border border-blue-200 dark:border-blue-900/60 shadow-xs flex items-start gap-3.5">
                 <div className="w-9 h-9 rounded-xl bg-blue-500 text-white flex items-center justify-center text-lg font-bold shrink-0 shadow-sm">
                   🛡️
                 </div>
                 <div className="space-y-1 text-xs sm:text-sm">
                   <h2 className="font-extrabold text-[#002d54] dark:text-sky-300 text-sm sm:text-base">
-                    Chế độ chỉ xem (Read-Only) dành cho Quản trị viên
+                    Quản lý phản hồi &amp; Chăm sóc khách hàng dành cho Quản trị viên
                   </h2>
                   <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
-                    Theo quy định bảo mật &amp; tính khách quan của hệ thống WAYVEE, mục <strong>Đánh giá trang web</strong> chỉ cho phép quản trị viên theo dõi mức độ hài lòng, đọc ý kiến đóng góp và xem thống kê. 
-                    <span className="text-blue-700 dark:text-blue-300 font-bold ml-1">
-                      Hệ thống không cung cấp chức năng thêm mới, chỉnh sửa hoặc xóa đánh giá trang web của người dùng.
-                    </span>
+                    Theo dõi đánh giá trải nghiệm hệ thống, xem hình ảnh và video người dùng đính kèm. Quản trị viên có thể 
+                    <span className="text-[#00a3e0] font-bold ml-1">
+                      gửi phản hồi trực tiếp tới từng đánh giá
+                    </span> để giải đáp thắc mắc và tương tác với người dùng kịp thời.
                   </p>
                 </div>
               </div>
@@ -660,23 +967,23 @@ export default function AdminReviews() {
                 <div className="bg-white dark:bg-[#0f172a] p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold uppercase text-slate-500 dark:text-slate-400 tracking-wider">
-                      Quyền hạn Quản trị
+                      Đã phản hồi
                     </span>
                     <div className="w-9 h-9 rounded-xl bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
-                      <span className="text-lg">🔒</span>
+                      <span className="text-lg">💬</span>
                     </div>
                   </div>
                   <div className="mt-3 flex items-baseline space-x-2">
-                    <span className="text-2xl font-extrabold text-slate-900 dark:text-white">
-                      Chỉ đọc
+                    <span className="text-3xl font-extrabold text-slate-900 dark:text-white">
+                      {websiteReviews.filter((r) => Boolean(r.adminReply)).length}
                     </span>
                     <span className="text-xs font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/60 px-2.5 py-0.5 rounded-full">
-                      Read-Only
+                      / {websiteReviews.length} mục
                     </span>
                   </div>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 flex items-center space-x-1">
                     <span className="text-indigo-500">✓</span>
-                    <span>Không có xóa, sửa hay thêm</span>
+                    <span>Tương tác quản trị với người dùng</span>
                   </p>
                 </div>
               </section>
@@ -757,6 +1064,17 @@ export default function AdminReviews() {
                     <option value="Chung">Trải nghiệm chung</option>
                   </select>
 
+                  {/* Reply Status Filter */}
+                  <select
+                    value={webReplyFilter}
+                    onChange={(e) => setWebReplyFilter(e.target.value)}
+                    className="px-3.5 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-[#00a3e0] min-w-[150px]"
+                  >
+                    <option value="all">Tất cả đánh giá</option>
+                    <option value="replied">Đã phản hồi</option>
+                    <option value="unreplied">Chưa phản hồi</option>
+                  </select>
+
                   {/* Reset */}
                   <button
                     type="button"
@@ -764,6 +1082,7 @@ export default function AdminReviews() {
                       setWebQuery("");
                       setWebRating("all");
                       setWebCategory("all");
+                      setWebReplyFilter("all");
                       fetchWebsiteReviews();
                     }}
                     className="p-2 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
@@ -783,8 +1102,8 @@ export default function AdminReviews() {
               <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 px-1">
                 <h2 className="text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
                   <span>Danh sách đánh giá trang web từ người dùng</span>
-                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-                    Chỉ đọc
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-sky-50 dark:bg-sky-950/60 text-[#00a3e0] border border-sky-200 dark:border-sky-800">
+                    Phản hồi trực tiếp
                   </span>
                 </h2>
                 <span>{visibleWebsiteReviews.length} mục hiển thị</span>
@@ -1067,11 +1386,13 @@ export default function AdminReviews() {
         </main>
       </div>
 
-      {/* Website Review Read-Only Detail Modal */}
+      {/* Website Review & Reply Detail Modal */}
       {detailModalReview && (
         <WebsiteReviewDetailModal
           review={detailModalReview}
           onClose={() => setDetailModalReview(null)}
+          onReplySuccess={handleReplySuccess}
+          onReplyDeleted={handleReplyDeleted}
         />
       )}
     </div>
