@@ -3,6 +3,7 @@ export { Input } from "./input";
 export { Card } from "./card";
 export { Pill } from "./pill";
 export { Badge } from "./badge";
+export { EmptyState } from "./empty-state";
 export { Slider } from "./slider";
 export { Skeleton } from "./skeleton";
 export { Spinner, TopBarProgress, LoadingOverlay, InlineLoading } from "./loading";

@@ -1,5 +1,5 @@
 :root {
-  /* Brand & Core Color Tokens (DESIGN.md) */
+  /* Brand & Core Color Tokens */
   --color-primary: #0b2545;
   --color-primary-dark: #062c4b;
   --color-primary-hover: #102f58;
@@ -18,43 +18,57 @@
   --color-on-tertiary-container: #0369a1;
 
   --color-accent-cyan: #00a8e8;
+  --color-accent-cyan-hover: #0096d1;
   --color-accent-rose: #f43f5e;
   --color-accent-rose-hover: #e11d48;
   --color-rating-gold: #f59e0b;
+  --color-success: #10b981;
+  --color-success-foreground: #ffffff;
 
-  --color-background: #f3f4f6;
+  --color-background: #f8fafc;
   --color-foreground: #0b2545;
   --color-surface: #ffffff;
-  --color-surface-dim: #f3f4f6;
-  --color-surface-container: #f4f6f8;
-  --color-surface-container-high: #eef2f6;
+  --color-surface-dim: #f1f5f9;
+  --color-surface-container: #f8fafc;
+  --color-surface-container-high: #e2e8f0;
 
   --color-card: #ffffff;
-  --color-card-foreground: #111827;
+  --color-card-foreground: #0f172a;
 
-  --color-muted: #f4f6f8;
-  --color-muted-foreground: #6b7280;
+  --color-muted: #f1f5f9;
+  --color-muted-foreground: #64748b;
 
-  --color-border: #e5e7eb;
-  --color-outline: #d1d5db;
+  --color-border: #e2e8f0;
+  --color-outline: #cbd5e1;
   --color-ring: #00a8e8;
 
-  --color-error: #dc2626;
+  --color-error: #ef4444;
   --color-error-container: #fee2e2;
 
   /* Border Radius Tokens */
+  --radius-xs: 0.25rem;
   --radius-sm: 0.375rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1rem;
-  --radius-xl: 1.25rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.875rem;
+  --radius-xl: 1.125rem;
   --radius-2xl: 1.5rem;
+  --radius-3xl: 2rem;
   --radius-full: 9999px;
 
-  /* Motion Timing & Easing Tokens (Wayvee Motion Design Language) */
-  --duration-fast: 160ms;
+  /* Shadows - Modern multi-layered ambient elevations */
+  --shadow-subtle: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+  --shadow-card: 0 1px 3px 0 rgba(15, 23, 42, 0.06), 0 1px 2px -1px rgba(15, 23, 42, 0.06);
+  --shadow-card-hover: 0 10px 25px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
+  --shadow-elevated: 0 20px 35px -5px rgba(15, 23, 42, 0.12), 0 8px 10px -6px rgba(15, 23, 42, 0.06);
+  --shadow-glow-cyan: 0 0 25px -4px rgba(0, 168, 232, 0.35);
+
+  /* Motion Timing & Easing Tokens */
+  --duration-fast: 150ms;
   --duration-normal: 220ms;
-  --duration-smooth: 280ms;
+  --duration-smooth: 320ms;
+  --duration-slow: 480ms;
   --ease-standard: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-out: cubic-bezier(0, 0, 0.2, 1);
   --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
 
@@ -71,15 +85,15 @@
   --color-primary-container: #0c4a6e;
   --color-on-primary-container: #e0f2fe;
 
-  --color-background: #0b1220;
-  --color-foreground: #e2e8f0;
-  --color-surface: #111a2e;
-  --color-surface-dim: #0b1220;
+  --color-background: #070e18;
+  --color-foreground: #f1f5f9;
+  --color-surface: #0f172a;
+  --color-surface-dim: #070e18;
   --color-surface-container: #1e293b;
   --color-surface-container-high: #334155;
 
-  --color-card: #111a2e;
-  --color-card-foreground: #e2e8f0;
+  --color-card: #0f172a;
+  --color-card-foreground: #f1f5f9;
 
   --color-muted: #1e293b;
   --color-muted-foreground: #94a3b8;
@@ -87,4 +101,10 @@
   --color-border: #1e293b;
   --color-outline: #334155;
   --color-ring: #38bdf8;
+
+  --shadow-subtle: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+  --shadow-card: 0 2px 4px 0 rgba(0, 0, 0, 0.3);
+  --shadow-card-hover: 0 14px 28px -4px rgba(0, 0, 0, 0.6), 0 4px 8px -4px rgba(0, 0, 0, 0.4);
+  --shadow-elevated: 0 24px 40px -6px rgba(0, 0, 0, 0.7);
+  --shadow-glow-cyan: 0 0 30px -4px rgba(56, 189, 248, 0.35);
 }

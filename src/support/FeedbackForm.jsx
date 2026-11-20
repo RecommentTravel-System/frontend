@@ -137,21 +137,42 @@ export default function FeedbackForm({ user, draft, onDraftChange, onClose }) {
         if (pending.current) event.preventDefault();
       }}
     >
+      {/* Nút thoát ở góc trên cùng của modal */}
+      <button
+        type="button"
+        className="feedback-close-btn"
+        aria-label="Thoát"
+        title="Thoát / Đóng"
+        onClick={() => {
+          if (onClose) onClose();
+          dialog.current?.close();
+        }}
+      >
+        <span aria-hidden="true" className="feedback-close-icon">✕</span>
+      </button>
+
       {saved ? (
         <div className="feedback-success">
           <h2 id="feedback-title">Cảm ơn bạn đã gửi đánh giá!</h2>
           <p role="status">
             đánh giá trang web của bạn đã được gửi thành công đến hệ thống WAYVEE. Ý kiến của bạn là động lực để chúng tôi phát triển tốt hơn!
           </p>
-          <button type="button" className="support-primary cursor-pointer" onClick={() => dialog.current.close()}>
-            đóng
+          <button
+            type="button"
+            className="support-primary cursor-pointer"
+            onClick={() => {
+              if (onClose) onClose();
+              dialog.current?.close();
+            }}
+          >
+            Đóng
           </button>
         </div>
       ) : (
         <form onSubmit={submit}>
           <fieldset className="feedback-rating" disabled={busy}>
             <legend id="feedback-title">
-              đánh giá chất lượng và trải nghiệm trang web WAYVEE (1 - 5 sao)
+              Đánh giá chất lượng và trải nghiệm trang web WAYVEE
             </legend>
             <div className="feedback-rating-options">
               {[1, 2, 3, 4, 5].map((rating) => (
@@ -342,8 +363,16 @@ export default function FeedbackForm({ user, draft, onDraftChange, onClose }) {
             {error}
           </p>
           <div className="feedback-actions">
-            <button type="button" className="support-outline cursor-pointer" disabled={busy} onClick={() => dialog.current.close()}>
-              để sau
+            <button
+              type="button"
+              className="support-outline cursor-pointer"
+              disabled={busy}
+              onClick={() => {
+                if (onClose) onClose();
+                dialog.current?.close();
+              }}
+            >
+              Thoát ra
             </button>
             <button type="submit" className="support-primary cursor-pointer" disabled={busy}>
               {busy ? 'Đang gửi…' : 'Gửi đánh giá'}

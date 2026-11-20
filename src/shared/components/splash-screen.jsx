@@ -38,6 +38,18 @@ export function SplashScreen({ onReady, onFinish, minDuration = 1000, maxTimeout
     return mediaReduced || dataMotionOff;
   }, []);
 
+  // Smooth exit transition
+  const triggerExitTransition = useCallback(() => {
+    // 1. Alert parent that app is ready (main page fades in)
+    if (onReady) onReady();
+    setPhase("exiting");
+
+    const exitDuration = isReducedMotion() ? 0 : 280;
+    setTimeout(() => {
+      if (onFinish) onFinish();
+    }, exitDuration);
+  }, [onReady, onFinish, isReducedMotion]);
+
   // Execute actual app initialization tasks
   const runInitialization = useCallback(async () => {
     startTimeRef.current = Date.now();
@@ -100,19 +112,7 @@ export function SplashScreen({ onReady, onFinish, minDuration = 1000, maxTimeout
       setErrorMessage(err?.message || "Không thể tải cấu hình ứng dụng.");
       setPhase("error");
     }
-  }, [t, refreshUser, minDuration, isReducedMotion]);
-
-  // Smooth exit transition
-  const triggerExitTransition = useCallback(() => {
-    // 1. Alert parent that app is ready (main page fades in)
-    if (onReady) onReady();
-    setPhase("exiting");
-
-    const exitDuration = isReducedMotion() ? 0 : 280;
-    setTimeout(() => {
-      if (onFinish) onFinish();
-    }, exitDuration);
-  }, [onReady, onFinish, isReducedMotion]);
+  }, [t, refreshUser, minDuration, isReducedMotion, triggerExitTransition]);
 
   // Fail-safe timeout watchdog
   useEffect(() => {

@@ -544,7 +544,7 @@ export function TripPlanPage() {
           return parsed.days;
         }
       }
-    } catch (e) { }
+    } catch { }
     return generateDynamicDays(locationState.tripDates || pendingTripData?.tripDates);
   });
 
@@ -564,7 +564,7 @@ export function TripPlanPage() {
           return parsed.wishlist;
         }
       }
-    } catch (e) { }
+    } catch { }
     if (!locationState.daysSchedule && locationState.placesList && locationState.placesList.length > 0) {
       return locationState.placesList.map(mapPlaceToWishlistItem);
     }
@@ -580,7 +580,7 @@ export function TripPlanPage() {
           cacheKey,
           JSON.stringify({ tripId, isUnlocked, days, wishlist, tripDates, destination })
         );
-      } catch (e) {
+      } catch {
         // ignore
       }
     }
@@ -1323,6 +1323,17 @@ export function TripPlanPage() {
               </span>
             </div>
 
+            {/* Quick search input for wishlist */}
+            <div className="px-3 pt-2">
+              <input
+                type="search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={isEn ? "Filter places..." : "Lọc địa điểm..."}
+                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 text-xs rounded-xl px-3 py-1.5 placeholder:text-slate-400 focus:border-[#00a3e0] focus:outline-none transition-all"
+              />
+            </div>
+
             {/* Wishlist Cards Stack */}
             <div className="p-3 flex-1 overflow-y-auto space-y-2.5 max-h-[calc(100vh-320px)]">
               {wishlist.length === 0 ? (
@@ -1331,7 +1342,7 @@ export function TripPlanPage() {
                   <p className="mt-1 text-[11px]">{isEn ? "Drag places here or add below." : "Kéo thả địa điểm vào đây hoặc nhập thêm bên dưới."}</p>
                 </div>
               ) : (
-                wishlist.map((item, itemIdx) => (
+                filterItems(wishlist).map((item, itemIdx) => (
                   <div
                     key={item.id}
                     draggable

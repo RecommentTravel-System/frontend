@@ -1,20 +1,19 @@
-import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '~/providers/auth-provider';
 import { AppHeader, AppFooter } from '~/shared/components';
 import AccountSidebar from '../components/AccountSidebar.jsx';
-import Icon from '../components/AccountIcon.jsx';
 import { getMyFavorites, deleteFavorite, removeFavoriteByOsmId } from '~/shared/services/favorite-api';
+import { EmptyState } from '~/shared/ui/empty-state';
 import './Favorites.css';
 
 export default function Favorites() {
-  const { user, isAuthenticated } = useAuth();
-  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
   const [notice, setNotice] = useState('');
 
-  const fetchFavorites = async () => {
+  const fetchFavorites = useCallback(async () => {
     if (!isAuthenticated) {
       setLoading(false);
       return;
@@ -30,11 +29,11 @@ export default function Favorites() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [isAuthenticated]);
 
   useEffect(() => {
     fetchFavorites();
-  }, [isAuthenticated]);
+  }, [fetchFavorites]);
 
   const handleRemove = async (fav) => {
     try {
@@ -70,8 +69,9 @@ export default function Favorites() {
             </header>
 
             {loading ? (
-              <div className="py-12 text-center text-slate-500">
-                <p>Đang tải danh sách địa điểm yêu thích...</p>
+              <div className="py-16 text-center text-slate-500">
+                <div className="inline-block w-8 h-8 border-3 border-sky-500 border-t-transparent rounded-full animate-spin mb-3"></div>
+                <p className="text-sm font-medium">Đang tải danh sách địa điểm yêu thích...</p>
               </div>
             ) : favorites.length > 0 ? (
               <div className="favorites-places">
@@ -87,7 +87,7 @@ export default function Favorites() {
                     name: placeName,
                     latitude: fav.latitude,
                     longitude: fav.longitude,
-                    imageUrl: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=800&q=80",
+                    imageUrl: fav.imageUrl || "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=800&q=80",
                     address: fav.latitude && fav.longitude ? `Tọa độ: ${fav.latitude.toFixed(4)}, ${fav.longitude.toFixed(4)}` : "Việt Nam",
                     categoryCode: "ATTRACTION",
                     description: "Địa điểm yêu thích đã lưu trên hệ thống WAYVEE."
@@ -98,7 +98,7 @@ export default function Favorites() {
                       <div className="favorite-place-photo">
                         <Link to={`/places/${fav.osmId}`} state={{ place: targetPlace }}>
                           <img
-                            src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=400&q=80"
+                            src={fav.imageUrl || "https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=400&q=80"}
                             alt={placeName}
                             loading="lazy"
                           />
@@ -148,16 +148,17 @@ export default function Favorites() {
                 })}
               </div>
             ) : (
-              <div className="favorites-empty">
-                <svg width="128" height="128" viewBox="0 0 128 128" fill="none" aria-hidden="true">
-                  <path d="M64 92S24 69 24 48c0-23 28-28 40-10 12-18 40-13 40 10 0 21-40 44-40 44Z" stroke="#515c6c" strokeWidth="6" strokeLinejoin="round" />
-                  <path d="m84 64-5 7m-7 6-2 1M98 17v-9m9 18 7-7m0 16h10M17 87h10m-3 14 7-7m7 8v11M18 18v9m-4-5h8" stroke="#97a4b6" strokeWidth="4" strokeLinecap="round" />
-                  <circle cx="111" cy="105" r="3" stroke="#97a4b6" strokeWidth="3" />
-                </svg>
-                <Link to="/places" className="favorites-outline-button">⌕ Bắt đầu khám phá</Link>
-                <h2>Bạn chưa có địa điểm yêu thích nào.</h2>
-                <p>Khám phá và lưu lại những địa điểm bạn thích để lên kế hoạch<br />dễ dàng hơn.</p>
-              </div>
+              <EmptyState
+                icon={
+                  <svg className="w-8 h-8 text-rose-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                  </svg>
+                }
+                title="Bạn chưa có địa điểm yêu thích nào"
+                description="Khám phá và lưu lại những điểm đến ấn tượng để dễ dàng lên kế hoạch cho chuyến đi sắp tới."
+                actionLabel="Khám phá địa điểm ngay"
+                onAction={() => window.location.assign('/places?browse=1')}
+              />
             )}
 
             {notice && <p className="favorites-notice" role="status">{notice}</p>}

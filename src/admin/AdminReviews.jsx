@@ -29,18 +29,18 @@ function Rating({ value }) {
 }
 
 function WebsiteReviewDetailModal({ review, onClose, onReplySuccess, onReplyDeleted }) {
+  const [replyText, setReplyText] = useState(review?.adminReply || "");
+  const [isEditing, setIsEditing] = useState(!review?.adminReply);
+  const [submitting, setSubmitting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [error, setError] = useState("");
+  const [activeMedia, setActiveMedia] = useState(null);
+
   if (!review) return null;
   const num = Number(review.rating || 5);
   const dateStr = review.createdAt
     ? new Date(review.createdAt).toLocaleString("vi-VN")
     : "Gần đây";
-
-  const [replyText, setReplyText] = useState(review.adminReply || "");
-  const [isEditing, setIsEditing] = useState(!review.adminReply);
-  const [submitting, setSubmitting] = useState(false);
-  const [deleting, setDeleting] = useState(false);
-  const [error, setError] = useState("");
-  const [activeMedia, setActiveMedia] = useState(null);
 
   const mediaList = Array.isArray(review.mediaUrls) ? review.mediaUrls : [];
 

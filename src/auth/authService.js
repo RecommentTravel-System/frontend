@@ -63,7 +63,7 @@ export async function changeAccountPassword(user, currentPassword, newPassword) 
   return true;
 }
 
-export async function deleteLocalAccount(user, currentPassword) {
+export async function deleteLocalAccount(user, _currentPassword) {
   clearSession();
   if (user?.email) {
     try {
