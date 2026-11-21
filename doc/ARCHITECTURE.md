@@ -181,6 +181,7 @@ src/
 | `/admin/reviews` | `AdminReviews` | Quản lý đánh giá |
 | `/admin/users` | `AdminUsers` | Quản lý người dùng |
 | `/admin/revenue` | `AdminRevenue` | Báo cáo doanh thu |
+| `/admin/access-logs` | `AdminAccessLogs` | Lịch sử truy cập & Biểu đồ lưu lượng |
 
 ---
 

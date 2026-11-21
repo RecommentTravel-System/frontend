@@ -35,7 +35,9 @@ import AdminReviewsRoute from '~/routes/admin-reviews';
 import AdminCategoriesRoute from '~/routes/admin-categories';
 import AdminUsersRoute from '~/routes/admin-users';
 import AdminRevenueRoute from '~/routes/admin-revenue';
+import AdminAccessLogsRoute from '~/routes/admin-access-logs';
 import AdminGuard from '~/routes/admin-guard';
+import { recordAccessLogApi } from '~/shared/services/access-log-api';
 
 function RequireAuth() {
   const { user } = useAuth();
@@ -144,6 +146,8 @@ function AppRoutes() {
       '/admin/reviews': 'Đánh giá - Quản trị',
       '/admin/users': 'Người dùng - Quản trị',
       '/admin/revenue': 'Báo cáo & Doanh thu - Quản trị',
+      '/admin/access-logs': 'Lịch sử truy cập - Quản trị',
+      '/admin/traffic': 'Lịch sử truy cập - Quản trị',
     };
     const path = location.pathname;
     const pageTitle =
@@ -156,6 +160,13 @@ function AppRoutes() {
        path.startsWith('/admin/') ? 'Quản trị viên' :
        'Không tìm thấy trang');
     document.title = `${pageTitle} | Wayvee`;
+    try {
+      recordAccessLogApi({
+        path: location.pathname,
+        pageTitle: `${pageTitle} | Wayvee`,
+        referrer: typeof document !== 'undefined' ? document.referrer : '',
+      });
+    } catch {}
     const target = location.hash && document.getElementById(location.hash.slice(1));
     if (target) target.scrollIntoView({ behavior: document.documentElement.dataset.motion === 'off' || window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
     else window.scrollTo({ top: 0, behavior: 'instant' });
@@ -219,6 +230,14 @@ function AppRoutes() {
       <Route
         path="/admin/revenue"
         element={<AdminGuard><AdminRevenueRoute /></AdminGuard>}
+      />
+      <Route
+        path="/admin/access-logs"
+        element={<AdminGuard><AdminAccessLogsRoute /></AdminGuard>}
+      />
+      <Route
+        path="/admin/traffic"
+        element={<AdminGuard><AdminAccessLogsRoute /></AdminGuard>}
       />
 
       <Route path="*" element={<main className="route-not-found"><h1>Không tìm thấy trang</h1><Link to="/">Quay về trang chủ</Link></main>} />

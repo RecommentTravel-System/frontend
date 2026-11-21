@@ -82,6 +82,20 @@ const navItems = [
       </svg>
     ),
   },
+  {
+    id: "access-logs",
+    labelKey: "adminNav.accessLogs",
+    label: "Lịch sử truy cập",
+    path: "/admin/access-logs",
+    badge: null,
+    trailingDot: true,
+    icon: (
+      <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10" />
+        <polyline points="12 6 12 12 16 14" />
+      </svg>
+    ),
+  },
 ];
 
 // ─── Component ────────────────────────────────────────────────────────────────
