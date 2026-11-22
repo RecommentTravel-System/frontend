@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { AppHeader } from "~/shared/components";
 import { useTranslation } from "~/providers/i18n-provider";
+import { useAuth } from "~/auth/useAuth.js";
 import AdminDashboardRail from "./AdminDashboardRail";
 import {
   getAdminAccessLogsApi,
@@ -277,6 +278,7 @@ function DeviceIcon({ device = "" }) {
 // ─── Main AdminAccessLogs Component ───────────────────────────────────────────
 export default function AdminAccessLogs() {
   const { t } = useTranslation();
+  const { user: currentUser } = useAuth();
 
   // State: Filter & Pagination
   const [period, setPeriod] = useState("month");
@@ -778,7 +780,6 @@ export default function AdminAccessLogs() {
                   <tr>
                     <th className="px-4 py-3">Thời gian</th>
                     <th className="px-4 py-3">Địa chỉ IP</th>
-                    <th className="px-4 py-3">Trang truy cập</th>
                     <th className="px-4 py-3">Thiết bị & Nền tảng</th>
                     <th className="px-4 py-3">Người dùng</th>
                     <th className="px-4 py-3 text-center">Trạng thái</th>
@@ -788,7 +789,7 @@ export default function AdminAccessLogs() {
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
                   {loadingLogs ? (
                     <tr>
-                      <td colSpan={7} className="px-4 py-12 text-center text-slate-400">
+                      <td colSpan={6} className="px-4 py-12 text-center text-slate-400">
                         <div className="flex items-center justify-center gap-2">
                           <svg className="w-4 h-4 animate-spin text-[#00a3e0]" viewBox="0 0 24 24" fill="none">
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
@@ -800,7 +801,7 @@ export default function AdminAccessLogs() {
                     </tr>
                   ) : logs.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="px-4 py-12 text-center text-slate-400">
+                      <td colSpan={6} className="px-4 py-12 text-center text-slate-400">
                         Không tìm thấy bản ghi truy cập nào phù hợp với bộ lọc.
                       </td>
                     </tr>
@@ -820,18 +821,6 @@ export default function AdminAccessLogs() {
                           {log.ipAddress || "127.0.0.1"}
                         </td>
 
-                        {/* Path & Title */}
-                        <td className="px-4 py-3 max-w-xs truncate">
-                          <div className="font-semibold text-slate-900 dark:text-slate-100 font-mono text-[11px]">
-                            {log.path || "/"}
-                          </div>
-                          {log.pageTitle && (
-                            <div className="text-[11px] text-slate-400 truncate">
-                              {log.pageTitle}
-                            </div>
-                          )}
-                        </td>
-
                         {/* Device & OS */}
                         <td className="px-4 py-3 whitespace-nowrap">
                           <div className="flex items-center gap-1.5">
@@ -845,7 +834,7 @@ export default function AdminAccessLogs() {
                           </div>
                         </td>
 
-                        {/* User / Anonymous */}
+                        {/* User */}
                         <td className="px-4 py-3 whitespace-nowrap">
                           {log.userFullName || log.userEmail ? (
                             <div>
@@ -856,6 +845,19 @@ export default function AdminAccessLogs() {
                                 {log.userEmail}
                               </div>
                             </div>
+                          ) : (log.path?.startsWith('/admin') || log.pageTitle?.includes('Quản trị')) ? (
+                            <div>
+                              <div className="font-semibold text-sky-600 dark:text-sky-400">
+                                {currentUser?.fullName || "Quản trị viên"}
+                              </div>
+                              <div className="text-[10px] text-slate-400">
+                                {currentUser?.email || "admin@gmail.com"}
+                              </div>
+                            </div>
+                          ) : log.userId ? (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-sky-50 text-sky-700 dark:bg-sky-950/60 dark:text-sky-300">
+                              Người dùng #{log.userId}
+                            </span>
                           ) : (
                             <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
                               Khách vãng lai

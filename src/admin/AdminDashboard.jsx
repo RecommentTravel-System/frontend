@@ -21,10 +21,11 @@ function fmtNum(n) {
 }
 
 // ─── SVG Line Chart ───────────────────────────────────────────────────────────
-function LineChart({ data = [], color = "#00a3e0", label = "", height = 140 }) {
+function LineChart({ data = [], color = "#00a3e0", label = "chart", height = 140 }) {
   const W = 600;
   const H = height;
   const PAD = { top: 16, right: 16, bottom: 28, left: 48 };
+  const gradId = useRef(`grad-${Math.random().toString(36).substring(2, 9)}`).current;
 
   if (!data.length) {
     return (
@@ -69,9 +70,9 @@ function LineChart({ data = [], color = "#00a3e0", label = "", height = 140 }) {
       aria-label={label}
     >
       <defs>
-        <linearGradient id={`grad-${label}`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity="0.18" />
-          <stop offset="100%" stopColor={color} stopOpacity="0.01" />
+        <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity="0.25" />
+          <stop offset="100%" stopColor={color} stopOpacity="0.0" />
         </linearGradient>
       </defs>
 
@@ -100,7 +101,7 @@ function LineChart({ data = [], color = "#00a3e0", label = "", height = 140 }) {
       ))}
 
       {/* Area fill */}
-      <path d={areaPath} fill={`url(#grad-${label})`} />
+      <path d={areaPath} fill={`url(#${gradId})`} />
 
       {/* Line */}
       <polyline
@@ -431,12 +432,12 @@ export default function AdminDashboard() {
                     <h2 className="text-sm font-bold text-slate-900 dark:text-white">Doanh thu theo thời gian</h2>
                     <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{periodLabel}</p>
                   </div>
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" title="Live" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-sky-400 animate-pulse" title="Live" />
                 </div>
                 <LineChart
                   data={revenueData}
-                  color="#10b981"
-                  label="biểu đồ doanh thu"
+                  color="#00a3e0"
+                  label="revenue"
                   height={160}
                 />
                 {revenueData.length === 0 && (
@@ -456,7 +457,7 @@ export default function AdminDashboard() {
                 <LineChart
                   data={usersData}
                   color="#00a3e0"
-                  label="biểu đồ người dùng mới"
+                  label="users"
                   height={160}
                 />
                 {usersData.length === 0 && (

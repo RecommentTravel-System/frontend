@@ -161,17 +161,29 @@ function AppRoutes() {
        'Không tìm thấy trang');
     document.title = `${pageTitle} | Wayvee`;
     try {
+      const activeUser = user || (() => {
+        try {
+          const saved = localStorage.getItem("wayvee_user");
+          return saved && saved !== "undefined" && saved !== "null" ? JSON.parse(saved) : null;
+        } catch {
+          return null;
+        }
+      })();
+
       recordAccessLogApi({
         path: location.pathname,
         pageTitle: `${pageTitle} | Wayvee`,
         referrer: typeof document !== 'undefined' ? document.referrer : '',
+        userId: activeUser?.userId || activeUser?.id || null,
+        userEmail: activeUser?.email || null,
+        userFullName: activeUser?.fullName || activeUser?.name || activeUser?.username || null,
       });
     } catch {}
     const target = location.hash && document.getElementById(location.hash.slice(1));
     if (target) target.scrollIntoView({ behavior: document.documentElement.dataset.motion === 'off' || window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
     else window.scrollTo({ top: 0, behavior: 'instant' });
     container.current?.focus({ preventScroll: true });
-  }, [location.pathname, location.hash]);
+  }, [location.pathname, location.hash, user]);
 
   return <div key={location.pathname} className="route-page" ref={container} tabIndex={-1}>
     <Routes>
