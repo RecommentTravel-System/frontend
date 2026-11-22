@@ -1,0 +1,154 @@
+{
+  "id": "https://wayvee-one.vercel.app/",
+  "name": "WAYVEE - Nền tảng du lịch & lịch trình thông minh",
+  "short_name": "WAYVEE",
+  "description": "Khám phá địa điểm du lịch, tạo và tối ưu hóa lịch trình thông minh tại Việt Nam cùng WAYVEE.",
+  "lang": "vi",
+  "dir": "ltr",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "minimal-ui"
+  ],
+  "orientation": "any",
+  "background_color": "#ffffff",
+  "theme_color": "#00a3e0",
+  "categories": [
+    "travel",
+    "navigation",
+    "lifestyle",
+    "productivity"
+  ],
+  "icons": [
+    {
+      "src": "/icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/windows-square-44.png",
+      "sizes": "44x44",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/windows-store-50.png",
+      "sizes": "50x50",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/windows-square-150.png",
+      "sizes": "150x150",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/windows-splash-300.png",
+      "sizes": "300x300",
+      "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Tạo lịch trình",
+      "short_name": "Lịch trình",
+      "description": "Khởi tạo lịch trình du lịch thông minh",
+      "url": "/trip/info?source=shortcut",
+      "icons": [
+        {
+          "src": "/icons/icon-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Khám phá địa điểm",
+      "short_name": "Địa điểm",
+      "description": "Tìm kiếm các điểm du lịch, ăn uống, vui chơi",
+      "url": "/places?source=shortcut",
+      "icons": [
+        {
+          "src": "/icons/icon-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Địa điểm yêu thích",
+      "short_name": "Yêu thích",
+      "description": "Xem lại bộ sưu tập địa điểm yêu thích",
+      "url": "/favorites?source=shortcut",
+      "icons": [
+        {
+          "src": "/icons/icon-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/desktop-wide.jpg",
+      "sizes": "1280x720",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "Giao diện khám phá và lập lịch trình WAYVEE trên máy tính"
+    },
+    {
+      "src": "/screenshots/mobile-narrow.jpg",
+      "sizes": "750x1334",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Trải nghiệm WAYVEE di động mượt mà và trực quan"
+    }
+  ],
+  "prefer_related_applications": false,
+  "handle_links": "preferred"
+}
