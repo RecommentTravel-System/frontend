@@ -729,7 +729,7 @@ export default function AdminAccessLogs() {
                   Nhật ký chi tiết các phiên truy cập
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
-                  Tìm kiếm và theo dõi chi tiết từng request, địa chỉ IP, URL, thiết bị và thời gian truy cập
+                  Tìm kiếm và theo dõi chi tiết từng request, thiết bị và thời gian truy cập
                 </p>
               </div>
 
@@ -741,7 +741,7 @@ export default function AdminAccessLogs() {
                     type="text"
                     value={searchKeyword}
                     onChange={(e) => setSearchKeyword(e.target.value)}
-                    placeholder="Tìm theo IP, đường dẫn, người dùng..."
+                    placeholder="Tìm theo người dùng, thiết bị..."
                     className="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#00a3e0]"
                   />
                   <svg
@@ -779,7 +779,6 @@ export default function AdminAccessLogs() {
                 <thead className="bg-slate-50 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 font-semibold border-b border-slate-200 dark:border-slate-800">
                   <tr>
                     <th className="px-4 py-3">Thời gian</th>
-                    <th className="px-4 py-3">Địa chỉ IP</th>
                     <th className="px-4 py-3">Thiết bị & Nền tảng</th>
                     <th className="px-4 py-3">Người dùng</th>
                     <th className="px-4 py-3 text-center">Trạng thái</th>
@@ -789,7 +788,7 @@ export default function AdminAccessLogs() {
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
                   {loadingLogs ? (
                     <tr>
-                      <td colSpan={6} className="px-4 py-12 text-center text-slate-400">
+                      <td colSpan={5} className="px-4 py-12 text-center text-slate-400">
                         <div className="flex items-center justify-center gap-2">
                           <svg className="w-4 h-4 animate-spin text-[#00a3e0]" viewBox="0 0 24 24" fill="none">
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
@@ -801,7 +800,7 @@ export default function AdminAccessLogs() {
                     </tr>
                   ) : logs.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="px-4 py-12 text-center text-slate-400">
+                      <td colSpan={5} className="px-4 py-12 text-center text-slate-400">
                         Không tìm thấy bản ghi truy cập nào phù hợp với bộ lọc.
                       </td>
                     </tr>
@@ -814,11 +813,6 @@ export default function AdminAccessLogs() {
                         {/* Timestamp */}
                         <td className="px-4 py-3 font-mono text-slate-500 dark:text-slate-400 whitespace-nowrap">
                           {fmtDateTime(log.createdAt)}
-                        </td>
-
-                        {/* IP Address */}
-                        <td className="px-4 py-3 font-mono text-slate-700 dark:text-slate-300 font-medium">
-                          {log.ipAddress || "127.0.0.1"}
                         </td>
 
                         {/* Device & OS */}
