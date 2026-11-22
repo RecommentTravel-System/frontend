@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { api } from "~/shared/lib/api";
 import { useDelayedLoading } from "~/shared/lib/use-delayed-loading";
 import { Spinner } from "~/shared/ui/loading";
+import { findLocalVietnamDestination } from "./vietnam-locations-data";
 
 const LEAFLET_OVERRIDE_STYLES = `
   .pb-map-wrapper {
@@ -36,6 +37,8 @@ export function LocationMapModal({ initialQuery = "", onConfirm, onClose }) {
   });
   const [isLeafletReady, setIsLeafletReady] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
+  const [searchError, setSearchError] = useState(null);
+  const [searchSuccess, setSearchSuccess] = useState(null);
 
   const { visible: showSearchLoading } = useDelayedLoading(isSearching, { delay: 200 });
   const { visible: showLocatingLoading } = useDelayedLoading(isLocating, { delay: 200 });
@@ -139,9 +142,24 @@ export function LocationMapModal({ initialQuery = "", onConfirm, onClose }) {
           });
 
           moveMapAndMarker(lat, lng, 14);
+          return;
         }
       } catch (err) {
         console.warn("Initial query geocode failed:", err);
+      }
+
+      // Fallback to local knowledge base
+      if (isMounted) {
+        const localMatch = findLocalVietnamDestination(initialQuery);
+        if (localMatch) {
+          setSelectedLocation({
+            name: localMatch.name,
+            fullName: localMatch.fullName,
+            lat: localMatch.lat,
+            lng: localMatch.lng
+          });
+          moveMapAndMarker(localMatch.lat, localMatch.lng, 14);
+        }
       }
     };
 
@@ -150,6 +168,64 @@ export function LocationMapModal({ initialQuery = "", onConfirm, onClose }) {
       isMounted = false;
     };
   }, [isLeafletReady, initialQuery]);
+
+  // Reverse geocode: converts (lat, lng) -> Address and updates search input
+  const handleReverseGeocode = async (lat, lng, updateInputField = true) => {
+    try {
+      let displayName = "";
+
+      // 1. Try Backend API first
+      try {
+        const params = new URLSearchParams({
+          lat: String(lat),
+          lng: String(lng)
+        });
+        const result = await api.get(`/api/location/reverse?${params.toString()}`);
+        const data = result.data || result;
+        displayName = data.display_name || data.displayName || data.name || "";
+      } catch (backendErr) {
+        console.warn("Backend reverse geocode fallback:", backendErr);
+      }
+
+      // 2. Fallback to Nominatim OSM if backend does not return full address
+      if (!displayName) {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=vi`
+        );
+        const data = await res.json();
+        displayName = data.display_name || "";
+      }
+
+      if (!displayName) {
+        displayName = `Vị trí (${lat.toFixed(5)}, ${lng.toFixed(5)})`;
+      }
+
+      const shortName = displayName.split(",")[0] || displayName;
+
+      setSelectedLocation({
+        lat,
+        lng,
+        name: shortName,
+        fullName: displayName
+      });
+
+      if (updateInputField) {
+        setSearchQuery(displayName);
+      }
+    } catch (error) {
+      console.error("Reverse geocode failed:", error);
+      const fallbackName = `Vị trí (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
+      setSelectedLocation({
+        lat,
+        lng,
+        name: fallbackName,
+        fullName: fallbackName
+      });
+      if (updateInputField) {
+        setSearchQuery(fallbackName);
+      }
+    }
+  };
 
   // Initialize Leaflet Map Instance
   useEffect(() => {
@@ -270,67 +346,11 @@ export function LocationMapModal({ initialQuery = "", onConfirm, onClose }) {
     };
   }, [isLeafletReady]);
 
-  // Reverse geocode: converts (lat, lng) -> Address and updates search input
-  const handleReverseGeocode = async (lat, lng, updateInputField = true) => {
-    try {
-      let displayName = "";
-
-      // 1. Try Backend API first
-      try {
-        const params = new URLSearchParams({
-          lat: String(lat),
-          lng: String(lng)
-        });
-        const result = await api.get(`/api/location/reverse?${params.toString()}`);
-        const data = result.data || result;
-        displayName = data.display_name || data.displayName || data.name || "";
-      } catch (backendErr) {
-        console.warn("Backend reverse geocode fallback:", backendErr);
-      }
-
-      // 2. Fallback to Nominatim OSM if backend does not return full address
-      if (!displayName) {
-        const res = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=vi`
-        );
-        const data = await res.json();
-        displayName = data.display_name || "";
-      }
-
-      if (!displayName) {
-        displayName = `Vị trí (${lat.toFixed(5)}, ${lng.toFixed(5)})`;
-      }
-
-      const shortName = displayName.split(",")[0] || displayName;
-
-      setSelectedLocation({
-        lat,
-        lng,
-        name: shortName,
-        fullName: displayName
-      });
-
-      if (updateInputField) {
-        setSearchQuery(displayName);
-      }
-    } catch (error) {
-      console.error("Reverse geocode failed:", error);
-      const fallbackName = `Vị trí (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
-      setSelectedLocation({
-        lat,
-        lng,
-        name: fallbackName,
-        fullName: fallbackName
-      });
-      if (updateInputField) {
-        setSearchQuery(fallbackName);
-      }
-    }
-  };
-
   // Search location via Nominatim and auto-point map
   const handleSearch = (query) => {
     setSearchQuery(query);
+    setSearchError(null);
+    setSearchSuccess(null);
 
     if (autoGeocodeTimerRef.current) {
       clearTimeout(autoGeocodeTimerRef.current);
@@ -344,62 +364,146 @@ export function LocationMapModal({ initialQuery = "", onConfirm, onClose }) {
     // Debounced search to show suggestions and automatically point map to top result
     autoGeocodeTimerRef.current = setTimeout(async () => {
       setIsSearching(true);
+      let foundItems = [];
+
       try {
         const res = await fetch(
           `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
             query.trim()
           )}&countrycodes=vn&accept-language=vi&limit=5`
         );
-        const data = await res.json();
-        setSearchResults(data || []);
-
-        // Auto point marker & map to the best match as user types an address
-        if (data && data.length > 0) {
-          const topItem = data[0];
-          const lat = parseFloat(topItem.lat);
-          const lng = parseFloat(topItem.lon);
-          const shortName = topItem.name || topItem.display_name.split(",")[0];
-
-          setSelectedLocation({
-            name: shortName,
-            fullName: topItem.display_name,
-            lat,
-            lng
-          });
-          moveMapAndMarker(lat, lng, 13);
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) {
+            foundItems = data;
+          }
         }
       } catch (err) {
         console.warn("Search location error:", err);
-      } finally {
-        setIsSearching(false);
       }
+
+      // Check local database if Nominatim returns nothing
+      if (foundItems.length === 0) {
+        const localMatch = findLocalVietnamDestination(query.trim());
+        if (localMatch) {
+          foundItems = [
+            {
+              place_id: `local-${localMatch.name}`,
+              name: localMatch.name,
+              display_name: localMatch.fullName,
+              lat: String(localMatch.lat),
+              lon: String(localMatch.lng)
+            }
+          ];
+        }
+      }
+
+      setSearchResults(foundItems);
+
+      // Auto point marker & map to the best match as user types an address
+      if (foundItems.length > 0) {
+        const topItem = foundItems[0];
+        const lat = parseFloat(topItem.lat);
+        const lng = parseFloat(topItem.lon);
+        const shortName = topItem.name || topItem.display_name.split(",")[0];
+
+        setSelectedLocation({
+          name: shortName,
+          fullName: topItem.display_name,
+          lat,
+          lng
+        });
+        moveMapAndMarker(lat, lng, 13);
+      }
+
+      setIsSearching(false);
     }, 450);
   };
 
   // Immediate geocode when user hits Enter or clicks search icon
   const handleDirectSearch = async () => {
-    if (!searchQuery || !searchQuery.trim()) return;
+    const rawQuery = searchQuery?.trim();
+    if (!rawQuery) {
+      setSearchError("Vui lòng nhập tên địa điểm hoặc thành phố cần tìm kiếm.");
+      setSearchSuccess(null);
+      return;
+    }
 
     if (autoGeocodeTimerRef.current) {
       clearTimeout(autoGeocodeTimerRef.current);
     }
 
     setIsSearching(true);
+    setSearchError(null);
+    setSearchSuccess(null);
+
+    let foundItems = [];
+
+    // 1. Try Nominatim with countrycodes=vn
     try {
       const res = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-          searchQuery.trim()
+          rawQuery
         )}&countrycodes=vn&accept-language=vi&limit=5`
       );
-      const data = await res.json();
-
-      if (data && data.length > 0) {
-        handleSelectSearchResult(data[0]);
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          foundItems = data;
+        }
       }
     } catch (err) {
-      console.warn("Direct search failed:", err);
-    } finally {
-      setIsSearching(false);
+      console.warn("Direct search Nominatim failed:", err);
+    }
+
+    // 2. Fallback: Try Nominatim with appended ', Việt Nam' if empty
+    if (foundItems.length === 0) {
+      try {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+            rawQuery + ", Việt Nam"
+          )}&accept-language=vi&limit=5`
+        );
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) {
+            foundItems = data;
+          }
+        }
+      } catch (err) {
+        console.warn("Direct search fallback Nominatim failed:", err);
+      }
+    }
+
+    // 3. Fallback: Try built-in Vietnam Locations Database
+    if (foundItems.length === 0) {
+      const localMatch = findLocalVietnamDestination(rawQuery);
+      if (localMatch) {
+        foundItems = [
+          {
+            place_id: `local-${localMatch.name}`,
+            name: localMatch.name,
+            display_name: localMatch.fullName,
+            lat: String(localMatch.lat),
+            lon: String(localMatch.lng)
+          }
+        ];
+      }
+    }
+
+    setIsSearching(false);
+
+    if (foundItems.length > 0) {
+      setSearchResults(foundItems);
+      handleSelectSearchResult(foundItems[0]);
+      setSearchSuccess(`Đã tìm thấy: ${foundItems[0].name || foundItems[0].display_name}`);
+      setSearchError(null);
+      setTimeout(() => setSearchSuccess(null), 3500);
+    } else {
+      setSearchResults([]);
+      setSearchError(
+        `Không tìm thấy địa điểm phù hợp cho "${rawQuery}". Vui lòng kiểm tra lại chính tả hoặc nhấp trực tiếp trên bản đồ bên dưới để chọn vị trí.`
+      );
     }
   };
 
@@ -486,82 +590,139 @@ export function LocationMapModal({ initialQuery = "", onConfirm, onClose }) {
         </div>
 
         {/* Search Input & GPS Bar */}
-        <div className="flex gap-2" ref={searchContainerRef}>
-          <div className="relative flex-1">
-            <input
-              type="text"
-              placeholder="Gõ tìm địa điểm (ví dụ: Hà Nội, Huế, đà Nẵng, Phú Quốc...)"
-              value={searchQuery}
-              onChange={(e) => handleSearch(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  handleDirectSearch();
-                }
-              }}
-              className="w-full pl-9 pr-16 py-2.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-[#002d54] dark:focus:border-sky-500 text-slate-800 dark:text-slate-100 placeholder:text-slate-400"
-            />
-            {showSearchLoading ? (
-              <span className="absolute left-3 top-2.5 flex items-center justify-center pointer-events-none" aria-label="Đang tìm kiếm vị trí">
-                <Spinner size="xs" variant="primary" />
-              </span>
-            ) : (
-              <button
-                type="button"
-                onClick={handleDirectSearch}
-                className="absolute left-3 top-2.5 text-xs text-slate-400 hover:text-sky-600 transition-colors cursor-pointer"
-                title="Tìm kiếm vị trí"
-              >
-                🔍
-              </button>
-            )}
-
-            {searchQuery && (
-              <button
-                type="button"
-                onClick={() => {
-                  setSearchQuery("");
-                  setSearchResults([]);
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleDirectSearch();
+          }}
+          className="flex flex-col gap-2"
+          ref={searchContainerRef}
+        >
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <input
+                type="text"
+                placeholder="Gõ tìm địa điểm (ví dụ: Hà Nội, Huế, đà Nẵng, Phú Quốc...)"
+                value={searchQuery}
+                onChange={(e) => handleSearch(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleDirectSearch();
+                  }
                 }}
-                className="absolute right-3 top-2.5 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
-                title="Xóa tìm kiếm"
+                className="w-full pl-9 pr-16 py-2.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:border-[#002d54] dark:focus:border-sky-500 text-slate-800 dark:text-slate-100 placeholder:text-slate-400"
+              />
+              {showSearchLoading ? (
+                <span className="absolute left-3 top-2.5 flex items-center justify-center pointer-events-none" aria-label="Đang tìm kiếm vị trí">
+                  <Spinner size="xs" variant="primary" />
+                </span>
+              ) : (
+                <button
+                  type="submit"
+                  className="absolute left-3 top-2.5 text-xs text-slate-400 hover:text-sky-600 transition-colors cursor-pointer"
+                  title="Tìm kiếm vị trí"
+                >
+                  🔍
+                </button>
+              )}
+
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchQuery("");
+                    setSearchResults([]);
+                    setSearchError(null);
+                    setSearchSuccess(null);
+                  }}
+                  className="absolute right-3 top-2.5 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                  title="Xóa tìm kiếm"
+                >
+                  ✕
+                </button>
+              )}
+
+              {/* Search Dropdown Results */}
+              {searchResults.length > 0 && (
+                <div className="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl z-50 max-h-48 overflow-y-auto">
+                  {searchResults.map((item) => (
+                    <button
+                      key={item.place_id}
+                      type="button"
+                      onClick={() => handleSelectSearchResult(item)}
+                      className="w-full text-left px-3.5 py-2 text-xs hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-b border-slate-100 dark:border-slate-800/50 last:border-0 flex items-start gap-2 cursor-pointer transition-colors"
+                    >
+                      <span className="text-sky-500 mt-0.5">📍</span>
+                      <span className="truncate">{item.display_name}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Nút Tìm kiếm */}
+            <button
+              type="submit"
+              disabled={isSearching}
+              className="flex items-center gap-1.5 px-3.5 py-2.5 bg-[#002d54] hover:bg-[#001f3b] dark:bg-sky-500 dark:hover:bg-sky-600 text-white dark:text-slate-950 rounded-xl text-xs font-bold transition-colors cursor-pointer disabled:opacity-50 shrink-0 shadow-2xs"
+              title="Tìm kiếm địa điểm (Enter)"
+            >
+              <span>🔍</span>
+              <span className="hidden sm:inline">Tìm</span>
+            </button>
+
+            {/* Vị trí của tôi Button */}
+            <button
+              type="button"
+              onClick={handleGetMyLocation}
+              disabled={isLocating}
+              aria-busy={isLocating}
+              className="flex items-center gap-1.5 px-3.5 py-2.5 bg-sky-50 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800 rounded-xl text-xs font-semibold hover:bg-sky-100 dark:hover:bg-sky-900/50 transition-colors cursor-pointer disabled:opacity-50 flex-shrink-0"
+            >
+              {showLocatingLoading ? <Spinner size="xs" variant="cyan" /> : <span>🎯</span>}
+              <span className="hidden sm:inline">
+                {isLocating ? "Đang định vị..." : "Vị trí của tôi"}
+              </span>
+            </button>
+          </div>
+
+          {/* Search Error / Not Found Alert */}
+          {searchError && (
+            <div className="flex items-center justify-between gap-2 px-3.5 py-2.5 bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 rounded-xl text-xs text-rose-700 dark:text-rose-300 animate-in fade-in duration-200">
+              <div className="flex items-center gap-2">
+                <span className="text-rose-500 font-bold text-sm shrink-0">⚠️</span>
+                <span>{searchError}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSearchError(null)}
+                className="text-rose-400 hover:text-rose-600 p-0.5 rounded cursor-pointer shrink-0"
+                title="Đóng thông báo"
               >
                 ✕
               </button>
-            )}
+            </div>
+          )}
 
-            {/* Search Dropdown Results */}
-            {searchResults.length > 0 && (
-              <div className="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl z-50 max-h-48 overflow-y-auto">
-                {searchResults.map((item) => (
-                  <button
-                    key={item.place_id}
-                    type="button"
-                    onClick={() => handleSelectSearchResult(item)}
-                    className="w-full text-left px-3.5 py-2 text-xs hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 border-b border-slate-100 dark:border-slate-800/50 last:border-0 flex items-start gap-2 cursor-pointer transition-colors"
-                  >
-                    <span className="text-sky-500 mt-0.5">📍</span>
-                    <span className="truncate">{item.display_name}</span>
-                  </button>
-                ))}
+          {/* Search Success Notification */}
+          {searchSuccess && !searchError && (
+            <div className="flex items-center justify-between gap-2 px-3.5 py-2 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-xl text-xs text-emerald-700 dark:text-emerald-300 animate-in fade-in duration-200">
+              <div className="flex items-center gap-2 truncate">
+                <span className="text-emerald-500 font-bold shrink-0">✓</span>
+                <span className="truncate">{searchSuccess}</span>
               </div>
-            )}
-          </div>
-
-          {/* Vị trí của tôi Button */}
-          <button
-            type="button"
-            onClick={handleGetMyLocation}
-            disabled={isLocating}
-            aria-busy={isLocating}
-            className="flex items-center gap-1.5 px-3.5 py-2.5 bg-sky-50 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800 rounded-xl text-xs font-semibold hover:bg-sky-100 dark:hover:bg-sky-900/50 transition-colors cursor-pointer disabled:opacity-50 flex-shrink-0"
-          >
-            {showLocatingLoading ? <Spinner size="xs" variant="cyan" /> : <span>🎯</span>}
-            <span className="hidden sm:inline">
-              {isLocating ? "Đang định vị..." : "Vị trí của tôi"}
-            </span>
-          </button>
-        </div>
+              <button
+                type="button"
+                onClick={() => setSearchSuccess(null)}
+                className="text-emerald-400 hover:text-emerald-600 p-0.5 rounded cursor-pointer shrink-0"
+                title="Đóng thông báo"
+              >
+                ✕
+              </button>
+            </div>
+          )}
+        </form>
 
         {/* Leaflet Map Area */}
         <div className="pb-map-wrapper relative w-full h-72 sm:h-80 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800">
