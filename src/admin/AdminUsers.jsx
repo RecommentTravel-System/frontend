@@ -75,7 +75,7 @@ export default function AdminUsers() {
           roleNameEn: isAdmin ? "Admin" : "Member",
           isStaff: isAdmin,
           verified: isActive,
-          tripsCompleted: 0,
+          tripsCompleted: typeof u.tripsCompleted === "number" ? u.tripsCompleted : (u.tripsCompleted || 0),
           savedPlaces: 0,
           reviewsCount: 0,
           rating: 5.0,
@@ -492,9 +492,8 @@ export default function AdminUsers() {
                       return (
                         <tr
                           key={user.id}
-                          className={`hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors group ${
-                            isLocked ? "bg-red-50/20 dark:bg-red-950/10" : ""
-                          }`}
+                          className={`hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors group ${isLocked ? "bg-red-50/20 dark:bg-red-950/10" : ""
+                            }`}
                         >
                           {/* Checkbox */}
                           <td className="py-3.5 pl-6 pr-2 text-center">
@@ -524,32 +523,29 @@ export default function AdminUsers() {
                                       const fallback = e.currentTarget.parentElement?.querySelector(".avatar-fallback");
                                       if (fallback) fallback.style.display = "flex";
                                     }}
-                                    className={`w-10 h-10 rounded-full object-cover border transition-transform group-hover/user:scale-105 ${
-                                      isLocked
+                                    className={`w-10 h-10 rounded-full object-cover border transition-transform group-hover/user:scale-105 ${isLocked
                                         ? "border-red-400 ring-1 ring-red-200 dark:ring-red-900"
                                         : user.role === "admin" || user.role === "superadmin"
                                           ? "border-sky-500 ring-1 ring-sky-300 dark:ring-sky-800"
                                           : "border-[#00a3e0]"
-                                    }`}
+                                      }`}
                                   />
                                 ) : null}
                                 <div
-                                  className={`avatar-fallback w-10 h-10 rounded-full bg-sky-100 dark:bg-sky-950/60 text-[#00a3e0] font-bold text-sm items-center justify-center border border-sky-200 dark:border-sky-800 ${
-                                    user.avatar ? "hidden" : "flex"
-                                  }`}
+                                  className={`avatar-fallback w-10 h-10 rounded-full bg-sky-100 dark:bg-sky-950/60 text-[#00a3e0] font-bold text-sm items-center justify-center border border-sky-200 dark:border-sky-800 ${user.avatar ? "hidden" : "flex"
+                                    }`}
                                 >
                                   {user.initials || (user.name || "U").slice(0, 2).toUpperCase()}
                                 </div>
 
                                 {/* Status dot on Avatar */}
                                 <span
-                                  className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full ring-2 ring-white dark:ring-slate-900 ${
-                                    isLocked
+                                  className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full ring-2 ring-white dark:ring-slate-900 ${isLocked
                                       ? "bg-red-500"
                                       : isPending
                                         ? "bg-amber-500"
                                         : "bg-emerald-500"
-                                  }`}
+                                    }`}
                                 />
                               </div>
 
@@ -572,10 +568,10 @@ export default function AdminUsers() {
                                       title="Đăng nhập bằng Google"
                                     >
                                       <svg className="w-2.5 h-2.5" viewBox="0 0 18 18" aria-hidden="true">
-                                        <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.9c1.7-1.57 2.7-3.88 2.7-6.62z"/>
-                                        <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.9-2.26c-.8.54-1.84.86-3.06.86-2.35 0-4.34-1.59-5.05-3.72H.9v2.33A9 9 0 0 0 9 18z"/>
-                                        <path fill="#FBBC05" d="M3.95 10.7A5.4 5.4 0 0 1 3.67 9c0-.59.1-1.17.28-1.7V4.97H.9A9 9 0 0 0 0 9c0 1.45.35 2.83.9 4.03l3.05-2.33z"/>
-                                        <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.47.9 11.43 0 9 0A9 9 0 0 0 .9 4.97L3.95 7.3C4.66 5.17 6.65 3.58 9 3.58z"/>
+                                        <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.9c1.7-1.57 2.7-3.88 2.7-6.62z" />
+                                        <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.9-2.26c-.8.54-1.84.86-3.06.86-2.35 0-4.34-1.59-5.05-3.72H.9v2.33A9 9 0 0 0 9 18z" />
+                                        <path fill="#FBBC05" d="M3.95 10.7A5.4 5.4 0 0 1 3.67 9c0-.59.1-1.17.28-1.7V4.97H.9A9 9 0 0 0 0 9c0 1.45.35 2.83.9 4.03l3.05-2.33z" />
+                                        <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.47.9 11.43 0 9 0A9 9 0 0 0 .9 4.97L3.95 7.3C4.66 5.17 6.65 3.58 9 3.58z" />
                                       </svg>
                                       Google
                                     </span>
@@ -603,9 +599,8 @@ export default function AdminUsers() {
                                 </span>
 
                                 <div
-                                  className={`text-[11px] font-medium tracking-tight truncate ${
-                                    isLocked ? "text-red-500 dark:text-red-400" : "text-slate-400 dark:text-slate-500"
-                                  }`}
+                                  className={`text-[11px] font-medium tracking-tight truncate ${isLocked ? "text-red-500 dark:text-red-400" : "text-slate-400 dark:text-slate-500"
+                                    }`}
                                 >
                                   ID: {user.id} • {user.phone}
                                 </div>
@@ -753,11 +748,10 @@ export default function AdminUsers() {
                     key={p}
                     type="button"
                     onClick={() => setCurrentPage(p)}
-                    className={`flex items-center justify-center w-8 h-8 rounded-lg transition-colors cursor-pointer ${
-                      currentPage === p
+                    className={`flex items-center justify-center w-8 h-8 rounded-lg transition-colors cursor-pointer ${currentPage === p
                         ? "bg-[#00a3e0] text-white font-bold shadow-xs"
                         : "border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
-                    }`}
+                      }`}
                   >
                     {p}
                   </button>
@@ -1042,9 +1036,8 @@ export default function AdminUsers() {
                   />
                 ) : null}
                 <div
-                  className={`detail-avatar-fallback w-14 h-14 rounded-full bg-sky-100 dark:bg-sky-950/60 text-[#00a3e0] font-bold text-lg items-center justify-center border border-sky-200 dark:border-sky-800 ${
-                    activeDetailUser.avatar ? "hidden" : "flex"
-                  }`}
+                  className={`detail-avatar-fallback w-14 h-14 rounded-full bg-sky-100 dark:bg-sky-950/60 text-[#00a3e0] font-bold text-lg items-center justify-center border border-sky-200 dark:border-sky-800 ${activeDetailUser.avatar ? "hidden" : "flex"
+                    }`}
                 >
                   {activeDetailUser.initials || (activeDetailUser.name || "U").slice(0, 2).toUpperCase()}
                 </div>
@@ -1086,7 +1079,7 @@ export default function AdminUsers() {
                 <h5 className="font-bold text-slate-900 dark:text-white">Nhật ký hệ thống gần nhất:</h5>
                 <div className="p-3 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 space-y-1.5">
                   <div className="flex justify-between">
-                    <span>• đăng nhập gần nhất:</span>
+                    <span>• Đăng nhập gần nhất:</span>
                     <span className="font-semibold text-emerald-600 dark:text-emerald-400">
                       {isEn ? activeDetailUser.lastActiveEn : activeDetailUser.lastActiveVi}
                     </span>
@@ -1097,10 +1090,10 @@ export default function AdminUsers() {
                       {activeDetailUser.authProvider === "GOOGLE" ? (
                         <span className="text-amber-600 dark:text-amber-400 font-bold flex items-center gap-1">
                           <svg className="w-3.5 h-3.5" viewBox="0 0 18 18" aria-hidden="true">
-                            <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.9c1.7-1.57 2.7-3.88 2.7-6.62z"/>
-                            <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.9-2.26c-.8.54-1.84.86-3.06.86-2.35 0-4.34-1.59-5.05-3.72H.9v2.33A9 9 0 0 0 9 18z"/>
-                            <path fill="#FBBC05" d="M3.95 10.7A5.4 5.4 0 0 1 3.67 9c0-.59.1-1.17.28-1.7V4.97H.9A9 9 0 0 0 0 9c0 1.45.35 2.83.9 4.03l3.05-2.33z"/>
-                            <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.47.9 11.43 0 9 0A9 9 0 0 0 .9 4.97L3.95 7.3C4.66 5.17 6.65 3.58 9 3.58z"/>
+                            <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.9c1.7-1.57 2.7-3.88 2.7-6.62z" />
+                            <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.9-2.26c-.8.54-1.84.86-3.06.86-2.35 0-4.34-1.59-5.05-3.72H.9v2.33A9 9 0 0 0 9 18z" />
+                            <path fill="#FBBC05" d="M3.95 10.7A5.4 5.4 0 0 1 3.67 9c0-.59.1-1.17.28-1.7V4.97H.9A9 9 0 0 0 0 9c0 1.45.35 2.83.9 4.03l3.05-2.33z" />
+                            <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.47.9 11.43 0 9 0A9 9 0 0 0 .9 4.97L3.95 7.3C4.66 5.17 6.65 3.58 9 3.58z" />
                           </svg>
                           Đăng nhập Google (Google Sign-In)
                         </span>
