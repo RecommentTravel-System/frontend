@@ -37,6 +37,7 @@ import AdminUsersRoute from '~/routes/admin-users';
 import AdminRevenueRoute from '~/routes/admin-revenue';
 import AdminAccessLogsRoute from '~/routes/admin-access-logs';
 import AdminGuard from '~/routes/admin-guard';
+import PrivacyPolicyRoute from '~/routes/privacy-policy';
 import { recordAccessLogApi } from '~/shared/services/access-log-api';
 
 function RequireAuth() {
@@ -128,6 +129,7 @@ function AppRoutes() {
       '/reviews': 'Bài đánh giá',
       '/settings': 'Cài đặt',
       '/support': 'Hỗ trợ & Phản hồi',
+      '/privacy-policy': 'Chính sách bảo mật',
       '/payment/success': 'Thanh toán thành công',
       '/create-tour': 'Tạo tour',
       '/search': 'Tìm kiếm địa điểm',
@@ -207,6 +209,7 @@ function AppRoutes() {
       <Route path="/locations/:locationId" element={<LocationDetails />} />
       <Route path="/search" element={<Suspense fallback={<SearchLoading />}><SearchPage /></Suspense>} />
       <Route path="/support" element={<Support />} />
+      <Route path="/privacy-policy" element={<PrivacyPolicyRoute />} />
 
       {/* Routes bổ sung từ nhánh HEAD */}
       <Route path="/places" element={<PlacesRoute initialMode="all" />} />

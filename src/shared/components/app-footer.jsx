@@ -21,6 +21,9 @@ export function AppFooter() {
         return "/support?view=chat";
       case "Góp ý phản hồi":
         return "/support?view=feedback";
+      case "Chính sách bảo mật":
+      case "Privacy Policy":
+        return "/privacy-policy";
       case "Liên hệ chúng tôi":
         return "mailto:wayvee@gmail.com";
       default:
@@ -39,7 +42,7 @@ export function AppFooter() {
     },
     {
       title: t("footer.support", "Hỗ trợ & Góp ý"),
-      links: ["Trung tâm hỗ trợ", "Trò chuyện ngay", "Góp ý phản hồi", "Liên hệ chúng tôi"]
+      links: ["Trung tâm hỗ trợ", "Trò chuyện ngay", "Góp ý phản hồi", "Chính sách bảo mật", "Liên hệ chúng tôi"]
     }
   ];
 
@@ -117,8 +120,14 @@ export function AppFooter() {
       </div>
 
       <div className="border-t border-white/10">
-        <div className="wayvee-container py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-400">
-          <p>© {new Date().getFullYear()} {SITE.name}. {t("footer.rights", "Bản quyền đã được đăng ký.")}</p>
+        <div className="wayvee-container py-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+            <p>© {new Date().getFullYear()} {SITE.name}. {t("footer.rights", "Bản quyền đã được đăng ký.")}</p>
+            <span className="hidden sm:inline text-slate-600">•</span>
+            <Link to="/privacy-policy" className="hover:text-white transition-colors underline underline-offset-2">
+              Chính sách bảo mật (Privacy Policy)
+            </Link>
+          </div>
           <p className="text-[11px] text-slate-400">Thiết kế chuẩn mực du lịch hiện đại • Trải nghiệm mượt mà trên mọi thiết bị</p>
         </div>
       </div>
