@@ -44,7 +44,6 @@ function EmptyReviews({ onWriteReview, title, subtitle }) {
         {title || 'Bạn chưa có bài đánh giá nào.'}
       </h2>
       <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 mb-4">
-        {subtitle || 'Hãy chia sẻ cảm nhận của bạn để giúp hệ thống và cộng đồng du lịch ngày càng tốt hơn!'}
       </p>
       {onWriteReview && (
         <button
