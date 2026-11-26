@@ -503,8 +503,8 @@ export default function Reviews() {
               type="button"
               onClick={() => setActiveTab('website')}
               className={`pb-3 px-3 text-xs sm:text-sm font-bold transition-all relative cursor-pointer ${activeTab === 'website'
-                  ? 'text-[#00a3e0] border-b-2 border-[#00a3e0]'
-                  : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+                ? 'text-[#00a3e0] border-b-2 border-[#00a3e0]'
+                : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
                 }`}
             >
               Đánh giá của bạn ({websiteReviews.length})
@@ -513,8 +513,8 @@ export default function Reviews() {
               type="button"
               onClick={() => setActiveTab('places')}
               className={`pb-3 px-3 text-xs sm:text-sm font-bold transition-all relative cursor-pointer ${activeTab === 'places'
-                  ? 'text-[#00a3e0] border-b-2 border-[#00a3e0]'
-                  : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+                ? 'text-[#00a3e0] border-b-2 border-[#00a3e0]'
+                : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
                 }`}
             >
               đánh giá địa điểm ({placeReviews.length})
@@ -559,7 +559,6 @@ export default function Reviews() {
                 <EmptyReviews
                   onWriteReview={() => setIsModalOpen(true)}
                   title="Bạn chưa gửi đánh giá trang web nào."
-                  subtitle="Chỉ bạn mới có thể xem các đánh giá mình đã gửi. Mọi ý kiến đều được Ban Quản Trị tiếp nhận để nâng cấp hệ thống!"
                 />
               )}
             </div>
