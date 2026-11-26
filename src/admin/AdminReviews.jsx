@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback, useRef } from "react";
+﻿import { useEffect, useMemo, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppHeader } from "~/shared/components";
 import { useTranslation } from "~/providers/i18n-provider";
@@ -12,17 +12,17 @@ import {
 } from "~/shared/services/website-review-api.js";
 
 const statusLabels = {
-  pending: "Chờ duyệt",
-  flagged: "Báo cáo khẩn",
-  approved: "Đã duyệt",
-  hidden: "Đã ẩn"
+  pending: "Chá» duyá»‡t",
+  flagged: "BÃ¡o cÃ¡o kháº©n",
+  approved: "ÄÃ£ duyá»‡t",
+  hidden: "ÄÃ£ áº©n"
 };
 
 function Rating({ value }) {
   const num = Number(value) || 5;
   return (
-    <span className="inline-flex items-center gap-1 text-xs font-bold text-amber-500" aria-label={`${num} trên 5 sao`}>
-      <span>★</span>
+    <span className="inline-flex items-center gap-1 text-xs font-bold text-amber-500" aria-label={`${num} trÃªn 5 sao`}>
+      <span>â˜…</span>
       <span className="text-slate-800 dark:text-slate-200 font-extrabold">{num.toFixed(1)}</span>
     </span>
   );
@@ -51,7 +51,7 @@ function MediaViewerModal({ media, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-70 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-sm animate-fade-in"
+      className="fixed inset-0 z-[70] flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-sm animate-fade-in"
       onClick={onClose}
     >
       <div
@@ -62,9 +62,9 @@ function MediaViewerModal({ media, onClose }) {
           type="button"
           onClick={onClose}
           className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 w-9 h-9 rounded-full bg-white/20 hover:bg-rose-500/80 text-white flex items-center justify-center text-lg transition-colors cursor-pointer shadow-md"
-          title="Đóng"
+          title="ÄÃ³ng"
         >
-          ✕
+          âœ•
         </button>
 
         {isVideo ? (
@@ -72,18 +72,18 @@ function MediaViewerModal({ media, onClose }) {
             <div className="relative w-full max-h-[72vh] flex items-center justify-center bg-black/60 rounded-2xl overflow-hidden border border-slate-800">
               {loading && !error && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-white gap-2 bg-black/40 z-10 pointer-events-none">
-                  <div className="w-8 h-8 border-3 border-sky-400 border-t-transparent rounded-full animate-spin" />
-                  <span className="text-xs text-sky-200">Đang nạp video...</span>
+                  <div className="w-8 h-8 border-[3px] border-sky-400 border-t-transparent rounded-full animate-spin" />
+                  <span className="text-xs text-sky-200">Äang náº¡p video...</span>
                 </div>
               )}
               {error ? (
                 <div className="p-8 text-center space-y-3 max-w-md">
-                  <div className="text-3xl">⚠️</div>
+                  <div className="text-3xl">âš ï¸</div>
                   <p className="text-sm text-amber-300 font-bold">
-                    Không thể phát trực tiếp tệp video này trong khung xem nhanh.
+                    KhÃ´ng thá»ƒ phÃ¡t trá»±c tiáº¿p tá»‡p video nÃ y trong khung xem nhanh.
                   </p>
                   <p className="text-xs text-slate-400">
-                    Bạn có thể mở trực tiếp trong tab mới hoặc chọn tệp video từ máy tính để phát.
+                    Báº¡n cÃ³ thá»ƒ má»Ÿ trá»±c tiáº¿p trong tab má»›i hoáº·c chá»n tá»‡p video tá»« mÃ¡y tÃ­nh Ä‘á»ƒ phÃ¡t.
                   </p>
                 </div>
               ) : (
@@ -103,7 +103,7 @@ function MediaViewerModal({ media, onClose }) {
                   className="max-w-full max-h-[70vh] rounded-xl shadow-lg object-contain"
                 >
                   <source src={url} type="video/mp4" />
-                  Trình duyệt của bạn không hỗ trợ phát video này.
+                  TrÃ¬nh duyá»‡t cá»§a báº¡n khÃ´ng há»— trá»£ phÃ¡t video nÃ y.
                 </video>
               )}
             </div>
@@ -115,17 +115,17 @@ function MediaViewerModal({ media, onClose }) {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-white font-bold transition-colors shadow-sm cursor-pointer"
               >
-                <span>↗ Mở tab mới</span>
+                <span>â†— Má»Ÿ tab má»›i</span>
               </a>
               <a
                 href={url}
                 download="wayvee-feedback-video.mp4"
                 className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-bold transition-colors shadow-sm cursor-pointer"
               >
-                <span>⬇ Tải video</span>
+                <span>â¬‡ Táº£i video</span>
               </a>
               <label className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-slate-600 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold transition-colors cursor-pointer">
-                <span>📁 Chọn video từ máy</span>
+                <span>ðŸ“ Chá»n video tá»« mÃ¡y</span>
                 <input
                   type="file"
                   accept="video/*"
@@ -139,7 +139,7 @@ function MediaViewerModal({ media, onClose }) {
           <div className="w-full flex flex-col items-center space-y-2">
             <img
               src={url}
-              alt="Chi tiết đính kèm"
+              alt="Chi tiáº¿t Ä‘Ã­nh kÃ¨m"
               className="max-w-full max-h-[78vh] object-contain rounded-2xl shadow-2xl"
             />
             <div className="pt-2">
@@ -149,7 +149,7 @@ function MediaViewerModal({ media, onClose }) {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-white/20 hover:bg-white/30 text-white text-xs transition-colors"
               >
-                <span>↗ Xem ảnh kích thước gốc</span>
+                <span>â†— Xem áº£nh kÃ­ch thÆ°á»›c gá»‘c</span>
               </a>
             </div>
           </div>
@@ -171,19 +171,19 @@ function WebsiteReviewDetailModal({ review, onClose, onReplySuccess, onReplyDele
   const num = Number(review.rating || 5);
   const dateStr = review.createdAt
     ? new Date(review.createdAt).toLocaleString("vi-VN")
-    : "Gần đây";
+    : "Gáº§n Ä‘Ã¢y";
 
   const mediaList = Array.isArray(review.mediaUrls) ? review.mediaUrls : [];
 
   const replyTemplates = [
-    "Cảm ơn bạn đã đóng góp ý kiến! Đội ngũ WAYVEE đã ghi nhận và sẽ tối ưu trải nghiệm này trong bản cập nhật tới.",
-    "Cảm ơn bạn đã phản hồi! Bộ phận kỹ thuật đang kiểm tra và sẽ sớm khắc phục vấn đề bạn gặp phải.",
-    "Cảm ơn bạn đã tin tưởng và đồng hành cùng WAYVEE! Chúc bạn có những chuyến đi thật trọn vẹn và ý nghĩa."
+    "Cáº£m Æ¡n báº¡n Ä‘Ã£ Ä‘Ã³ng gÃ³p Ã½ kiáº¿n! Äá»™i ngÅ© WAYVEE Ä‘Ã£ ghi nháº­n vÃ  sáº½ tá»‘i Æ°u tráº£i nghiá»‡m nÃ y trong báº£n cáº­p nháº­t tá»›i.",
+    "Cáº£m Æ¡n báº¡n Ä‘Ã£ pháº£n há»“i! Bá»™ pháº­n ká»¹ thuáº­t Ä‘ang kiá»ƒm tra vÃ  sáº½ sá»›m kháº¯c phá»¥c váº¥n Ä‘á» báº¡n gáº·p pháº£i.",
+    "Cáº£m Æ¡n báº¡n Ä‘Ã£ tin tÆ°á»Ÿng vÃ  Ä‘á»“ng hÃ nh cÃ¹ng WAYVEE! ChÃºc báº¡n cÃ³ nhá»¯ng chuyáº¿n Ä‘i tháº­t trá»n váº¹n vÃ  Ã½ nghÄ©a."
   ];
 
   const handleSendReply = async () => {
     if (!replyText.trim()) {
-      setError("Vui lòng nhập nội dung phản hồi.");
+      setError("Vui lÃ²ng nháº­p ná»™i dung pháº£n há»“i.");
       return;
     }
     setSubmitting(true);
@@ -197,19 +197,19 @@ function WebsiteReviewDetailModal({ review, onClose, onReplySuccess, onReplyDele
             ...review,
             adminReply: replyText.trim(),
             repliedAt: new Date().toISOString(),
-            repliedBy: "Ban Quản Trị WAYVEE"
+            repliedBy: "Ban Quáº£n Trá»‹ WAYVEE"
           }
         );
       }
     } catch (err) {
-      setError(err?.message || "Không thể gửi phản hồi. Vui lòng thử lại!");
+      setError(err?.message || "KhÃ´ng thá»ƒ gá»­i pháº£n há»“i. Vui lÃ²ng thá»­ láº¡i!");
     } finally {
       setSubmitting(false);
     }
   };
 
   const handleDeleteReply = async () => {
-    if (!window.confirm("Bạn có chắc chắn muốn xóa phản hồi này không?")) return;
+    if (!window.confirm("Báº¡n cÃ³ cháº¯c cháº¯n muá»‘n xÃ³a pháº£n há»“i nÃ y khÃ´ng?")) return;
     setDeleting(true);
     setError("");
     try {
@@ -220,7 +220,7 @@ function WebsiteReviewDetailModal({ review, onClose, onReplySuccess, onReplyDele
         onReplyDeleted(review.id);
       }
     } catch (err) {
-      setError(err?.message || "Không thể xóa phản hồi. Vui lòng thử lại!");
+      setError(err?.message || "KhÃ´ng thá»ƒ xÃ³a pháº£n há»“i. Vui lÃ²ng thá»­ láº¡i!");
     } finally {
       setDeleting(false);
     }
@@ -236,9 +236,9 @@ function WebsiteReviewDetailModal({ review, onClose, onReplySuccess, onReplyDele
         {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
           <div className="flex items-center gap-2">
-            <span className="text-xl">★</span>
+            <span className="text-xl">â˜…</span>
             <h3 className="text-base font-extrabold text-[#002d54] dark:text-white">
-              Chi tiết đánh giá &amp; Phản hồi
+              Chi tiáº¿t Ä‘Ã¡nh giÃ¡ &amp; Pháº£n há»“i
             </h3>
           </div>
           <button
@@ -246,7 +246,7 @@ function WebsiteReviewDetailModal({ review, onClose, onReplySuccess, onReplyDele
             onClick={onClose}
             className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
           >
-            ✕
+            âœ•
           </button>
         </div>
 
@@ -254,27 +254,27 @@ function WebsiteReviewDetailModal({ review, onClose, onReplySuccess, onReplyDele
           {/* User & Rating */}
           <div className="flex items-center justify-between p-3.5 bg-slate-50 dark:bg-slate-900/60 rounded-2xl border border-slate-100 dark:border-slate-800">
             <div>
-              <p className="text-xs text-slate-400">Người đánh giá</p>
+              <p className="text-xs text-slate-400">NgÆ°á»i Ä‘Ã¡nh giÃ¡</p>
               <p className="font-bold text-slate-900 dark:text-white">
-                {review.anonymous ? "Người dùng ẩn danh" : review.userFullName || "Khách"}
+                {review.anonymous ? "NgÆ°á»i dÃ¹ng áº©n danh" : review.userFullName || "KhÃ¡ch"}
               </p>
               {!review.anonymous && review.userEmail && (
                 <p className="text-xs text-slate-500">{review.userEmail}</p>
               )}
             </div>
             <div className="text-right">
-              <p className="text-xs text-slate-400">Điểm số</p>
+              <p className="text-xs text-slate-400">Äiá»ƒm sá»‘</p>
               <span className="text-base font-extrabold text-amber-500">
-                ★ {num.toFixed(1)} / 5.0
+                â˜… {num.toFixed(1)} / 5.0
               </span>
             </div>
           </div>
 
           <div className="flex items-center justify-between text-xs">
             <div>
-              <span className="text-slate-400 mr-2">Khía cạnh:</span>
+              <span className="text-slate-400 mr-2">KhÃ­a cáº¡nh:</span>
               <span className="inline-block px-3 py-1 rounded-lg font-semibold bg-sky-50 dark:bg-sky-950/60 text-[#00a3e0] border border-sky-100 dark:border-sky-800">
-                {review.category || "Trải nghiệm chung"}
+                {review.category || "Tráº£i nghiá»‡m chung"}
               </span>
             </div>
             <div className="text-slate-400">
@@ -284,9 +284,9 @@ function WebsiteReviewDetailModal({ review, onClose, onReplySuccess, onReplyDele
 
           {/* Comment */}
           <div>
-            <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Nội dung nhận xét &amp; góp ý</p>
+            <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">Ná»™i dung nháº­n xÃ©t &amp; gÃ³p Ã½</p>
             <div className="p-4 bg-slate-50 dark:bg-slate-900/60 rounded-2xl border border-slate-100 dark:border-slate-800 text-slate-800 dark:text-slate-200 leading-relaxed italic">
-              “{review.comment}”
+              â€œ{review.comment}â€
             </div>
           </div>
 
@@ -294,7 +294,7 @@ function WebsiteReviewDetailModal({ review, onClose, onReplySuccess, onReplyDele
           {mediaList.length > 0 && (
             <div className="space-y-2">
               <p className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                <span>📎</span> Ảnh &amp; Video người dùng đính kèm ({mediaList.length})
+                <span>ðŸ“Ž</span> áº¢nh &amp; Video ngÆ°á»i dÃ¹ng Ä‘Ã­nh kÃ¨m ({mediaList.length})
               </p>
               <div className="grid grid-cols-3 gap-2.5">
                 {mediaList.map((url, idx) => {
@@ -310,7 +310,7 @@ function WebsiteReviewDetailModal({ review, onClose, onReplySuccess, onReplyDele
                           <video src={url} className="w-full h-full object-cover opacity-80" />
                           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                             <span className="w-7 h-7 rounded-full bg-black/70 text-white flex items-center justify-center text-xs">
-                              ▶
+                              â–¶
                             </span>
                           </div>
                           <span className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded text-[8px] font-bold bg-black/70 text-white">
@@ -320,7 +320,7 @@ function WebsiteReviewDetailModal({ review, onClose, onReplySuccess, onReplyDele
                       ) : (
                         <img
                           src={url}
-                          alt={`Đính kèm ${idx + 1}`}
+                          alt={`ÄÃ­nh kÃ¨m ${idx + 1}`}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                         />
                       )}
@@ -335,7 +335,7 @@ function WebsiteReviewDetailModal({ review, onClose, onReplySuccess, onReplyDele
           <div className="p-4 bg-sky-50/60 dark:bg-sky-950/30 rounded-2xl border border-sky-100 dark:border-sky-900/50 space-y-3">
             <div className="flex items-center justify-between">
               <h4 className="text-xs font-bold uppercase tracking-wider text-[#002d54] dark:text-sky-300 flex items-center gap-1.5">
-                <span>🛡️</span> Phản hồi từ Ban Quản Trị
+                <span>ðŸ›¡ï¸</span> Pháº£n há»“i tá»« Ban Quáº£n Trá»‹
               </h4>
               {review.adminReply && !isEditing && (
                 <div className="flex items-center gap-2">
@@ -344,16 +344,16 @@ function WebsiteReviewDetailModal({ review, onClose, onReplySuccess, onReplyDele
                     onClick={() => setIsEditing(true)}
                     className="text-xs font-semibold text-[#00a3e0] hover:underline cursor-pointer"
                   >
-                    Sửa phản hồi
+                    Sá»­a pháº£n há»“i
                   </button>
-                  <span className="text-slate-300">·</span>
+                  <span className="text-slate-300">Â·</span>
                   <button
                     type="button"
                     disabled={deleting}
                     onClick={handleDeleteReply}
                     className="text-xs font-semibold text-red-500 hover:underline cursor-pointer disabled:opacity-50"
                   >
-                    {deleting ? "Đang xóa..." : "Xóa"}
+                    {deleting ? "Äang xÃ³a..." : "XÃ³a"}
                   </button>
                 </div>
               )}
@@ -365,7 +365,7 @@ function WebsiteReviewDetailModal({ review, onClose, onReplySuccess, onReplyDele
                   {review.adminReply}
                 </p>
                 <div className="flex items-center justify-between text-[11px] text-slate-400">
-                  <span>Người trả lời: <strong>{review.repliedBy || "Ban Quản Trị WAYVEE"}</strong></span>
+                  <span>NgÆ°á»i tráº£ lá»i: <strong>{review.repliedBy || "Ban Quáº£n Trá»‹ WAYVEE"}</strong></span>
                   {review.repliedAt && <span>{new Date(review.repliedAt).toLocaleString("vi-VN")}</span>}
                 </div>
               </div>
@@ -378,13 +378,13 @@ function WebsiteReviewDetailModal({ review, onClose, onReplySuccess, onReplyDele
                     setReplyText(e.target.value);
                     if (error) setError("");
                   }}
-                  placeholder="Nhập nội dung phản hồi gửi tới người dùng..."
+                  placeholder="Nháº­p ná»™i dung pháº£n há»“i gá»­i tá»›i ngÆ°á»i dÃ¹ng..."
                   className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-xs sm:text-sm placeholder:text-slate-400 focus:outline-none focus:border-[#00a3e0] resize-y"
                 />
 
                 {/* Quick Templates */}
                 <div className="space-y-1">
-                  <span className="text-[10px] font-bold uppercase text-slate-400">Gợi ý phản hồi nhanh:</span>
+                  <span className="text-[10px] font-bold uppercase text-slate-400">Gá»£i Ã½ pháº£n há»“i nhanh:</span>
                   <div className="flex flex-wrap gap-1.5">
                     {replyTemplates.map((template, idx) => (
                       <button
@@ -401,7 +401,7 @@ function WebsiteReviewDetailModal({ review, onClose, onReplySuccess, onReplyDele
                 </div>
 
                 {error && (
-                  <p className="text-xs text-red-500 font-medium">⚠ {error}</p>
+                  <p className="text-xs text-red-500 font-medium">âš  {error}</p>
                 )}
 
                 <div className="flex items-center justify-end gap-2 pt-1">
@@ -414,7 +414,7 @@ function WebsiteReviewDetailModal({ review, onClose, onReplySuccess, onReplyDele
                       }}
                       className="px-3 py-1.5 rounded-xl text-xs font-bold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
                     >
-                      Hủy
+                      Há»§y
                     </button>
                   )}
                   <button
@@ -423,7 +423,7 @@ function WebsiteReviewDetailModal({ review, onClose, onReplySuccess, onReplyDele
                     onClick={handleSendReply}
                     className="px-4 py-2 bg-[#00a3e0] hover:bg-[#008ec4] text-white text-xs font-bold rounded-xl shadow-xs transition-all cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
                   >
-                    {submitting ? "Đang gửi..." : review.adminReply ? "Lưu phản hồi" : "Gửi phản hồi"}
+                    {submitting ? "Äang gá»­i..." : review.adminReply ? "LÆ°u pháº£n há»“i" : "Gá»­i pháº£n há»“i"}
                   </button>
                 </div>
               </div>
@@ -438,7 +438,7 @@ function WebsiteReviewDetailModal({ review, onClose, onReplySuccess, onReplyDele
             onClick={onClose}
             className="px-5 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-xl transition-colors cursor-pointer"
           >
-            Đóng
+            ÄÃ³ng
           </button>
         </div>
       </div>
@@ -463,9 +463,9 @@ function WebsiteReviewAdminCard({ review, onViewDetail, onPreviewMedia }) {
       hour: "2-digit",
       minute: "2-digit"
     })
-    : "Gần đây";
+    : "Gáº§n Ä‘Ã¢y";
 
-  const name = review.anonymous ? "Người dùng ẩn danh" : review.userFullName || "Thành viên WAYVEE";
+  const name = review.anonymous ? "NgÆ°á»i dÃ¹ng áº©n danh" : review.userFullName || "ThÃ nh viÃªn WAYVEE";
   const initial = review.anonymous ? "?" : (name.slice(0, 2).toUpperCase() || "WV");
   const mediaList = Array.isArray(review.mediaUrls) ? review.mediaUrls : [];
 
@@ -483,26 +483,26 @@ function WebsiteReviewAdminCard({ review, onViewDetail, onPreviewMedia }) {
             </h3>
             {review.anonymous ? (
               <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-500">
-                Ẩn danh
+                áº¨n danh
               </span>
             ) : (
               <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-sky-50 dark:bg-sky-950/60 text-[#00a3e0] border border-sky-200 dark:border-sky-900">
-                Thành viên
+                ThÃ nh viÃªn
               </span>
             )}
             {review.adminReply && (
               <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 flex items-center gap-1">
-                <span>✓</span> Đã phản hồi
+                <span>âœ“</span> ÄÃ£ pháº£n há»“i
               </span>
             )}
             <span className="text-xs text-slate-400 dark:text-slate-500">
-              ID: #{review.id} · {dateStr}
+              ID: #{review.id} Â· {dateStr}
             </span>
           </div>
 
           <div className="flex items-center gap-3 text-xs flex-wrap">
             <span className="font-bold text-[#002d54] dark:text-sky-300">
-              🌐 Trang web WAYVEE
+              ðŸŒ Trang web WAYVEE
             </span>
             <Rating value={review.rating} />
             {review.category && (
@@ -512,13 +512,13 @@ function WebsiteReviewAdminCard({ review, onViewDetail, onPreviewMedia }) {
             )}
             {mediaList.length > 0 && (
               <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-50 dark:bg-sky-950/40 text-[#00a3e0] border border-sky-200 dark:border-sky-800">
-                📎 {mediaList.length} tệp đính kèm
+                ðŸ“Ž {mediaList.length} tá»‡p Ä‘Ã­nh kÃ¨m
               </span>
             )}
           </div>
 
           <p className="text-sm text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-900/60 p-3.5 rounded-xl border border-slate-100 dark:border-slate-800/80 italic leading-relaxed">
-            “{review.comment}”
+            â€œ{review.comment}â€
           </p>
 
           {/* Media preview strip if present */}
@@ -531,11 +531,11 @@ function WebsiteReviewAdminCard({ review, onViewDetail, onPreviewMedia }) {
                     key={idx}
                     onClick={() => onPreviewMedia && onPreviewMedia({ url, isVideo })}
                     className="w-14 h-10 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 relative cursor-pointer hover:border-[#00a3e0] hover:scale-105 transition-all shadow-2xs"
-                    title={isVideo ? "Bấm để xem video" : "Bấm để xem ảnh"}
+                    title={isVideo ? "Báº¥m Ä‘á»ƒ xem video" : "Báº¥m Ä‘á»ƒ xem áº£nh"}
                   >
                     {isVideo ? (
                       <div className="w-full h-full bg-slate-900 flex items-center justify-center text-[10px] text-white font-bold hover:bg-sky-950 transition-colors">
-                        ▶ MP4
+                        â–¶ MP4
                       </div>
                     ) : (
                       <img src={url} alt="thumb" className="w-full h-full object-cover" />
@@ -544,7 +544,7 @@ function WebsiteReviewAdminCard({ review, onViewDetail, onPreviewMedia }) {
                 );
               })}
               {mediaList.length > 4 && (
-                <span className="text-xs text-slate-400">+{mediaList.length - 4} tệp khác</span>
+                <span className="text-xs text-slate-400">+{mediaList.length - 4} tá»‡p khÃ¡c</span>
               )}
             </div>
           )}
@@ -553,20 +553,20 @@ function WebsiteReviewAdminCard({ review, onViewDetail, onPreviewMedia }) {
           {review.adminReply && (
             <div className="p-3 bg-sky-50/50 dark:bg-sky-950/30 rounded-xl border border-sky-200/70 dark:border-sky-900/50 text-xs text-slate-700 dark:text-slate-300 space-y-1">
               <div className="flex items-center justify-between font-bold text-[#002d54] dark:text-sky-300 text-[11px]">
-                <span>🛡️ Phản hồi từ Ban Quản Trị:</span>
+                <span>ðŸ›¡ï¸ Pháº£n há»“i tá»« Ban Quáº£n Trá»‹:</span>
                 {review.repliedAt && (
                   <span className="font-normal text-slate-400 text-[10px]">
                     {new Date(review.repliedAt).toLocaleString("vi-VN")}
                   </span>
                 )}
               </div>
-              <p className="italic">“{review.adminReply}”</p>
+              <p className="italic">â€œ{review.adminReply}â€</p>
             </div>
           )}
 
           {!review.anonymous && review.userEmail && (
             <p className="text-[11px] text-slate-400">
-              Email tác giả: {review.userEmail}
+              Email tÃ¡c giáº£: {review.userEmail}
             </p>
           )}
         </div>
@@ -577,11 +577,11 @@ function WebsiteReviewAdminCard({ review, onViewDetail, onPreviewMedia }) {
           type="button"
           onClick={() => onViewDetail(review)}
           className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-2xs ${review.adminReply
-              ? "bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200"
-              : "bg-sky-50 dark:bg-sky-950/40 text-[#00a3e0] border border-sky-200 dark:border-sky-900 hover:bg-sky-100"
+            ? "bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200"
+            : "bg-sky-50 dark:bg-sky-950/40 text-[#00a3e0] border border-sky-200 dark:border-sky-900 hover:bg-sky-100"
             }`}
         >
-          {review.adminReply ? "Xem & Sửa phản hồi" : "Xem chi tiết"}
+          {review.adminReply ? "Xem & Sá»­a pháº£n há»“i" : "Xem chi tiáº¿t"}
         </button>
       </div>
     </article>
@@ -593,8 +593,8 @@ function PlaceReviewCard({ review, selected, onSelect, onAction }) {
   return (
     <article
       className={`bg-white dark:bg-[#0f172a] p-5 rounded-2xl border transition-shadow shadow-sm hover:shadow-md flex flex-col md:flex-row md:items-start justify-between gap-4 ${isFlagged
-          ? "border-red-300 dark:border-red-900/80 bg-red-50/10 dark:bg-red-950/10"
-          : "border-slate-200 dark:border-slate-800"
+        ? "border-red-300 dark:border-red-900/80 bg-red-50/10 dark:bg-red-950/10"
+        : "border-slate-200 dark:border-slate-800"
         }`}
     >
       <div className="flex items-start gap-3.5 flex-1 min-w-0">
@@ -603,7 +603,7 @@ function PlaceReviewCard({ review, selected, onSelect, onAction }) {
             type="checkbox"
             checked={selected}
             onChange={() => onSelect(review.id)}
-            aria-label={`Chọn ${review.id}`}
+            aria-label={`Chá»n ${review.id}`}
             className="w-4 h-4 rounded border-slate-300 dark:border-slate-700 text-[#00a3e0] focus:ring-[#00a3e0] cursor-pointer"
           />
         </div>
@@ -621,29 +621,29 @@ function PlaceReviewCard({ review, selected, onSelect, onAction }) {
               {review.badge}
             </span>
             <span className="text-xs text-slate-400 dark:text-slate-500">
-              ID: #{review.id} · {review.time}
+              ID: #{review.id} Â· {review.time}
             </span>
           </div>
 
           <div className="flex items-center gap-3 text-xs">
             <span className="font-bold text-[#002d54] dark:text-sky-300">
-              📍 {review.place}
+              ðŸ“ {review.place}
             </span>
             <Rating value={review.rating} />
             <span
               className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold ${review.status === "approved"
-                  ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60"
-                  : review.status === "flagged"
-                    ? "bg-red-50 dark:bg-red-950/60 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-900/60"
-                    : "bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-900/60"
+                ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60"
+                : review.status === "flagged"
+                  ? "bg-red-50 dark:bg-red-950/60 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-900/60"
+                  : "bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-900/60"
                 }`}
             >
               <span
                 className={`w-1.5 h-1.5 rounded-full ${review.status === "approved"
-                    ? "bg-emerald-500"
-                    : review.status === "flagged"
-                      ? "bg-red-500"
-                      : "bg-amber-500"
+                  ? "bg-emerald-500"
+                  : review.status === "flagged"
+                    ? "bg-red-500"
+                    : "bg-amber-500"
                   }`}
               />
               {statusLabels[review.status] || review.status}
@@ -653,14 +653,14 @@ function PlaceReviewCard({ review, selected, onSelect, onAction }) {
           {isFlagged && (
             <div className="p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 rounded-xl text-xs text-red-700 dark:text-red-300">
               <strong className="font-bold flex items-center gap-1 mb-0.5">
-                <span>⚠</span> Lý do báo cáo từ cộng đồng:
+                <span>âš </span> LÃ½ do bÃ¡o cÃ¡o tá»« cá»™ng Ä‘á»“ng:
               </strong>
-              <span>Nội dung cần xem xét và kiểm duyệt kỹ lưỡng.</span>
+              <span>Ná»™i dung cáº§n xem xÃ©t vÃ  kiá»ƒm duyá»‡t ká»¹ lÆ°á»¡ng.</span>
             </div>
           )}
 
           <p className="text-sm text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-900/60 p-3.5 rounded-xl border border-slate-100 dark:border-slate-800/80 italic leading-relaxed">
-            “{review.content}”
+            â€œ{review.content}â€
           </p>
 
           <p className="text-[11px] text-slate-400 dark:text-slate-500">
@@ -677,14 +677,14 @@ function PlaceReviewCard({ review, selected, onSelect, onAction }) {
               className="px-3.5 py-1.5 bg-[#00a3e0] hover:bg-[#008ec4] text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-sm"
               onClick={() => onAction(review.id, "approved")}
             >
-              Xác minh
+              XÃ¡c minh
             </button>
             <button
               type="button"
               className="px-3.5 py-1.5 bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/60 hover:bg-red-100 rounded-xl text-xs font-semibold transition-all cursor-pointer"
               onClick={() => onAction(review.id, "hidden")}
             >
-              Xóa review
+              XÃ³a review
             </button>
           </>
         ) : (
@@ -693,7 +693,7 @@ function PlaceReviewCard({ review, selected, onSelect, onAction }) {
             className="px-3.5 py-1.5 bg-[#00a3e0] hover:bg-[#008ec4] text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-sm"
             onClick={() => onAction(review.id, "approved")}
           >
-            Duyệt ngay
+            Duyá»‡t ngay
           </button>
         )}
         <button
@@ -701,7 +701,7 @@ function PlaceReviewCard({ review, selected, onSelect, onAction }) {
           className="px-3.5 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-semibold transition-all cursor-pointer"
           onClick={() => onAction(review.id, "hidden")}
         >
-          Ẩn / Xóa
+          áº¨n / XÃ³a
         </button>
       </div>
     </article>
@@ -712,7 +712,7 @@ export default function AdminReviews() {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  // Active moderation view: "website" (đánh giá trang web) vs "places" (đánh giá địa điểm)
+  // Active moderation view: "website" (Ä‘Ã¡nh giÃ¡ trang web) vs "places" (Ä‘Ã¡nh giÃ¡ Ä‘á»‹a Ä‘iá»ƒm)
   const [activeTab, setActiveTab] = useState("website");
 
   // Website Reviews State (READ-ONLY)
@@ -745,7 +745,7 @@ export default function AdminReviews() {
       prev.map((r) => (String(r.id) === String(updatedReview.id) ? updatedReview : r))
     );
     setDetailModalReview(updatedReview);
-    setNotice("Đã gửi phản hồi thành công đến người dùng!");
+    setNotice("ÄÃ£ gá»­i pháº£n há»“i thÃ nh cÃ´ng Ä‘áº¿n ngÆ°á»i dÃ¹ng!");
   };
 
   const handleReplyDeleted = (reviewId) => {
@@ -759,7 +759,7 @@ export default function AdminReviews() {
     setDetailModalReview((prev) =>
       prev ? { ...prev, adminReply: null, repliedAt: null, repliedBy: null } : null
     );
-    setNotice("Đã xóa phản hồi của bài đánh giá.");
+    setNotice("ÄÃ£ xÃ³a pháº£n há»“i cá»§a bÃ i Ä‘Ã¡nh giÃ¡.");
   };
 
   const fetchWebsiteReviews = useCallback(async () => {
@@ -788,16 +788,16 @@ export default function AdminReviews() {
       const mapped = list.map((item) => ({
         id: String(item.reviewId),
         reviewId: item.reviewId,
-        name: item.userFullName || item.username || (item.anonymous ? "Người dùng ẩn danh" : "Thành viên WAYVEE"),
-        badge: item.anonymous ? "Ẩn danh" : "Thành viên",
-        place: item.placeName || `Địa điểm #${item.osmId}`,
+        name: item.userFullName || item.username || (item.anonymous ? "NgÆ°á»i dÃ¹ng áº©n danh" : "ThÃ nh viÃªn WAYVEE"),
+        badge: item.anonymous ? "áº¨n danh" : "ThÃ nh viÃªn",
+        place: item.placeName || `Äá»‹a Ä‘iá»ƒm #${item.osmId}`,
         rating: item.rating || 5,
-        time: item.createdAt ? new Date(item.createdAt).toLocaleString("vi-VN") : "Gần đây",
+        time: item.createdAt ? new Date(item.createdAt).toLocaleString("vi-VN") : "Gáº§n Ä‘Ã¢y",
         status: "approved",
         verified: true,
         avatar: item.userFullName ? item.userFullName.slice(0, 2).toUpperCase() : "WV",
-        content: item.comment || "Đánh giá không có nội dung văn bản.",
-        evidence: `OSM ID: ${item.osmId} · User ID: ${item.userId || "N/A"}`
+        content: item.comment || "ÄÃ¡nh giÃ¡ khÃ´ng cÃ³ ná»™i dung vÄƒn báº£n.",
+        evidence: `OSM ID: ${item.osmId} Â· User ID: ${item.userId || "N/A"}`
       }));
       setPlaceReviews(mapped);
     } catch (err) {
@@ -813,7 +813,7 @@ export default function AdminReviews() {
     fetchPlaceReviews();
   }, [fetchWebsiteReviews, fetchPlaceReviews]);
 
-  // Filtered Website Reviews (có lọc theo trạng thái phản hồi)
+  // Filtered Website Reviews (cÃ³ lá»c theo tráº¡ng thÃ¡i pháº£n há»“i)
   const visibleWebsiteReviews = useMemo(() => {
     return websiteReviews.filter((r) => {
       const kw = webQuery.toLowerCase();
@@ -860,30 +860,30 @@ export default function AdminReviews() {
     try {
       if (nextStatus === "hidden") {
         await deleteReview(id);
-        setNotice("Đã xóa/ẩn bài đánh giá địa điểm thành công.");
+        setNotice("ÄÃ£ xÃ³a/áº©n bÃ i Ä‘Ã¡nh giÃ¡ Ä‘á»‹a Ä‘iá»ƒm thÃ nh cÃ´ng.");
       } else {
-        setNotice("Đã cập nhật trạng thái đánh giá địa điểm thành công.");
+        setNotice("ÄÃ£ cáº­p nháº­t tráº¡ng thÃ¡i Ä‘Ã¡nh giÃ¡ Ä‘á»‹a Ä‘iá»ƒm thÃ nh cÃ´ng.");
       }
       await fetchPlaceReviews();
     } catch (err) {
       console.error("Update place review error:", err);
-      setNotice("Có lỗi xảy ra khi xử lý đánh giá địa điểm.");
+      setNotice("CÃ³ lá»—i xáº£y ra khi xá»­ lÃ½ Ä‘Ã¡nh giÃ¡ Ä‘á»‹a Ä‘iá»ƒm.");
     }
     setSelectedPlaceReviews((current) => current.filter((item) => item !== id));
   };
 
   const bulkUpdatePlaceReviews = async (nextStatus) => {
-    if (!selectedPlaceReviews.length) return setNotice("Hãy chọn ít nhất một review để thực hiện thao tác.");
+    if (!selectedPlaceReviews.length) return setNotice("HÃ£y chá»n Ã­t nháº¥t má»™t review Ä‘á»ƒ thá»±c hiá»‡n thao tÃ¡c.");
     try {
       if (nextStatus === "hidden") {
         await Promise.all(selectedPlaceReviews.map((id) => deleteReview(id).catch(() => { })));
       }
-      setNotice(`${selectedPlaceReviews.length} review đã được xử lý.`);
+      setNotice(`${selectedPlaceReviews.length} review Ä‘Ã£ Ä‘Æ°á»£c xá»­ lÃ½.`);
       await fetchPlaceReviews();
       setSelectedPlaceReviews([]);
     } catch (err) {
       console.error("Bulk update error:", err);
-      setNotice("Có lỗi xảy ra khi cập nhật hàng loạt.");
+      setNotice("CÃ³ lá»—i xáº£y ra khi cáº­p nháº­t hÃ ng loáº¡t.");
     }
   };
 
@@ -908,20 +908,20 @@ export default function AdminReviews() {
             <div>
               <div className="flex items-center space-x-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
                 <span>{t("adminNav.portalBadge", "Admin Portal")}</span>
-                <span className="text-slate-400">›</span>
-                <span>Kiểm duyệt &amp; đánh giá</span>
-                <span className="text-slate-400">›</span>
+                <span className="text-slate-400">â€º</span>
+                <span>Kiá»ƒm duyá»‡t &amp; Ä‘Ã¡nh giÃ¡</span>
+                <span className="text-slate-400">â€º</span>
                 <span className="text-[#00a3e0]">
-                  {activeTab === "website" ? "Đánh giá trang web" : "Đánh giá địa điểm"}
+                  {activeTab === "website" ? "ÄÃ¡nh giÃ¡ trang web" : "ÄÃ¡nh giÃ¡ Ä‘á»‹a Ä‘iá»ƒm"}
                 </span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-extrabold text-[#002d54] dark:text-white tracking-tight">
-                {activeTab === "website" ? "Đánh giá trang web WAYVEE" : "Quản lý đánh giá địa điểm"}
+                {activeTab === "website" ? "ÄÃ¡nh giÃ¡ trang web WAYVEE" : "Quáº£n lÃ½ Ä‘Ã¡nh giÃ¡ Ä‘á»‹a Ä‘iá»ƒm"}
               </h1>
               <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
                 {activeTab === "website"
-                  ? "Theo dõi đánh giá trải nghiệm hệ thống và mức độ hài lòng từ người dùng "
-                  : "Kiểm duyệt phản hồi, xác thực trải nghiệm và xử lý dữ liệu đánh giá địa điểm từ cộng đồng."}
+                  ? "Theo dÃµi Ä‘Ã¡nh giÃ¡ tráº£i nghiá»‡m há»‡ thá»‘ng vÃ  má»©c Ä‘á»™ hÃ i lÃ²ng tá»« ngÆ°á»i dÃ¹ng "
+                  : "Kiá»ƒm duyá»‡t pháº£n há»“i, xÃ¡c thá»±c tráº£i nghiá»‡m vÃ  xá»­ lÃ½ dá»¯ liá»‡u Ä‘Ã¡nh giÃ¡ Ä‘á»‹a Ä‘iá»ƒm tá»« cá»™ng Ä‘á»“ng."}
               </p>
             </div>
 
@@ -931,7 +931,7 @@ export default function AdminReviews() {
                 onClick={() => navigate("/")}
                 className="inline-flex items-center space-x-1.5 px-3.5 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-[#00a3e0] text-slate-700 dark:text-slate-200 hover:text-[#00a3e0] rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-2xs cursor-pointer"
               >
-                <span>{t("adminReviews.backToHome", "Về trang người dùng")}</span>
+                <span>{t("adminReviews.backToHome", "Vá» trang ngÆ°á»i dÃ¹ng")}</span>
               </button>
             </div>
           </div>
@@ -940,7 +940,7 @@ export default function AdminReviews() {
           {notice && (
             <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 rounded-xl text-emerald-700 dark:text-emerald-300 text-sm font-medium flex items-center justify-between gap-2 animate-fade-in">
               <div className="flex items-center gap-2">
-                <span className="text-emerald-500 font-bold">✓</span>
+                <span className="text-emerald-500 font-bold">âœ“</span>
                 <span>{notice}</span>
               </div>
               <button
@@ -948,7 +948,7 @@ export default function AdminReviews() {
                 onClick={() => setNotice("")}
                 className="text-slate-400 hover:text-slate-600 cursor-pointer"
               >
-                ✕
+                âœ•
               </button>
             </div>
           )}
@@ -959,14 +959,14 @@ export default function AdminReviews() {
               type="button"
               onClick={() => setActiveTab("website")}
               className={`pb-3 px-3 text-sm font-bold transition-all relative cursor-pointer flex items-center gap-2 ${activeTab === "website"
-                  ? "text-[#00a3e0] border-b-2 border-[#00a3e0]"
-                  : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+                ? "text-[#00a3e0] border-b-2 border-[#00a3e0]"
+                : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
                 }`}
             >
-              <span className="text-base">★</span>
-              <span>Đánh giá trang web ({websiteReviews.length})</span>
+              <span className="text-base">â˜…</span>
+              <span>ÄÃ¡nh giÃ¡ trang web ({websiteReviews.length})</span>
               <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-sky-100 dark:bg-sky-950/80 text-[#00a3e0] border border-sky-200 dark:border-sky-900">
-                Có thể phản hồi
+                CÃ³ thá»ƒ pháº£n há»“i
               </span>
             </button>
 
@@ -974,47 +974,47 @@ export default function AdminReviews() {
               type="button"
               onClick={() => setActiveTab("places")}
               className={`pb-3 px-3 text-sm font-bold transition-all relative cursor-pointer flex items-center gap-2 ${activeTab === "places"
-                  ? "text-[#00a3e0] border-b-2 border-[#00a3e0]"
-                  : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+                ? "text-[#00a3e0] border-b-2 border-[#00a3e0]"
+                : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
                 }`}
             >
-              <span>📍</span>
-              <span>Đánh giá địa điểm ({placeReviews.length})</span>
+              <span>ðŸ“</span>
+              <span>ÄÃ¡nh giÃ¡ Ä‘á»‹a Ä‘iá»ƒm ({placeReviews.length})</span>
             </button>
           </div>
 
           {/* ========================================================================= */}
-          {/* TAB 1: WEBSITE REVIEWS (QUẢN LÝ ĐÁNH GIÁ & PHẢN HỒI NGƯỜI DÙNG)          */}
+          {/* TAB 1: WEBSITE REVIEWS (QUáº¢N LÃ ÄÃNH GIÃ & PHáº¢N Há»’I NGÆ¯á»œI DÃ™NG)          */}
           {/* ========================================================================= */}
           {activeTab === "website" && (
             <div className="space-y-6">
               {/* FEEDBACK & REPLY POLICY BANNER */}
               <div className="bg-gradient-to-r from-blue-50 via-sky-50 to-indigo-50 dark:from-slate-900 dark:via-sky-950/40 dark:to-slate-900 p-4 sm:p-5 rounded-2xl border border-blue-200 dark:border-blue-900/60 shadow-xs flex items-start gap-3.5">
                 <div className="w-9 h-9 rounded-xl bg-blue-500 text-white flex items-center justify-center text-lg font-bold shrink-0 shadow-sm">
-                  🛡️
+                  ðŸ›¡ï¸
                 </div>
                 <div className="space-y-1 text-xs sm:text-sm">
                   <h2 className="font-extrabold text-[#002d54] dark:text-sky-300 text-sm sm:text-base">
-                    Quản lý phản hồi &amp; Chăm sóc khách hàng dành cho Quản trị viên
+                    Quáº£n lÃ½ pháº£n há»“i &amp; ChÄƒm sÃ³c khÃ¡ch hÃ ng dÃ nh cho Quáº£n trá»‹ viÃªn
                   </h2>
                   <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
-                    Theo dõi đánh giá trải nghiệm hệ thống, xem hình ảnh và video người dùng đính kèm. Quản trị viên có thể
+                    Theo dÃµi Ä‘Ã¡nh giÃ¡ tráº£i nghiá»‡m há»‡ thá»‘ng, xem hÃ¬nh áº£nh vÃ  video ngÆ°á»i dÃ¹ng Ä‘Ã­nh kÃ¨m. Quáº£n trá»‹ viÃªn cÃ³ thá»ƒ
                     <span className="text-[#00a3e0] font-bold ml-1">
-                      gửi phản hồi trực tiếp tới từng đánh giá
-                    </span> để giải đáp thắc mắc và tương tác với người dùng kịp thời.
+                      gá»­i pháº£n há»“i trá»±c tiáº¿p tá»›i tá»«ng Ä‘Ã¡nh giÃ¡
+                    </span> Ä‘á»ƒ giáº£i Ä‘Ã¡p tháº¯c máº¯c vÃ  tÆ°Æ¡ng tÃ¡c vá»›i ngÆ°á»i dÃ¹ng ká»‹p thá»i.
                   </p>
                 </div>
               </div>
 
               {/* KPI CARDS FOR WEBSITE REVIEWS */}
-              <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4" aria-label="Tổng quan đánh giá trang web">
+              <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4" aria-label="Tá»•ng quan Ä‘Ã¡nh giÃ¡ trang web">
                 <div className="bg-white dark:bg-[#0f172a] p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold uppercase text-slate-500 dark:text-slate-400 tracking-wider">
-                      Tổng đánh giá web
+                      Tá»•ng Ä‘Ã¡nh giÃ¡ web
                     </span>
                     <div className="w-9 h-9 rounded-xl bg-sky-100 dark:bg-sky-950/60 text-[#00a3e0] flex items-center justify-center">
-                      <span className="text-lg">💬</span>
+                      <span className="text-lg">ðŸ’¬</span>
                     </div>
                   </div>
                   <div className="mt-3 flex items-baseline space-x-2">
@@ -1022,22 +1022,22 @@ export default function AdminReviews() {
                       {webStats.totalReviews || websiteReviews.length}
                     </span>
                     <span className="text-xs font-bold text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/60 px-2.5 py-0.5 rounded-full">
-                      Lượt gửi
+                      LÆ°á»£t gá»­i
                     </span>
                   </div>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 flex items-center space-x-1">
-                    <span className="text-[#00a3e0]">✓</span>
-                    <span>Từ người dùng &amp; khách tham quan</span>
+                    <span className="text-[#00a3e0]">âœ“</span>
+                    <span>Tá»« ngÆ°á»i dÃ¹ng &amp; khÃ¡ch tham quan</span>
                   </p>
                 </div>
 
                 <div className="bg-white dark:bg-[#0f172a] p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold uppercase text-slate-500 dark:text-slate-400 tracking-wider">
-                      điểm hài lòng TB
+                      Ä‘iá»ƒm hÃ i lÃ²ng TB
                     </span>
                     <div className="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-500 flex items-center justify-center">
-                      <span className="text-lg">★</span>
+                      <span className="text-lg">â˜…</span>
                     </div>
                   </div>
                   <div className="mt-3 flex items-baseline space-x-2">
@@ -1049,18 +1049,18 @@ export default function AdminReviews() {
                     </span>
                   </div>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 flex items-center space-x-1">
-                    <span className="text-amber-500">★</span>
-                    <span>Điểm trung bình thời gian thực</span>
+                    <span className="text-amber-500">â˜…</span>
+                    <span>Äiá»ƒm trung bÃ¬nh thá»i gian thá»±c</span>
                   </p>
                 </div>
 
                 <div className="bg-white dark:bg-[#0f172a] p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold uppercase text-slate-500 dark:text-slate-400 tracking-wider">
-                      Tỷ lệ tích cực (4-5★)
+                      Tá»· lá»‡ tÃ­ch cá»±c (4-5â˜…)
                     </span>
                     <div className="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-                      <span className="text-lg">⭐</span>
+                      <span className="text-lg">â­</span>
                     </div>
                   </div>
                   <div className="mt-3 flex items-baseline space-x-2">
@@ -1068,22 +1068,22 @@ export default function AdminReviews() {
                       {webStats.positivePercentage || 100}%
                     </span>
                     <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-0.5 rounded-full">
-                      Hài lòng cao
+                      HÃ i lÃ²ng cao
                     </span>
                   </div>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 flex items-center space-x-1">
-                    <span className="text-emerald-500">📈</span>
-                    <span>Mức độ sẵn sàng giới thiệu</span>
+                    <span className="text-emerald-500">ðŸ“ˆ</span>
+                    <span>Má»©c Ä‘á»™ sáºµn sÃ ng giá»›i thiá»‡u</span>
                   </p>
                 </div>
 
                 <div className="bg-white dark:bg-[#0f172a] p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold uppercase text-slate-500 dark:text-slate-400 tracking-wider">
-                      Đã phản hồi
+                      ÄÃ£ pháº£n há»“i
                     </span>
                     <div className="w-9 h-9 rounded-xl bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
-                      <span className="text-lg">💬</span>
+                      <span className="text-lg">ðŸ’¬</span>
                     </div>
                   </div>
                   <div className="mt-3 flex items-baseline space-x-2">
@@ -1091,12 +1091,12 @@ export default function AdminReviews() {
                       {websiteReviews.filter((r) => Boolean(r.adminReply)).length}
                     </span>
                     <span className="text-xs font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/60 px-2.5 py-0.5 rounded-full">
-                      / {websiteReviews.length} mục
+                      / {websiteReviews.length} má»¥c
                     </span>
                   </div>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 flex items-center space-x-1">
-                    <span className="text-indigo-500">✓</span>
-                    <span>Tương tác quản trị với người dùng</span>
+                    <span className="text-indigo-500">âœ“</span>
+                    <span>TÆ°Æ¡ng tÃ¡c quáº£n trá»‹ vá»›i ngÆ°á»i dÃ¹ng</span>
                   </p>
                 </div>
               </section>
@@ -1104,7 +1104,7 @@ export default function AdminReviews() {
               {/* RATING BREAKDOWN BARS */}
               <div className="bg-white dark:bg-[#0f172a] p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xs space-y-3">
                 <h3 className="text-xs font-bold uppercase text-slate-500 dark:text-slate-400 tracking-wider">
-                  Phân bố đánh giá số sao
+                  PhÃ¢n bá»‘ Ä‘Ã¡nh giÃ¡ sá»‘ sao
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-5 gap-3 pt-1">
                   {[5, 4, 3, 2, 1].map((star) => {
@@ -1114,8 +1114,8 @@ export default function AdminReviews() {
                     return (
                       <div key={star} className="p-3 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-100 dark:border-slate-800/80">
                         <div className="flex items-center justify-between text-xs font-bold mb-1.5">
-                          <span className="text-amber-500">{star} ★</span>
-                          <span className="text-slate-700 dark:text-slate-300">{count} lượt ({percent}%)</span>
+                          <span className="text-amber-500">{star} â˜…</span>
+                          <span className="text-slate-700 dark:text-slate-300">{count} lÆ°á»£t ({percent}%)</span>
                         </div>
                         <div className="w-full bg-slate-200 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
                           <div
@@ -1144,7 +1144,7 @@ export default function AdminReviews() {
                       type="text"
                       value={webQuery}
                       onChange={(e) => setWebQuery(e.target.value)}
-                      placeholder="Tìm theo người gửi, email hoặc nội dung nhận xét..."
+                      placeholder="TÃ¬m theo ngÆ°á»i gá»­i, email hoáº·c ná»™i dung nháº­n xÃ©t..."
                       className="w-full pl-9 pr-4 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:border-[#00a3e0]"
                     />
                   </div>
@@ -1155,12 +1155,12 @@ export default function AdminReviews() {
                     onChange={(e) => setWebRating(e.target.value)}
                     className="px-3.5 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-[#00a3e0] min-w-[140px]"
                   >
-                    <option value="all">Tất cả số sao</option>
-                    <option value="5">5 Sao (Tuyệt vời)</option>
-                    <option value="4">4 Sao (Hài lòng)</option>
-                    <option value="3">3 Sao (Bình thường)</option>
-                    <option value="2">2 Sao (Chưa hài lòng)</option>
-                    <option value="1">1 Sao (Rất tệ)</option>
+                    <option value="all">Táº¥t cáº£ sá»‘ sao</option>
+                    <option value="5">5 Sao (Tuyá»‡t vá»i)</option>
+                    <option value="4">4 Sao (HÃ i lÃ²ng)</option>
+                    <option value="3">3 Sao (BÃ¬nh thÆ°á»ng)</option>
+                    <option value="2">2 Sao (ChÆ°a hÃ i lÃ²ng)</option>
+                    <option value="1">1 Sao (Ráº¥t tá»‡)</option>
                   </select>
 
                   {/* Category filter */}
@@ -1169,12 +1169,12 @@ export default function AdminReviews() {
                     onChange={(e) => setWebCategory(e.target.value)}
                     className="px-3.5 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-[#00a3e0] min-w-[160px]"
                   >
-                    <option value="all">Tất cả chủ đề</option>
-                    <option value="Giao diện">Giao diện (UI/UX)</option>
-                    <option value="lịch trình">Lịch trình</option>
-                    <option value="địa điểm">Địa điểm</option>
-                    <option value="Hiệu năng">Hiệu năng &amp; Tốc độ</option>
-                    <option value="Chung">Trải nghiệm chung</option>
+                    <option value="all">Táº¥t cáº£ chá»§ Ä‘á»</option>
+                    <option value="Giao diá»‡n">Giao diá»‡n (UI/UX)</option>
+                    <option value="lá»‹ch trÃ¬nh">Lá»‹ch trÃ¬nh</option>
+                    <option value="Ä‘á»‹a Ä‘iá»ƒm">Äá»‹a Ä‘iá»ƒm</option>
+                    <option value="Hiá»‡u nÄƒng">Hiá»‡u nÄƒng &amp; Tá»‘c Ä‘á»™</option>
+                    <option value="Chung">Tráº£i nghiá»‡m chung</option>
                   </select>
 
                   {/* Reply Status Filter */}
@@ -1183,9 +1183,9 @@ export default function AdminReviews() {
                     onChange={(e) => setWebReplyFilter(e.target.value)}
                     className="px-3.5 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-[#00a3e0] min-w-[150px]"
                   >
-                    <option value="all">Tất cả đánh giá</option>
-                    <option value="replied">Đã phản hồi</option>
-                    <option value="unreplied">Chưa phản hồi</option>
+                    <option value="all">Táº¥t cáº£ Ä‘Ã¡nh giÃ¡</option>
+                    <option value="replied">ÄÃ£ pháº£n há»“i</option>
+                    <option value="unreplied">ChÆ°a pháº£n há»“i</option>
                   </select>
 
                   {/* Reset */}
@@ -1199,7 +1199,7 @@ export default function AdminReviews() {
                       fetchWebsiteReviews();
                     }}
                     className="p-2 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-                    title="Làm mới bộ lọc"
+                    title="LÃ m má»›i bá»™ lá»c"
                   >
                     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
@@ -1214,19 +1214,19 @@ export default function AdminReviews() {
               {/* LIST HEADING */}
               <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 px-1">
                 <h2 className="text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-                  <span>Danh sách đánh giá trang web từ người dùng</span>
+                  <span>Danh sÃ¡ch Ä‘Ã¡nh giÃ¡ trang web tá»« ngÆ°á»i dÃ¹ng</span>
                   <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-sky-50 dark:bg-sky-950/60 text-[#00a3e0] border border-sky-200 dark:border-sky-800">
-                    Phản hồi trực tiếp
+                    Pháº£n há»“i trá»±c tiáº¿p
                   </span>
                 </h2>
-                <span>{visibleWebsiteReviews.length} mục hiển thị</span>
+                <span>{visibleWebsiteReviews.length} má»¥c hiá»ƒn thá»‹</span>
               </div>
 
               {/* WEBSITE REVIEWS LIST */}
               <section className="space-y-4">
                 {loadingWebReviews ? (
                   <div className="p-12 text-center text-slate-500 dark:text-slate-400 text-sm bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse">
-                    đang tải dữ liệu đánh giá trang web...
+                    Äang táº£i dá»¯ liá»‡u Ä‘Ã¡nh giÃ¡ trang web...
                   </div>
                 ) : visibleWebsiteReviews.length ? (
                   visibleWebsiteReviews.map((review) => (
@@ -1239,7 +1239,7 @@ export default function AdminReviews() {
                   ))
                 ) : (
                   <div className="p-12 text-center text-slate-500 dark:text-slate-400 text-sm bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200 dark:border-slate-800">
-                    Không tìm thấy đánh giá trang web nào phù hợp với bộ lọc.
+                    KhÃ´ng tÃ¬m tháº¥y Ä‘Ã¡nh giÃ¡ trang web nÃ o phÃ¹ há»£p vá»›i bá»™ lá»c.
                   </div>
                 )}
               </section>
@@ -1247,40 +1247,40 @@ export default function AdminReviews() {
           )}
 
           {/* ========================================================================= */}
-          {/* TAB 2: PLACE REVIEWS (KIỂM DUYỆT đỊA đIỂM)                                 */}
+          {/* TAB 2: PLACE REVIEWS (KIá»‚M DUYá»†T Ä‘á»ŠA Ä‘Iá»‚M)                                 */}
           {/* ========================================================================= */}
           {activeTab === "places" && (
             <div className="space-y-6">
               {/* Summary KPI Cards for Place Reviews */}
-              <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4" aria-label="Tổng quan đánh giá địa điểm">
+              <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4" aria-label="Tá»•ng quan Ä‘Ã¡nh giÃ¡ Ä‘á»‹a Ä‘iá»ƒm">
                 <div className="bg-white dark:bg-[#0f172a] p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold uppercase text-slate-500 dark:text-slate-400 tracking-wider">
-                      Tổng đánh giá địa điểm
+                      Tá»•ng Ä‘Ã¡nh giÃ¡ Ä‘á»‹a Ä‘iá»ƒm
                     </span>
                     <div className="w-9 h-9 rounded-xl bg-sky-100 dark:bg-sky-950/60 text-[#00a3e0] flex items-center justify-center">
-                      <span className="text-lg">💬</span>
+                      <span className="text-lg">ðŸ’¬</span>
                     </div>
                   </div>
                   <div className="mt-3 flex items-baseline space-x-2">
                     <span className="text-3xl font-extrabold text-slate-900 dark:text-white">{placeReviews.length}</span>
                     <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-0.5 rounded-full">
-                      ★ {placeReviews.length > 0 ? (placeReviews.reduce((acc, r) => acc + (r.rating || 0), 0) / placeReviews.length).toFixed(1) : "5.0"} / 5.0
+                      â˜… {placeReviews.length > 0 ? (placeReviews.reduce((acc, r) => acc + (r.rating || 0), 0) / placeReviews.length).toFixed(1) : "5.0"} / 5.0
                     </span>
                   </div>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 flex items-center space-x-1">
-                    <span className="text-[#00a3e0]">✓</span>
-                    <span>Dữ liệu thời gian thực từ CSDL</span>
+                    <span className="text-[#00a3e0]">âœ“</span>
+                    <span>Dá»¯ liá»‡u thá»i gian thá»±c tá»« CSDL</span>
                   </p>
                 </div>
 
                 <div className="bg-white dark:bg-[#0f172a] p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold uppercase text-slate-500 dark:text-slate-400 tracking-wider">
-                      đánh giá cần chú ý
+                      Ä‘Ã¡nh giÃ¡ cáº§n chÃº Ã½
                     </span>
                     <div className="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center">
-                      <span className="text-lg">⚠</span>
+                      <span className="text-lg">âš </span>
                     </div>
                   </div>
                   <div className="mt-3 flex items-baseline space-x-2">
@@ -1288,22 +1288,22 @@ export default function AdminReviews() {
                       {String(pendingCount).padStart(2, "0")}
                     </span>
                     <span className="text-xs font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 px-2.5 py-0.5 rounded-full">
-                      Chờ duyệt
+                      Chá» duyá»‡t
                     </span>
                   </div>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 flex items-center space-x-1">
-                    <span className="text-amber-500">⚡</span>
-                    <span>Cập nhật tự động theo CSDL</span>
+                    <span className="text-amber-500">âš¡</span>
+                    <span>Cáº­p nháº­t tá»± Ä‘á»™ng theo CSDL</span>
                   </p>
                 </div>
 
                 <div className="bg-white dark:bg-[#0f172a] p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold uppercase text-slate-500 dark:text-slate-400 tracking-wider">
-                      Tích cực (4-5★)
+                      TÃ­ch cá»±c (4-5â˜…)
                     </span>
                     <div className="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-                      <span className="text-lg">⭐</span>
+                      <span className="text-lg">â­</span>
                     </div>
                   </div>
                   <div className="mt-3 flex items-baseline space-x-2">
@@ -1311,33 +1311,33 @@ export default function AdminReviews() {
                       {placeReviews.length > 0 ? Math.round((placeReviews.filter((r) => r.rating >= 4).length / placeReviews.length) * 100) : 100}%
                     </span>
                     <span className="text-xs font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-0.5 rounded-full">
-                      Hài lòng
+                      HÃ i lÃ²ng
                     </span>
                   </div>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 flex items-center space-x-1">
-                    <span className="text-emerald-500">📈</span>
-                    <span>Tỷ lệ phản hồi tích cực</span>
+                    <span className="text-emerald-500">ðŸ“ˆ</span>
+                    <span>Tá»· lá»‡ pháº£n há»“i tÃ­ch cá»±c</span>
                   </p>
                 </div>
 
                 <div className="bg-white dark:bg-[#0f172a] p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold uppercase text-slate-500 dark:text-slate-400 tracking-wider">
-                      Trạng thái kết nối
+                      Tráº¡ng thÃ¡i káº¿t ná»‘i
                     </span>
                     <div className="w-9 h-9 rounded-xl bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center">
-                      <span className="text-lg">🔗</span>
+                      <span className="text-lg">ðŸ”—</span>
                     </div>
                   </div>
                   <div className="mt-3 flex items-baseline space-x-2">
-                    <span className="text-2xl font-extrabold text-slate-900 dark:text-white">Hoạt động</span>
+                    <span className="text-2xl font-extrabold text-slate-900 dark:text-white">Hoáº¡t Ä‘á»™ng</span>
                     <span className="text-xs font-bold text-sky-700 dark:text-sky-300 bg-sky-50 dark:bg-sky-950/60 px-2.5 py-0.5 rounded-full">
                       Live
                     </span>
                   </div>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 flex items-center space-x-1">
-                    <span className="text-[#00a3e0]">●</span>
-                    <span>Đồng bộ trực tiếp qua REST API</span>
+                    <span className="text-[#00a3e0]">â—</span>
+                    <span>Äá»“ng bá»™ trá»±c tiáº¿p qua REST API</span>
                   </p>
                 </div>
               </section>
@@ -1356,7 +1356,7 @@ export default function AdminReviews() {
                       type="text"
                       value={placeQuery}
                       onChange={(e) => setPlaceQuery(e.target.value)}
-                      placeholder="Tìm theo tên, địa điểm hoặc từ khóa review..."
+                      placeholder="TÃ¬m theo tÃªn, Ä‘á»‹a Ä‘iá»ƒm hoáº·c tá»« khÃ³a review..."
                       className="w-full pl-9 pr-4 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:border-[#00a3e0]"
                     />
                   </div>
@@ -1366,10 +1366,10 @@ export default function AdminReviews() {
                     onChange={(e) => setPlaceStatus(e.target.value)}
                     className="px-3.5 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-[#00a3e0] min-w-[150px]"
                   >
-                    <option value="all">Tất cả trạng thái</option>
-                    <option value="approved">Đã duyệt / Công khai</option>
-                    <option value="pending">Chờ duyệt</option>
-                    <option value="flagged">Báo cáo khẩn</option>
+                    <option value="all">Táº¥t cáº£ tráº¡ng thÃ¡i</option>
+                    <option value="approved">ÄÃ£ duyá»‡t / CÃ´ng khai</option>
+                    <option value="pending">Chá» duyá»‡t</option>
+                    <option value="flagged">BÃ¡o cÃ¡o kháº©n</option>
                   </select>
 
                   <div className="flex items-center gap-1.5">
@@ -1377,31 +1377,31 @@ export default function AdminReviews() {
                       type="button"
                       onClick={() => setPlaceQuickFilter("all")}
                       className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${placeQuickFilter === "all"
-                          ? "bg-[#00a3e0] text-white shadow-sm"
-                          : "bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                        ? "bg-[#00a3e0] text-white shadow-sm"
+                        : "bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                         }`}
                     >
-                      Tất cả ({placeReviews.length})
+                      Táº¥t cáº£ ({placeReviews.length})
                     </button>
                     <button
                       type="button"
                       onClick={() => setPlaceQuickFilter("verified")}
                       className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${placeQuickFilter === "verified"
-                          ? "bg-[#00a3e0] text-white shadow-sm"
-                          : "bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                        ? "bg-[#00a3e0] text-white shadow-sm"
+                        : "bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                         }`}
                     >
-                      đã xác thực
+                      Ä‘Ã£ xÃ¡c thá»±c
                     </button>
                     <button
                       type="button"
                       onClick={() => setPlaceQuickFilter("flagged")}
                       className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${placeQuickFilter === "flagged"
-                          ? "bg-red-500 text-white shadow-sm"
-                          : "bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                        ? "bg-red-500 text-white shadow-sm"
+                        : "bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                         }`}
                     >
-                      Cần chú ý ({pendingCount})
+                      Cáº§n chÃº Ã½ ({pendingCount})
                     </button>
                   </div>
 
@@ -1414,7 +1414,7 @@ export default function AdminReviews() {
                       fetchPlaceReviews();
                     }}
                     className="p-2 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-                    title="Làm mới bộ lọc"
+                    title="LÃ m má»›i bá»™ lá»c"
                   >
                     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
@@ -1435,25 +1435,25 @@ export default function AdminReviews() {
                     onChange={toggleSelectAllPlaceReviews}
                     className="w-4 h-4 rounded border-slate-300 dark:border-slate-700 text-[#00a3e0] focus:ring-[#00a3e0] cursor-pointer"
                   />
-                  <span>Chọn tất cả trên trang</span>
+                  <span>Chá»n táº¥t cáº£ trÃªn trang</span>
                 </label>
                 <div className="flex items-center gap-3">
                   <span>
-                    đã chọn: <strong className="text-slate-900 dark:text-white">{selectedPlaceReviews.length}</strong>
+                    Ä‘Ã£ chá»n: <strong className="text-slate-900 dark:text-white">{selectedPlaceReviews.length}</strong>
                   </span>
                   <button
                     type="button"
                     onClick={() => bulkUpdatePlaceReviews("approved")}
                     className="px-3 py-1.5 bg-[#00a3e0] hover:bg-[#008ec4] text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-sm"
                   >
-                    Duyệt đã chọn
+                    Duyá»‡t Ä‘Ã£ chá»n
                   </button>
                   <button
                     type="button"
                     onClick={() => bulkUpdatePlaceReviews("hidden")}
                     className="px-3 py-1.5 bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/60 hover:bg-red-100 rounded-xl text-xs font-semibold transition-all cursor-pointer"
                   >
-                    Ẩn / Xóa hàng loạt
+                    áº¨n / XÃ³a hÃ ng loáº¡t
                   </button>
                 </div>
               </div>
@@ -1461,16 +1461,16 @@ export default function AdminReviews() {
               {/* List Heading for Place Reviews */}
               <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 px-1">
                 <h2 className="text-base font-extrabold text-slate-900 dark:text-white">
-                  Danh sách đánh giá địa điểm thực tế
+                  Danh sÃ¡ch Ä‘Ã¡nh giÃ¡ Ä‘á»‹a Ä‘iá»ƒm thá»±c táº¿
                 </h2>
-                <span>{visiblePlaceReviews.length} mục hiển thị</span>
+                <span>{visiblePlaceReviews.length} má»¥c hiá»ƒn thá»‹</span>
               </div>
 
               {/* Place Reviews List */}
               <section className="space-y-4">
                 {loadingPlaceReviews ? (
                   <div className="p-12 text-center text-slate-500 dark:text-slate-400 text-sm bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse">
-                    đang tải dữ liệu đánh giá địa điểm từ CSDL...
+                    Ä‘ang táº£i dá»¯ liá»‡u Ä‘Ã¡nh giÃ¡ Ä‘á»‹a Ä‘iá»ƒm tá»« CSDL...
                   </div>
                 ) : visiblePlaceReviews.length ? (
                   visiblePlaceReviews.map((review) => (
@@ -1488,7 +1488,7 @@ export default function AdminReviews() {
                   ))
                 ) : (
                   <div className="p-12 text-center text-slate-500 dark:text-slate-400 text-sm bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200 dark:border-slate-800">
-                    Không có review địa điểm phù hợp với bộ lọc hiện tại.
+                    KhÃ´ng cÃ³ review Ä‘á»‹a Ä‘iá»ƒm phÃ¹ há»£p vá»›i bá»™ lá»c hiá»‡n táº¡i.
                   </div>
                 )}
               </section>
@@ -1517,3 +1517,4 @@ export default function AdminReviews() {
     </div>
   );
 }
+
