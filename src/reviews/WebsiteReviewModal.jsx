@@ -1,15 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { submitWebsiteReview, uploadWebsiteReviewMedia } from "~/shared/services/website-review-api";
 
-const CATEGORIES = [
-  "Trải nghiệm chung",
-  "Giao diện & Thiết kế (UI/UX)",
-  "Lập kế hoạch & Lịch trình",
-  "Tìm kiếm & Khám phá địa điểm",
-  "Tốc độ & Hiệu năng hệ thống",
-  "Dịch vụ & Hỗ trợ người dùng"
-];
-
 const RATING_DESCRIPTIONS = {
   1: "Rất tệ - Cần cải thiện nhiều",
   2: "Chưa hài lòng - Còn nhiều lỗi",
@@ -252,24 +243,6 @@ export default function WebsiteReviewModal({ isOpen, onClose, user, onSuccess })
               <p className="text-xs font-semibold text-amber-600 dark:text-amber-400 h-4">
                 {RATING_DESCRIPTIONS[hoverRating || rating]}
               </p>
-            </div>
-
-            {/* Category selection */}
-            <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-                Khía cạnh muốn góp ý / đánh giá
-              </label>
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:border-[#00a3e0]"
-              >
-                {CATEGORIES.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
-                  </option>
-                ))}
-              </select>
             </div>
 
             {/* Comment Textarea */}

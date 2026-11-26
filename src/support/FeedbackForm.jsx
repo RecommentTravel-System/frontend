@@ -1,22 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { submitWebsiteReview, uploadWebsiteReviewMedia } from '~/shared/services/website-review-api.js';
 
-const CATEGORIES = [
-  "Trải nghiệm chung",
-  "Giao diện & Thiết kế (UI/UX)",
-  "Lập kế hoạch & Lịch trình",
-  "Tìm kiếm & Khám phá địa điểm",
-  "Tốc độ & Hiệu năng hệ thống",
-  "Dịch vụ & Hỗ trợ người dùng"
-];
-
 export default function FeedbackForm({ user, draft, onDraftChange, onClose }) {
   const dialog = useRef(null);
   const pending = useRef(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [saved, setSaved] = useState(false);
-  const [category, setCategory] = useState(draft?.category || "Trải nghiệm chung");
+  const category = draft?.category || "Trải nghiệm chung";
+  const [hoverRating, setHoverRating] = useState(0);
   const [mediaList, setMediaList] = useState([]);
   const fileInputRef = useRef(null);
 
@@ -175,46 +167,30 @@ export default function FeedbackForm({ user, draft, onDraftChange, onClose }) {
               Đánh giá chất lượng và trải nghiệm trang web WAYVEE
             </legend>
             <div className="feedback-rating-options">
-              {[1, 2, 3, 4, 5].map((rating) => (
-                <label key={rating} title={`${rating} sao`}>
-                  <input
-                    type="radio"
-                    name="recommendation"
-                    value={rating}
-                    checked={draft.rating === rating}
-                    onChange={() => update('rating', rating)}
-                    aria-label={`${rating} trên 5 điểm`}
-                    required
-                  />
-                  <span>{rating} ★</span>
-                </label>
-              ))}
+              {[1, 2, 3, 4, 5].map((rating) => {
+                const active = (hoverRating || draft.rating) >= rating;
+                return (
+                  <label
+                    key={rating}
+                    title={`${rating} sao`}
+                    onMouseEnter={() => setHoverRating(rating)}
+                    onMouseLeave={() => setHoverRating(0)}
+                  >
+                    <input
+                      type="radio"
+                      name="recommendation"
+                      value={rating}
+                      checked={draft.rating === rating}
+                      onChange={() => update('rating', rating)}
+                      aria-label={`${rating} trên 5 sao`}
+                      required
+                    />
+                    <span className={active ? 'is-active' : ''}>★</span>
+                  </label>
+                );
+              })}
             </div>
           </fieldset>
-
-          <label className="feedback-comment-label" htmlFor="feedback-category">
-            Khía cạnh bạn muốn đánh giá / góp ý
-          </label>
-          <select
-            id="feedback-category"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            disabled={busy}
-            style={{
-              width: '100%',
-              padding: '10px',
-              borderRadius: '8px',
-              border: '1px solid #d5dee8',
-              marginBottom: '15px',
-              fontSize: '13px'
-            }}
-          >
-            {CATEGORIES.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
-            ))}
-          </select>
 
           <label className="feedback-comment-label" htmlFor="feedback-comment">
             Bạn có góp ý hoặc trải nghiệm muốn chia sẻ không?
