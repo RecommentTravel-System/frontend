@@ -216,6 +216,137 @@ function ReviewCard({ review, onEdit, onDelete }) {
   );
 }
 
+function MediaViewerModal({ media, onClose }) {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [customSrc, setCustomSrc] = useState(null);
+  const videoRef = useRef(null);
+
+  if (!media) return null;
+
+  const url = customSrc || media.url;
+  const isVideo = media.isVideo || url.endsWith('.mp4') || url.endsWith('.webm') || url.includes('/video/');
+
+  const handleLocalFile = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const objUrl = URL.createObjectURL(file);
+      setCustomSrc(objUrl);
+      setError(false);
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-70 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-sm animate-fade-in"
+      onClick={onClose}
+    >
+      <div
+        className="relative max-w-4xl w-full max-h-[92vh] flex flex-col items-center justify-center bg-slate-900/90 rounded-3xl border border-slate-700/80 shadow-2xl p-4 sm:p-6 overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 w-9 h-9 rounded-full bg-white/20 hover:bg-rose-500/80 text-white flex items-center justify-center text-lg transition-colors cursor-pointer shadow-md"
+          title="Đóng"
+        >
+          ✕
+        </button>
+
+        {isVideo ? (
+          <div className="w-full flex flex-col items-center space-y-3">
+            <div className="relative w-full max-h-[72vh] flex items-center justify-center bg-black/60 rounded-2xl overflow-hidden border border-slate-800">
+              {loading && !error && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-white gap-2 bg-black/40 z-10 pointer-events-none">
+                  <div className="w-8 h-8 border-3 border-sky-400 border-t-transparent rounded-full animate-spin" />
+                  <span className="text-xs text-sky-200">Đang nạp video...</span>
+                </div>
+              )}
+              {error ? (
+                <div className="p-8 text-center space-y-3 max-w-md">
+                  <div className="text-3xl">⚠️</div>
+                  <p className="text-sm text-amber-300 font-bold">
+                    Không thể phát trực tiếp tệp video này trong khung xem nhanh.
+                  </p>
+                  <p className="text-xs text-slate-400">
+                    Bạn có thể mở trực tiếp trong tab mới hoặc chọn tệp video từ máy tính để phát.
+                  </p>
+                </div>
+              ) : (
+                <video
+                  ref={videoRef}
+                  src={url}
+                  controls
+                  autoPlay
+                  playsInline
+                  preload="auto"
+                  onLoadedData={() => setLoading(false)}
+                  onCanPlay={() => setLoading(false)}
+                  onError={() => {
+                    setLoading(false);
+                    setError(true);
+                  }}
+                  className="max-w-full max-h-[70vh] rounded-xl shadow-lg object-contain"
+                >
+                  <source src={url} type="video/mp4" />
+                  Trình duyệt của bạn không hỗ trợ phát video này.
+                </video>
+              )}
+            </div>
+
+            <div className="flex items-center justify-center gap-2.5 flex-wrap pt-1 text-xs">
+              <a
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-white font-bold transition-colors shadow-sm cursor-pointer"
+              >
+                <span>↗ Mở tab mới</span>
+              </a>
+              <a
+                href={url}
+                download="wayvee-feedback-video.mp4"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-bold transition-colors shadow-sm cursor-pointer"
+              >
+                <span>⬇ Tải video</span>
+              </a>
+              <label className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-slate-600 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold transition-colors cursor-pointer">
+                <span>📁 Chọn video từ máy</span>
+                <input
+                  type="file"
+                  accept="video/*"
+                  onChange={handleLocalFile}
+                  className="hidden"
+                />
+              </label>
+            </div>
+          </div>
+        ) : (
+          <div className="w-full flex flex-col items-center space-y-2">
+            <img
+              src={url}
+              alt="Chi tiết đính kèm"
+              className="max-w-full max-h-[78vh] object-contain rounded-2xl shadow-2xl"
+            />
+            <div className="pt-2">
+              <a
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-white/20 hover:bg-white/30 text-white text-xs transition-colors"
+              >
+                <span>↗ Xem ảnh kích thước gốc</span>
+              </a>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function WebsiteReviewCard({ item }) {
   const dateStr = item.createdAt ? new Date(item.createdAt).toLocaleDateString('vi-VN', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Vừa xong';
   const name = item.anonymous ? 'Bạn (Đánh giá ẩn danh)' : (item.userFullName || 'Đánh giá của bạn');
@@ -336,37 +467,10 @@ function WebsiteReviewCard({ item }) {
 
       {/* Media Lightbox Modal */}
       {selectedMedia && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs animate-fade-in"
-          onClick={() => setSelectedMedia(null)}
-        >
-          <div
-            className="relative max-w-3xl w-full max-h-[85vh] flex flex-col items-center justify-center p-2"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              type="button"
-              onClick={() => setSelectedMedia(null)}
-              className="absolute -top-10 right-0 w-8 h-8 rounded-full bg-white/20 hover:bg-white/40 text-white flex items-center justify-center text-base cursor-pointer"
-            >
-              ✕
-            </button>
-            {selectedMedia.isVideo ? (
-              <video
-                src={selectedMedia.url}
-                controls
-                autoPlay
-                className="max-w-full max-h-[80vh] rounded-2xl shadow-2xl"
-              />
-            ) : (
-              <img
-                src={selectedMedia.url}
-                alt="Đính kèm phóng to"
-                className="max-w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl"
-              />
-            )}
-          </div>
-        </div>
+        <MediaViewerModal
+          media={selectedMedia}
+          onClose={() => setSelectedMedia(null)}
+        />
       )}
     </article>
   );

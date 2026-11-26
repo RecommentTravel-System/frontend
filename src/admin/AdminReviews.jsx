@@ -28,6 +28,137 @@ function Rating({ value }) {
   );
 }
 
+function MediaViewerModal({ media, onClose }) {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [customSrc, setCustomSrc] = useState(null);
+  const videoRef = useRef(null);
+
+  if (!media) return null;
+
+  const url = customSrc || media.url;
+  const isVideo = media.isVideo || url.endsWith('.mp4') || url.endsWith('.webm') || url.includes('/video/');
+
+  const handleLocalFile = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const objUrl = URL.createObjectURL(file);
+      setCustomSrc(objUrl);
+      setError(false);
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-70 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-sm animate-fade-in"
+      onClick={onClose}
+    >
+      <div
+        className="relative max-w-4xl w-full max-h-[92vh] flex flex-col items-center justify-center bg-slate-900/90 rounded-3xl border border-slate-700/80 shadow-2xl p-4 sm:p-6 overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 w-9 h-9 rounded-full bg-white/20 hover:bg-rose-500/80 text-white flex items-center justify-center text-lg transition-colors cursor-pointer shadow-md"
+          title="Đóng"
+        >
+          ✕
+        </button>
+
+        {isVideo ? (
+          <div className="w-full flex flex-col items-center space-y-3">
+            <div className="relative w-full max-h-[72vh] flex items-center justify-center bg-black/60 rounded-2xl overflow-hidden border border-slate-800">
+              {loading && !error && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-white gap-2 bg-black/40 z-10 pointer-events-none">
+                  <div className="w-8 h-8 border-3 border-sky-400 border-t-transparent rounded-full animate-spin" />
+                  <span className="text-xs text-sky-200">Đang nạp video...</span>
+                </div>
+              )}
+              {error ? (
+                <div className="p-8 text-center space-y-3 max-w-md">
+                  <div className="text-3xl">⚠️</div>
+                  <p className="text-sm text-amber-300 font-bold">
+                    Không thể phát trực tiếp tệp video này trong khung xem nhanh.
+                  </p>
+                  <p className="text-xs text-slate-400">
+                    Bạn có thể mở trực tiếp trong tab mới hoặc chọn tệp video từ máy tính để phát.
+                  </p>
+                </div>
+              ) : (
+                <video
+                  ref={videoRef}
+                  src={url}
+                  controls
+                  autoPlay
+                  playsInline
+                  preload="auto"
+                  onLoadedData={() => setLoading(false)}
+                  onCanPlay={() => setLoading(false)}
+                  onError={() => {
+                    setLoading(false);
+                    setError(true);
+                  }}
+                  className="max-w-full max-h-[70vh] rounded-xl shadow-lg object-contain"
+                >
+                  <source src={url} type="video/mp4" />
+                  Trình duyệt của bạn không hỗ trợ phát video này.
+                </video>
+              )}
+            </div>
+
+            <div className="flex items-center justify-center gap-2.5 flex-wrap pt-1 text-xs">
+              <a
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-white font-bold transition-colors shadow-sm cursor-pointer"
+              >
+                <span>↗ Mở tab mới</span>
+              </a>
+              <a
+                href={url}
+                download="wayvee-feedback-video.mp4"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-bold transition-colors shadow-sm cursor-pointer"
+              >
+                <span>⬇ Tải video</span>
+              </a>
+              <label className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-slate-600 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold transition-colors cursor-pointer">
+                <span>📁 Chọn video từ máy</span>
+                <input
+                  type="file"
+                  accept="video/*"
+                  onChange={handleLocalFile}
+                  className="hidden"
+                />
+              </label>
+            </div>
+          </div>
+        ) : (
+          <div className="w-full flex flex-col items-center space-y-2">
+            <img
+              src={url}
+              alt="Chi tiết đính kèm"
+              className="max-w-full max-h-[78vh] object-contain rounded-2xl shadow-2xl"
+            />
+            <div className="pt-2">
+              <a
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-white/20 hover:bg-white/30 text-white text-xs transition-colors"
+              >
+                <span>↗ Xem ảnh kích thước gốc</span>
+              </a>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function WebsiteReviewDetailModal({ review, onClose, onReplySuccess, onReplyDeleted }) {
   const [replyText, setReplyText] = useState(review?.adminReply || "");
   const [isEditing, setIsEditing] = useState(!review?.adminReply);
@@ -314,39 +445,24 @@ function WebsiteReviewDetailModal({ review, onClose, onReplySuccess, onReplyDele
 
       {/* Lightbox Preview */}
       {activeMedia && (
-        <div
-          className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs"
-          onClick={() => setActiveMedia(null)}
-        >
-          <div className="relative max-w-2xl w-full" onClick={(e) => e.stopPropagation()}>
-            <button
-              type="button"
-              onClick={() => setActiveMedia(null)}
-              className="absolute -top-10 right-0 w-8 h-8 rounded-full bg-white/20 hover:bg-white/40 text-white flex items-center justify-center text-sm cursor-pointer"
-            >
-              ✕
-            </button>
-            {activeMedia.isVideo ? (
-              <video src={activeMedia.url} controls autoPlay className="max-w-full rounded-2xl shadow-2xl" />
-            ) : (
-              <img src={activeMedia.url} alt="Chi tiết đính kèm" className="max-w-full rounded-2xl shadow-2xl" />
-            )}
-          </div>
-        </div>
+        <MediaViewerModal
+          media={activeMedia}
+          onClose={() => setActiveMedia(null)}
+        />
       )}
     </div>
   );
 }
 
-function WebsiteReviewAdminCard({ review, onViewDetail }) {
+function WebsiteReviewAdminCard({ review, onViewDetail, onPreviewMedia }) {
   const dateStr = review.createdAt
     ? new Date(review.createdAt).toLocaleString("vi-VN", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit"
-      })
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    })
     : "Gần đây";
 
   const name = review.anonymous ? "Người dùng ẩn danh" : review.userFullName || "Thành viên WAYVEE";
@@ -413,10 +529,12 @@ function WebsiteReviewAdminCard({ review, onViewDetail }) {
                 return (
                   <div
                     key={idx}
-                    className="w-14 h-10 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 relative"
+                    onClick={() => onPreviewMedia && onPreviewMedia({ url, isVideo })}
+                    className="w-14 h-10 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 relative cursor-pointer hover:border-[#00a3e0] hover:scale-105 transition-all shadow-2xs"
+                    title={isVideo ? "Bấm để xem video" : "Bấm để xem ảnh"}
                   >
                     {isVideo ? (
-                      <div className="w-full h-full bg-slate-900 flex items-center justify-center text-[10px] text-white font-bold">
+                      <div className="w-full h-full bg-slate-900 flex items-center justify-center text-[10px] text-white font-bold hover:bg-sky-950 transition-colors">
                         ▶ MP4
                       </div>
                     ) : (
@@ -458,11 +576,10 @@ function WebsiteReviewAdminCard({ review, onViewDetail }) {
         <button
           type="button"
           onClick={() => onViewDetail(review)}
-          className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-2xs ${
-            review.adminReply
+          className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-2xs ${review.adminReply
               ? "bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200"
               : "bg-sky-50 dark:bg-sky-950/40 text-[#00a3e0] border border-sky-200 dark:border-sky-900 hover:bg-sky-100"
-          }`}
+            }`}
         >
           {review.adminReply ? "Xem & Sửa phản hồi" : "Xem chi tiết"}
         </button>
@@ -475,11 +592,10 @@ function PlaceReviewCard({ review, selected, onSelect, onAction }) {
   const isFlagged = review.status === "flagged";
   return (
     <article
-      className={`bg-white dark:bg-[#0f172a] p-5 rounded-2xl border transition-shadow shadow-sm hover:shadow-md flex flex-col md:flex-row md:items-start justify-between gap-4 ${
-        isFlagged
+      className={`bg-white dark:bg-[#0f172a] p-5 rounded-2xl border transition-shadow shadow-sm hover:shadow-md flex flex-col md:flex-row md:items-start justify-between gap-4 ${isFlagged
           ? "border-red-300 dark:border-red-900/80 bg-red-50/10 dark:bg-red-950/10"
           : "border-slate-200 dark:border-slate-800"
-      }`}
+        }`}
     >
       <div className="flex items-start gap-3.5 flex-1 min-w-0">
         <div className="pt-1">
@@ -515,22 +631,20 @@ function PlaceReviewCard({ review, selected, onSelect, onAction }) {
             </span>
             <Rating value={review.rating} />
             <span
-              className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold ${
-                review.status === "approved"
+              className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold ${review.status === "approved"
                   ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60"
                   : review.status === "flagged"
-                  ? "bg-red-50 dark:bg-red-950/60 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-900/60"
-                  : "bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-900/60"
-              }`}
+                    ? "bg-red-50 dark:bg-red-950/60 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-900/60"
+                    : "bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-900/60"
+                }`}
             >
               <span
-                className={`w-1.5 h-1.5 rounded-full ${
-                  review.status === "approved"
+                className={`w-1.5 h-1.5 rounded-full ${review.status === "approved"
                     ? "bg-emerald-500"
                     : review.status === "flagged"
-                    ? "bg-red-500"
-                    : "bg-amber-500"
-                }`}
+                      ? "bg-red-500"
+                      : "bg-amber-500"
+                  }`}
               />
               {statusLabels[review.status] || review.status}
             </span>
@@ -615,6 +729,7 @@ export default function AdminReviews() {
   const [webCategory, setWebCategory] = useState("all");
   const [webReplyFilter, setWebReplyFilter] = useState("all");
   const [detailModalReview, setDetailModalReview] = useState(null);
+  const [previewMedia, setPreviewMedia] = useState(null);
 
   // Place Reviews State
   const [placeReviews, setPlaceReviews] = useState([]);
@@ -761,7 +876,7 @@ export default function AdminReviews() {
     if (!selectedPlaceReviews.length) return setNotice("Hãy chọn ít nhất một review để thực hiện thao tác.");
     try {
       if (nextStatus === "hidden") {
-        await Promise.all(selectedPlaceReviews.map((id) => deleteReview(id).catch(() => {})));
+        await Promise.all(selectedPlaceReviews.map((id) => deleteReview(id).catch(() => { })));
       }
       setNotice(`${selectedPlaceReviews.length} review đã được xử lý.`);
       await fetchPlaceReviews();
@@ -805,7 +920,7 @@ export default function AdminReviews() {
               </h1>
               <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
                 {activeTab === "website"
-                  ? "Theo dõi đánh giá trải nghiệm hệ thống và mức độ hài lòng từ người dùng (Chế độ chỉ xem - Read Only)."
+                  ? "Theo dõi đánh giá trải nghiệm hệ thống và mức độ hài lòng từ người dùng "
                   : "Kiểm duyệt phản hồi, xác thực trải nghiệm và xử lý dữ liệu đánh giá địa điểm từ cộng đồng."}
               </p>
             </div>
@@ -843,11 +958,10 @@ export default function AdminReviews() {
             <button
               type="button"
               onClick={() => setActiveTab("website")}
-              className={`pb-3 px-3 text-sm font-bold transition-all relative cursor-pointer flex items-center gap-2 ${
-                activeTab === "website"
+              className={`pb-3 px-3 text-sm font-bold transition-all relative cursor-pointer flex items-center gap-2 ${activeTab === "website"
                   ? "text-[#00a3e0] border-b-2 border-[#00a3e0]"
                   : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
-              }`}
+                }`}
             >
               <span className="text-base">★</span>
               <span>Đánh giá trang web ({websiteReviews.length})</span>
@@ -859,11 +973,10 @@ export default function AdminReviews() {
             <button
               type="button"
               onClick={() => setActiveTab("places")}
-              className={`pb-3 px-3 text-sm font-bold transition-all relative cursor-pointer flex items-center gap-2 ${
-                activeTab === "places"
+              className={`pb-3 px-3 text-sm font-bold transition-all relative cursor-pointer flex items-center gap-2 ${activeTab === "places"
                   ? "text-[#00a3e0] border-b-2 border-[#00a3e0]"
                   : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
-              }`}
+                }`}
             >
               <span>📍</span>
               <span>Đánh giá địa điểm ({placeReviews.length})</span>
@@ -885,7 +998,7 @@ export default function AdminReviews() {
                     Quản lý phản hồi &amp; Chăm sóc khách hàng dành cho Quản trị viên
                   </h2>
                   <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
-                    Theo dõi đánh giá trải nghiệm hệ thống, xem hình ảnh và video người dùng đính kèm. Quản trị viên có thể 
+                    Theo dõi đánh giá trải nghiệm hệ thống, xem hình ảnh và video người dùng đính kèm. Quản trị viên có thể
                     <span className="text-[#00a3e0] font-bold ml-1">
                       gửi phản hồi trực tiếp tới từng đánh giá
                     </span> để giải đáp thắc mắc và tương tác với người dùng kịp thời.
@@ -1121,6 +1234,7 @@ export default function AdminReviews() {
                       key={review.id}
                       review={review}
                       onViewDetail={setDetailModalReview}
+                      onPreviewMedia={setPreviewMedia}
                     />
                   ))
                 ) : (
@@ -1262,33 +1376,30 @@ export default function AdminReviews() {
                     <button
                       type="button"
                       onClick={() => setPlaceQuickFilter("all")}
-                      className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                        placeQuickFilter === "all"
+                      className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${placeQuickFilter === "all"
                           ? "bg-[#00a3e0] text-white shadow-sm"
                           : "bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                      }`}
+                        }`}
                     >
                       Tất cả ({placeReviews.length})
                     </button>
                     <button
                       type="button"
                       onClick={() => setPlaceQuickFilter("verified")}
-                      className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                        placeQuickFilter === "verified"
+                      className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${placeQuickFilter === "verified"
                           ? "bg-[#00a3e0] text-white shadow-sm"
                           : "bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                      }`}
+                        }`}
                     >
                       đã xác thực
                     </button>
                     <button
                       type="button"
                       onClick={() => setPlaceQuickFilter("flagged")}
-                      className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                        placeQuickFilter === "flagged"
+                      className={`px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${placeQuickFilter === "flagged"
                           ? "bg-red-500 text-white shadow-sm"
                           : "bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                      }`}
+                        }`}
                     >
                       Cần chú ý ({pendingCount})
                     </button>
@@ -1393,6 +1504,14 @@ export default function AdminReviews() {
           onClose={() => setDetailModalReview(null)}
           onReplySuccess={handleReplySuccess}
           onReplyDeleted={handleReplyDeleted}
+        />
+      )}
+
+      {/* Direct Media Preview Modal (from Card Thumbnail) */}
+      {previewMedia && (
+        <MediaViewerModal
+          media={previewMedia}
+          onClose={() => setPreviewMedia(null)}
         />
       )}
     </div>
