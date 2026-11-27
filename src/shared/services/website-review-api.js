@@ -14,9 +14,9 @@ const DEFAULT_MOCK_REVIEWS = [
     anonymous: false,
     mediaUrls: [],
     adminReply: "Cảm ơn bạn Văn An đã khen ngợi giao diện và ủng hộ Wayvee!",
-    repliedAt: "2026-09-23T11:45:00",
+    repliedAt: "2026-10-03T11:45:00",
     repliedBy: "Ban Quản Trị WAYVEE",
-    createdAt: "2026-09-23T10:15:00"
+    createdAt: "2026-10-03T10:15:00"
   },
   {
     id: 1002,
@@ -31,7 +31,7 @@ const DEFAULT_MOCK_REVIEWS = [
     adminReply: null,
     repliedAt: null,
     repliedBy: null,
-    createdAt: "2026-09-24T14:20:00"
+    createdAt: "2026-10-09T14:20:00"
   },
   {
     id: 1003,
@@ -44,9 +44,9 @@ const DEFAULT_MOCK_REVIEWS = [
     anonymous: false,
     mediaUrls: [],
     adminReply: "Cảm ơn bạn Quân! Wayvee hứa sẽ nghiên cứu bổ sung chế độ 3D ở bản cập nhật tới.",
-    repliedAt: "2026-09-25T11:00:00",
+    repliedAt: "2026-10-16T11:00:00",
     repliedBy: "Ban Quản Trị WAYVEE",
-    createdAt: "2026-09-25T09:30:00"
+    createdAt: "2026-10-16T09:30:00"
   },
   {
     id: 1004,
@@ -61,7 +61,7 @@ const DEFAULT_MOCK_REVIEWS = [
     adminReply: null,
     repliedAt: null,
     repliedBy: null,
-    createdAt: "2026-09-25T16:10:00"
+    createdAt: "2026-10-23T16:10:00"
   },
   {
     id: 1005,
@@ -74,9 +74,9 @@ const DEFAULT_MOCK_REVIEWS = [
     anonymous: false,
     mediaUrls: [],
     adminReply: "Cảm ơn bạn Linh! Đội ngũ Wayvee hứa sẽ sớm ra mắt ứng dụng di động cho bạn.",
-    repliedAt: "2026-09-26T15:30:00",
+    repliedAt: "2026-10-29T15:30:00",
     repliedBy: "Ban Quản Trị WAYVEE",
-    createdAt: "2026-09-26T14:00:00"
+    createdAt: "2026-10-29T14:00:00"
   }
 ];
 
@@ -93,9 +93,9 @@ function getLocalReviews() {
       return DEFAULT_MOCK_REVIEWS;
     }
     
-    // Auto-sync if cached reviews don't match latest dataset
-    const hasLatestSample = parsed.some((r) => r.userFullName === "Lê Hoàng Quân" || r.userFullName === "Phạm Thùy Linh");
-    if (!hasLatestSample) {
+    // Auto-sync if cached reviews don't match latest dataset or have older dates
+    const hasOctoberSample = parsed.some((r) => r.createdAt && r.createdAt.includes("2026-10"));
+    if (!hasOctoberSample) {
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(DEFAULT_MOCK_REVIEWS));
       return DEFAULT_MOCK_REVIEWS;
     }
