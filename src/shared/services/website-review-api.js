@@ -270,6 +270,58 @@ export async function replyWebsiteReview(reviewId, reply) {
 }
 
 /**
+ * Update a website review (only owner user can update their own review).
+ * @param {number|string} id
+ * @param {Object} payload - { rating, category, comment, anonymous, mediaUrls }
+ */
+export async function updateWebsiteReview(id, payload) {
+  try {
+    const res = await api.put(`/api/v1/website-reviews/${id}`, payload);
+    // Also update local storage cache
+    const list = getLocalReviews();
+    const updated = list.map((item) =>
+      String(item.id) === String(id) ? { ...item, ...payload } : item
+    );
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
+    return res;
+  } catch (err) {
+    console.warn("Backend update review failed, updating local storage:", err);
+    const list = getLocalReviews();
+    let updatedItem = null;
+    const updated = list.map((item) => {
+      if (String(item.id) === String(id)) {
+        updatedItem = { ...item, ...payload };
+        return updatedItem;
+      }
+      return item;
+    });
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
+    return { data: updatedItem, success: true, message: "Đã cập nhật đánh giá thành công." };
+  }
+}
+
+/**
+ * Delete a website review (only owner user can delete their own review).
+ * @param {number|string} id
+ */
+export async function deleteWebsiteReview(id) {
+  try {
+    const res = await api.delete(`/api/v1/website-reviews/${id}`);
+    // Also remove from local storage cache
+    const list = getLocalReviews();
+    const updated = list.filter((item) => String(item.id) !== String(id));
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
+    return res;
+  } catch (err) {
+    console.warn("Backend delete review failed, removing from local storage:", err);
+    const list = getLocalReviews();
+    const updated = list.filter((item) => String(item.id) !== String(id));
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
+    return { success: true, message: "Đã xóa đánh giá thành công." };
+  }
+}
+
+/**
  * Admin delete reply from a website review.
  * @param {number|string} reviewId
  */

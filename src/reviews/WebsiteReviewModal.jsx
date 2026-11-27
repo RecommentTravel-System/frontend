@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from "react";
-import { submitWebsiteReview, uploadWebsiteReviewMedia } from "~/shared/services/website-review-api";
+﻿import { useState, useEffect, useRef } from "react";
+import { submitWebsiteReview, updateWebsiteReview, uploadWebsiteReviewMedia } from "~/shared/services/website-review-api";
 
 const RATING_DESCRIPTIONS = {
   1: "Rất tệ - Cần cải thiện nhiều",
@@ -9,7 +9,7 @@ const RATING_DESCRIPTIONS = {
   5: "Tuyệt vời - Rất thích trải nghiệm này!"
 };
 
-export default function WebsiteReviewModal({ isOpen, onClose, user, onSuccess }) {
+export default function WebsiteReviewModal({ isOpen, onClose, user, onSuccess, editingReview }) {
   const [rating, setRating] = useState(5);
   const [hoverRating, setHoverRating] = useState(0);
   const [category, setCategory] = useState("Trải nghiệm chung");
@@ -23,12 +23,30 @@ export default function WebsiteReviewModal({ isOpen, onClose, user, onSuccess })
   const [mediaList, setMediaList] = useState([]);
   const fileInputRef = useRef(null);
 
+  const isEditing = !!editingReview;
+
+  // Prefill fields when editing
   useEffect(() => {
-    if (user) {
+    if (editingReview) {
+      setRating(editingReview.rating || 5);
+      setCategory(editingReview.category || "Trải nghiệm chung");
+      setComment(editingReview.comment || "");
+      setAnonymous(editingReview.anonymous || false);
+      setMediaList(
+        (editingReview.mediaUrls || []).map((url, idx) => ({
+          id: `existing-${idx}`,
+          url,
+          type: url.includes("/video/") || url.endsWith(".mp4") || url.endsWith(".webm") ? "video" : "image",
+          uploading: false
+        }))
+      );
+      setUserFullName(editingReview.userFullName || "");
+      setUserEmail(editingReview.userEmail || "");
+    } else if (user) {
       setUserFullName(user.fullName || user.username || "");
       setUserEmail(user.email || "");
     }
-  }, [user]);
+  }, [editingReview, user]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -130,7 +148,12 @@ export default function WebsiteReviewModal({ isOpen, onClose, user, onSuccess })
         mediaUrls
       };
 
-      const res = await submitWebsiteReview(payload);
+      let res;
+      if (isEditing) {
+        res = await updateWebsiteReview(editingReview.id, payload);
+      } else {
+        res = await submitWebsiteReview(payload);
+      }
       setSubmitted(true);
       if (onSuccess) {
         onSuccess(res.data);
@@ -150,6 +173,11 @@ export default function WebsiteReviewModal({ isOpen, onClose, user, onSuccess })
     setCategory("Trải nghiệm chung");
     setMediaList([]);
     setError("");
+    if (!isEditing && user) {
+      setUserFullName(user.fullName || user.username || "");
+      setUserEmail(user.email || "");
+    }
+    setAnonymous(false);
     onClose();
   };
 
@@ -172,10 +200,10 @@ export default function WebsiteReviewModal({ isOpen, onClose, user, onSuccess })
             </div>
             <div>
               <h2 id="website-review-title" className="text-lg sm:text-xl font-extrabold text-[#002d54] dark:text-white">
-                Gửi đánh giá trang web
+                {isEditing ? "Chỉnh sửa đánh giá" : "Gửi đánh giá trang web"}
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Chia sẻ cảm nhận & đóng góp ý kiến để hoàn thiện WAYVEE
+                {isEditing ? "Cập nhật nội dung đánh giá của bạn" : "Chia sẻ cảm nhận & đóng góp ý kiến để hoàn thiện WAYVEE"}
               </p>
             </div>
           </div>
@@ -198,10 +226,10 @@ export default function WebsiteReviewModal({ isOpen, onClose, user, onSuccess })
               ✓
             </div>
             <h3 className="text-xl font-extrabold text-slate-900 dark:text-white">
-              Cảm ơn bạn đã gửi đánh giá!
+              {isEditing ? "Cập nhật đánh giá thành công!" : "Cảm ơn bạn đã gửi đánh giá!"}
             </h3>
             <p className="text-sm text-slate-600 dark:text-slate-400 max-w-md mx-auto">
-              đánh giá của bạn đã được ghi nhận vào hệ thống. Những ý kiến đóng góp quý báu này sẽ giúp đội ngũ WAYVEE không ngừng cải thiện và mang lại trải nghiệm du lịch tốt nhất.
+              {isEditing ? "Đánh giá của bạn đã được cập nhật thành công." : "đánh giá của bạn đã được ghi nhận vào hệ thống. Những ý kiến đóng góp quý báu này sẽ giúp đội ngũ WAYVEE không ngừng cải thiện và mang lại trải nghiệm du lịch tốt nhất."}
             </p>
             <div className="pt-4">
               <button
@@ -438,7 +466,7 @@ export default function WebsiteReviewModal({ isOpen, onClose, user, onSuccess })
                     <span>Đang gửi...</span>
                   </>
                 ) : (
-                  <span>Gửi đánh giá</span>
+                  <span>{isEditing ? "Lưu thay đổi" : "Gửi đánh giá"}</span>
                 )}
               </button>
             </div>

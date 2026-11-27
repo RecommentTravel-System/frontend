@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+﻿import { useEffect, useRef, useState, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../auth/useAuth.js';
 import AccountSidebar from '../components/AccountSidebar.jsx';
 import { AppHeader, AppFooter } from '~/shared/components';
 import Icon from '../components/AccountIcon.jsx';
 import { readReviews, reviewsKey, reviewStatuses, scoreLabel } from './reviewsData.js';
-import { getMyWebsiteReviews } from '~/shared/services/website-review-api.js';
+import { getMyWebsiteReviews, deleteWebsiteReview } from '~/shared/services/website-review-api.js';
 import WebsiteReviewModal from './WebsiteReviewModal.jsx';
 import './Reviews.css';
 
@@ -347,7 +347,7 @@ function MediaViewerModal({ media, onClose }) {
   );
 }
 
-function WebsiteReviewCard({ item }) {
+function WebsiteReviewCard({ item, onEdit, onDelete }) {
   const dateStr = item.createdAt ? new Date(item.createdAt).toLocaleDateString('vi-VN', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Vừa xong';
   const name = item.anonymous ? 'Bạn (Đánh giá ẩn danh)' : (item.userFullName || 'Đánh giá của bạn');
   const initial = item.anonymous ? '?' : (name.slice(0, 2).toUpperCase() || 'WV');
@@ -465,6 +465,30 @@ function WebsiteReviewCard({ item }) {
         </div>
       )}
 
+      {/* Action buttons - only shown when onEdit/onDelete are provided (owner) */}
+      {(onEdit || onDelete) && (
+        <div className="flex items-center gap-2 pt-2 border-t border-slate-100 dark:border-slate-800/80">
+          {onEdit && (
+            <button
+              type="button"
+              onClick={() => onEdit(item)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-[#00a3e0] border border-sky-200 dark:border-sky-900 hover:bg-sky-50 dark:hover:bg-sky-950/40 transition-colors cursor-pointer"
+            >
+              ✏️ Sửa đánh giá
+            </button>
+          )}
+          {onDelete && (
+            <button
+              type="button"
+              onClick={() => onDelete(item.id)}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-rose-500 border border-rose-200 dark:border-rose-900 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
+            >
+              🗑️ Xóa
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Media Lightbox Modal */}
       {selectedMedia && (
         <MediaViewerModal
@@ -495,6 +519,7 @@ export default function Reviews() {
   const [loadingWebsiteReviews, setLoadingWebsiteReviews] = useState(true);
   const [notice, setNotice] = useState(initial.error);
   const [editing, setEditing] = useState(null);
+  const [editingWebReview, setEditingWebReview] = useState(null);
 
   const loadWebsiteReviews = useCallback(async () => {
     setLoadingWebsiteReviews(true);
@@ -542,6 +567,7 @@ export default function Reviews() {
 
   const handleModalClose = () => {
     setIsModalOpen(false);
+    setEditingWebReview(null);
     if (searchParams.get('action') || searchParams.get('view')) {
       const next = new URLSearchParams(searchParams);
       next.delete('action');
@@ -551,8 +577,29 @@ export default function Reviews() {
   };
 
   const handleReviewSuccess = (newReview) => {
-    setNotice('Gửi đánh giá trang web thành công! Cảm ơn bạn đã đóng góp ý kiến.');
+    if (editingWebReview) {
+      setNotice('Đã cập nhật đánh giá thành công!');
+    } else {
+      setNotice('Gửi đánh giá trang web thành công! Cảm ơn bạn đã đóng góp ý kiến.');
+    }
     loadWebsiteReviews();
+  };
+
+  const handleEditWebReview = (item) => {
+    setEditingWebReview(item);
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteWebReview = async (id) => {
+    if (!window.confirm('Bạn có chắc chắn muốn xóa bài đánh giá này không?')) return;
+    try {
+      await deleteWebsiteReview(id);
+      setNotice('Đã xóa bài đánh giá thành công.');
+      loadWebsiteReviews();
+    } catch (err) {
+      console.error('Delete review failed:', err);
+      setNotice('Không thể xóa đánh giá. Vui lòng thử lại!');
+    }
   };
 
   return (
@@ -655,7 +702,7 @@ export default function Reviews() {
               ) : websiteReviews.length ? (
                 <div className="space-y-3">
                   {websiteReviews.map((item) => (
-                    <WebsiteReviewCard key={item.id} item={item} />
+                    <WebsiteReviewCard key={item.id} item={item} onEdit={handleEditWebReview} onDelete={handleDeleteWebReview} />
                   ))}
                 </div>
               ) : (
@@ -696,6 +743,7 @@ export default function Reviews() {
         onClose={handleModalClose}
         user={user}
         onSuccess={handleReviewSuccess}
+        editingReview={editingWebReview}
       />
 
       {/* Place Review Editor Modal */}
