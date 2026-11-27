@@ -702,6 +702,84 @@ function PlaceReviewCard({ review, selected, onSelect, onAction }) {
   );
 }
 
+
+function PaginationControls({ page, pageSize, totalPages, totalItems, onPageChange, onPageSizeChange }) {
+  if (totalItems === 0) return null;
+
+  const getPageNumbers = (current, total) => {
+    if (total <= 7) return Array.from({ length: total }, (_, i) => i);
+    if (current <= 3) return [0, 1, 2, 3, 4, -1, total - 1];
+    if (current >= total - 4) return [0, -1, total - 5, total - 4, total - 3, total - 2, total - 1];
+    return [0, -1, current - 1, current, current + 1, -2, total - 1];
+  };
+
+  const pageNumbers = getPageNumbers(page, totalPages);
+
+  return (
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 px-1 border-t border-slate-100 dark:border-slate-800/80 text-xs text-slate-500 dark:text-slate-400">
+      <div>
+        Hiển thị trang <span className="font-bold text-slate-900 dark:text-white">{page + 1}</span> /{" "}
+        <span className="font-bold text-slate-900 dark:text-white">{totalPages}</span> (Tổng cộng{" "}
+        <span className="font-bold text-slate-900 dark:text-white">{totalItems}</span> mục)
+      </div>
+
+      <div className="flex items-center flex-wrap gap-2">
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            disabled={page === 0}
+            onClick={() => onPageChange(Math.max(0, page - 1))}
+            className="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-semibold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+          >
+            Trang trước
+          </button>
+
+          {pageNumbers.map((pNum, idx) =>
+            pNum < 0 ? (
+              <span key={`ellipsis-${idx}`} className="px-1 text-slate-400 font-bold select-none">
+                ...
+              </span>
+            ) : (
+              <button
+                key={pNum}
+                type="button"
+                onClick={() => onPageChange(pNum)}
+                className={`w-8 h-8 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+                  page === pNum
+                    ? "bg-[#00a3e0] text-white shadow-xs"
+                    : "border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
+                }`}
+              >
+                {pNum + 1}
+              </button>
+            )
+          )}
+
+          <button
+            type="button"
+            disabled={page >= totalPages - 1}
+            onClick={() => onPageChange(Math.min(totalPages - 1, page + 1))}
+            className="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-semibold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+          >
+            Trang tiếp
+          </button>
+        </div>
+
+        <select
+          value={pageSize}
+          onChange={(e) => onPageSizeChange(Number(e.target.value))}
+          className="px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 text-xs font-semibold focus:outline-none focus:border-[#00a3e0] cursor-pointer"
+        >
+          <option value={5}>5 / trang</option>
+          <option value={10}>10 / trang</option>
+          <option value={20}>20 / trang</option>
+          <option value={50}>50 / trang</option>
+        </select>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminReviews() {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -723,6 +801,8 @@ export default function AdminReviews() {
   const [webMaxRating, setWebMaxRating] = useState("all");
   const [webDate, setWebDate] = useState("");
   const [webReplyFilter, setWebReplyFilter] = useState("all");
+  const [webPage, setWebPage] = useState(0);
+  const [webPageSize, setWebPageSize] = useState(5);
   const [detailModalReview, setDetailModalReview] = useState(null);
   const [previewMedia, setPreviewMedia] = useState(null);
 
@@ -732,6 +812,8 @@ export default function AdminReviews() {
   const [placeQuery, setPlaceQuery] = useState("");
   const [placeStatus, setPlaceStatus] = useState("all");
   const [placeQuickFilter, setPlaceQuickFilter] = useState("all");
+  const [placePage, setPlacePage] = useState(0);
+  const [placePageSize, setPlacePageSize] = useState(10);
   const [selectedPlaceReviews, setSelectedPlaceReviews] = useState([]);
   const [notice, setNotice] = useState("");
 
@@ -863,6 +945,29 @@ export default function AdminReviews() {
       return matchesQuery && matchesStatus && matchesQuick;
     });
   }, [placeReviews, placeQuery, placeStatus, placeQuickFilter]);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setWebPage(0);
+  }, [webQuery, webMinRating, webMaxRating, webDate, webReplyFilter]);
+
+  useEffect(() => {
+    setPlacePage(0);
+  }, [placeQuery, placeStatus, placeQuickFilter]);
+
+  // Web reviews pagination calculations
+  const webTotalPages = Math.max(1, Math.ceil(visibleWebsiteReviews.length / webPageSize));
+  const paginatedWebsiteReviews = useMemo(() => {
+    const start = webPage * webPageSize;
+    return visibleWebsiteReviews.slice(start, start + webPageSize);
+  }, [visibleWebsiteReviews, webPage, webPageSize]);
+
+  // Place reviews pagination calculations
+  const placeTotalPages = Math.max(1, Math.ceil(visiblePlaceReviews.length / placePageSize));
+  const paginatedPlaceReviews = useMemo(() => {
+    const start = placePage * placePageSize;
+    return visiblePlaceReviews.slice(start, start + placePageSize);
+  }, [visiblePlaceReviews, placePage, placePageSize]);
 
   const pendingCount = placeReviews.filter((r) => r.status === "pending" || r.status === "flagged").length;
 
@@ -1240,6 +1345,7 @@ export default function AdminReviews() {
                       setWebMaxRating("all");
                       setWebDate("");
                       setWebReplyFilter("all");
+                      setWebPage(0);
                       fetchWebsiteReviews();
                     }}
                     className="p-2 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
@@ -1272,8 +1378,8 @@ export default function AdminReviews() {
                   <div className="p-12 text-center text-slate-500 dark:text-slate-400 text-sm bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse">
                     đang tải dữ liệu đánh giá trang web...
                   </div>
-                ) : visibleWebsiteReviews.length ? (
-                  visibleWebsiteReviews.map((review) => (
+                ) : paginatedWebsiteReviews.length ? (
+                  paginatedWebsiteReviews.map((review) => (
                     <WebsiteReviewAdminCard
                       key={review.id}
                       review={review}
@@ -1285,6 +1391,21 @@ export default function AdminReviews() {
                   <div className="p-12 text-center text-slate-500 dark:text-slate-400 text-sm bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200 dark:border-slate-800">
                     Không tìm thấy đánh giá trang web nào phù hợp với bộ lọc.
                   </div>
+                )}
+
+                {/* Phân trang Website Reviews */}
+                {!loadingWebReviews && visibleWebsiteReviews.length > 0 && (
+                  <PaginationControls
+                    page={webPage}
+                    pageSize={webPageSize}
+                    totalPages={webTotalPages}
+                    totalItems={visibleWebsiteReviews.length}
+                    onPageChange={setWebPage}
+                    onPageSizeChange={(sz) => {
+                      setWebPageSize(sz);
+                      setWebPage(0);
+                    }}
+                  />
                 )}
               </section>
             </div>
@@ -1516,8 +1637,8 @@ export default function AdminReviews() {
                   <div className="p-12 text-center text-slate-500 dark:text-slate-400 text-sm bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse">
                     đang tải dữ liệu đánh giá địa điểm từ CSDL...
                   </div>
-                ) : visiblePlaceReviews.length ? (
-                  visiblePlaceReviews.map((review) => (
+                ) : paginatedPlaceReviews.length ? (
+                  paginatedPlaceReviews.map((review) => (
                     <PlaceReviewCard
                       key={review.id}
                       review={review}
@@ -1534,6 +1655,21 @@ export default function AdminReviews() {
                   <div className="p-12 text-center text-slate-500 dark:text-slate-400 text-sm bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200 dark:border-slate-800">
                     Không có review địa điểm phù hợp với bộ lọc hiện tại.
                   </div>
+                )}
+
+                {/* Phân trang Place Reviews */}
+                {!loadingPlaceReviews && visiblePlaceReviews.length > 0 && (
+                  <PaginationControls
+                    page={placePage}
+                    pageSize={placePageSize}
+                    totalPages={placeTotalPages}
+                    totalItems={visiblePlaceReviews.length}
+                    onPageChange={setPlacePage}
+                    onPageSizeChange={(sz) => {
+                      setPlacePageSize(sz);
+                      setPlacePage(0);
+                    }}
+                  />
                 )}
               </section>
             </div>
