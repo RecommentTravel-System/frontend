@@ -719,8 +719,9 @@ export default function AdminReviews() {
   });
   const [loadingWebReviews, setLoadingWebReviews] = useState(true);
   const [webQuery, setWebQuery] = useState("");
-  const [webRating, setWebRating] = useState("all");
-  const [webCategory, setWebCategory] = useState("all");
+  const [webMinRating, setWebMinRating] = useState("all");
+  const [webMaxRating, setWebMaxRating] = useState("all");
+  const [webDate, setWebDate] = useState("");
   const [webReplyFilter, setWebReplyFilter] = useState("all");
   const [detailModalReview, setDetailModalReview] = useState(null);
   const [previewMedia, setPreviewMedia] = useState(null);
@@ -807,7 +808,7 @@ export default function AdminReviews() {
     fetchPlaceReviews();
   }, [fetchWebsiteReviews, fetchPlaceReviews]);
 
-  // Filtered Website Reviews (có lọc theo trạng thái phản hồi)
+  // Filtered Website Reviews (lọc theo từ mấy sao đến mấy sao, chọn ngày, trạng thái phản hồi)
   const visibleWebsiteReviews = useMemo(() => {
     return websiteReviews.filter((r) => {
       const kw = webQuery.toLowerCase();
@@ -818,21 +819,37 @@ export default function AdminReviews() {
         (r.comment && r.comment.toLowerCase().includes(kw)) ||
         (r.adminReply && r.adminReply.toLowerCase().includes(kw));
 
-      const matchesRating =
-        webRating === "all" || Number(r.rating) === Number(webRating);
+      // Lọc từ mấy sao đến mấy sao
+      const rRating = Number(r.rating) || 5;
+      const min = webMinRating === "all" ? 1 : Number(webMinRating);
+      const max = webMaxRating === "all" ? 5 : Number(webMaxRating);
+      const effectiveMin = Math.min(min, max);
+      const effectiveMax = Math.max(min, max);
+      const matchesRating = rRating >= effectiveMin && rRating <= effectiveMax;
 
-      const matchesCat =
-        webCategory === "all" ||
-        (r.category && r.category.toLowerCase().includes(webCategory.toLowerCase()));
+      // Lọc chọn ngày
+      let matchesDate = true;
+      if (webDate && r.createdAt) {
+        const d = new Date(r.createdAt);
+        if (!isNaN(d.getTime())) {
+          const y = d.getFullYear();
+          const m = String(d.getMonth() + 1).padStart(2, "0");
+          const day = String(d.getDate()).padStart(2, "0");
+          const localDate = `${y}-${m}-${day}`;
+          const strPrefix = typeof r.createdAt === "string" ? r.createdAt.slice(0, 10) : "";
+          matchesDate = localDate === webDate || strPrefix === webDate;
+        }
+      }
 
+      // Lọc trạng thái phản hồi
       const matchesReply =
         webReplyFilter === "all" ||
         (webReplyFilter === "replied" && Boolean(r.adminReply)) ||
         (webReplyFilter === "unreplied" && !r.adminReply);
 
-      return matchesKw && matchesRating && matchesCat && matchesReply;
+      return matchesKw && matchesRating && matchesDate && matchesReply;
     });
-  }, [websiteReviews, webQuery, webRating, webCategory, webReplyFilter]);
+  }, [websiteReviews, webQuery, webMinRating, webMaxRating, webDate, webReplyFilter]);
 
   // Filtered Place Reviews
   const visiblePlaceReviews = useMemo(() => {
@@ -1143,39 +1160,71 @@ export default function AdminReviews() {
                     />
                   </div>
 
-                  {/* Rating filter */}
+                  {/* Min rating filter */}
                   <select
-                    value={webRating}
-                    onChange={(e) => setWebRating(e.target.value)}
-                    className="px-3.5 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-[#00a3e0] min-w-[140px]"
+                    value={webMinRating}
+                    onChange={(e) => setWebMinRating(e.target.value)}
+                    className="px-3 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-[#00a3e0] min-w-[125px]"
+                    title="Chọn từ số sao"
                   >
-                    <option value="all">Tất cả số sao</option>
-                    <option value="5">5 Sao (Tuyệt vời)</option>
-                    <option value="4">4 Sao (Hài lòng)</option>
-                    <option value="3">3 Sao (Bình thường)</option>
-                    <option value="2">2 Sao (Chưa hài lòng)</option>
-                    <option value="1">1 Sao (Rất tệ)</option>
+                    <option value="all">Từ: 1 Sao ★</option>
+                    <option value="1">Từ 1 Sao ★</option>
+                    <option value="2">Từ 2 Sao ★</option>
+                    <option value="3">Từ 3 Sao ★</option>
+                    <option value="4">Từ 4 Sao ★</option>
+                    <option value="5">Từ 5 Sao ★</option>
                   </select>
 
-                  {/* Category filter */}
+                  {/* Max rating filter */}
                   <select
-                    value={webCategory}
-                    onChange={(e) => setWebCategory(e.target.value)}
-                    className="px-3.5 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-[#00a3e0] min-w-[160px]"
+                    value={webMaxRating}
+                    onChange={(e) => setWebMaxRating(e.target.value)}
+                    className="px-3 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-[#00a3e0] min-w-[125px]"
+                    title="Chọn đến số sao"
                   >
-                    <option value="all">Tất cả chủ đề</option>
-                    <option value="Giao diện">Giao diện (UI/UX)</option>
-                    <option value="lịch trình">Lịch trình</option>
-                    <option value="địa điểm">Địa điểm</option>
-                    <option value="Hiệu năng">Hiệu năng &amp; Tốc độ</option>
-                    <option value="Chung">Trải nghiệm chung</option>
+                    <option value="all">Đến: 5 Sao ★</option>
+                    <option value="5">Đến 5 Sao ★</option>
+                    <option value="4">Đến 4 Sao ★</option>
+                    <option value="3">Đến 3 Sao ★</option>
+                    <option value="2">Đến 2 Sao ★</option>
+                    <option value="1">Đến 1 Sao ★</option>
                   </select>
+
+                  {/* Date filter (Chọn ngày) */}
+                  <div className="flex items-center gap-1.5 px-3 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 min-w-[160px]">
+                    <span className="text-slate-400 text-xs shrink-0 flex items-center gap-1">
+                      <svg className="w-3.5 h-3.5 text-[#00a3e0]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                        <line x1="16" y1="2" x2="16" y2="6" />
+                        <line x1="8" y1="2" x2="8" y2="6" />
+                        <line x1="3" y1="10" x2="21" y2="10" />
+                      </svg>
+                      Ngày:
+                    </span>
+                    <input
+                      type="date"
+                      value={webDate}
+                      onChange={(e) => setWebDate(e.target.value)}
+                      className="bg-transparent text-slate-900 dark:text-slate-100 focus:outline-none text-xs sm:text-sm cursor-pointer w-full"
+                      title="Chọn ngày đánh giá"
+                    />
+                    {webDate && (
+                      <button
+                        type="button"
+                        onClick={() => setWebDate("")}
+                        className="text-slate-400 hover:text-rose-500 text-xs font-bold px-1 transition-colors cursor-pointer"
+                        title="Bỏ chọn ngày"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
 
                   {/* Reply Status Filter */}
                   <select
                     value={webReplyFilter}
                     onChange={(e) => setWebReplyFilter(e.target.value)}
-                    className="px-3.5 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-[#00a3e0] min-w-[150px]"
+                    className="px-3.5 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-[#00a3e0] min-w-[140px]"
                   >
                     <option value="all">Tất cả đánh giá</option>
                     <option value="replied">Đã phản hồi</option>
@@ -1187,8 +1236,9 @@ export default function AdminReviews() {
                     type="button"
                     onClick={() => {
                       setWebQuery("");
-                      setWebRating("all");
-                      setWebCategory("all");
+                      setWebMinRating("all");
+                      setWebMaxRating("all");
+                      setWebDate("");
                       setWebReplyFilter("all");
                       fetchWebsiteReviews();
                     }}
