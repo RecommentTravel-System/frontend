@@ -7,61 +7,76 @@ const DEFAULT_MOCK_REVIEWS = [
     id: 1001,
     userId: 1,
     userFullName: "Nguyễn Văn An",
-    userEmail: "nguyenvanan.2003@gmail.com",
-    rating: 2,
-    category: "Lập kế hoạch & Lịch trình",
-    comment: "Giao diện tạo chuyến đi nhìn chung trực quan nhưng ở bước tìm và chọn địa điểm để thêm vào lịch trình thì hệ thống load xoay vòng rất lâu, đôi khi phải đợi 10-15 giây mới hiện danh sách địa điểm gợi ý làm trải nghiệm lên kế hoạch bị ngắt quãng. Mong team kỹ thuật tối ưu lại tốc độ tải phần này.",
+    userEmail: "an.nguyen@example.com",
+    rating: 5,
+    category: "Giao diện & Trải nghiệm",
+    comment: "Giao diện trang web rất hiện đại và tinh tế, phối màu hài hòa. Các thao tác tìm kiếm địa điểm và lập lịch trình rất mượt mà.",
     anonymous: false,
     mediaUrls: [],
-    adminReply: "Chào bạn Văn An, cảm ơn bạn đã phản hồi chi tiết về trải nghiệm tạo lịch trình. Đội ngũ kỹ thuật Wayvee đã ghi nhận hiện tượng giật lag khi tải danh sách địa điểm do đang đồng bộ dữ liệu bản đồ lớn. Chúng tôi đang triển khai bộ nhớ đệm (caching) và tối ưu truy vấn để khắc phục triệt để độ trễ này trong bản cập nhật tuần tới. Rất xin lỗi bạn vì trải nghiệm chưa trọn vẹn này!",
-    repliedAt: "2026-09-23T16:40:15",
+    adminReply: "Cảm ơn bạn Văn An đã khen ngợi giao diện và ủng hộ Wayvee!",
+    repliedAt: "2026-09-23T11:45:00",
     repliedBy: "Ban Quản Trị WAYVEE",
-    createdAt: "2026-09-23T14:15:30"
+    createdAt: "2026-09-23T10:15:00"
   },
   {
     id: 1002,
     userId: 2,
     userFullName: "Trần Thị Mai",
-    userEmail: "tranthimai.1998@gmail.com",
-    rating: 2,
-    category: "Lập kế hoạch & Lịch trình",
-    comment: "Mình vừa dùng thử tính năng lên lịch trình chuyến đi, tới bước chọn các địa điểm tham quan thì tải cực kỳ chậm, bấm vào chọn điểm đến mà thanh loading xoay mãi không hiện kết quả. Nhiều lúc tưởng trang web bị đơ phải F5 lại từ đầu. Hy vọng bên mình cải thiện hiệu năng phần chọn địa điểm sớm.",
+    userEmail: "mai.tran@example.com",
+    rating: 5,
+    category: "Tính năng lịch trình",
+    comment: "Tính năng tạo lịch trình thông minh quá tuyệt vời! Tiết kiệm cho mình cả buổi chiều lên kế hoạch đi du lịch Đà Nẵng cùng nhóm bạn.",
     anonymous: false,
     mediaUrls: [],
-    adminReply: "Chào bạn Mai, Wayvee rất tiếc về sự bất tiện bạn gặp phải khi lên lịch trình chuyến đi. Hiện tại hệ thống đang tinh chỉnh lại kết nối API bản đồ và thuật toán lọc địa điểm để tăng tốc độ tải trang lên gấp nhiều lần. Cảm ơn bạn đã đóng góp ý kiến quý báu giúp Wayvee ngày càng hoàn thiện hơn!",
-    repliedAt: "2026-09-24T13:55:00",
-    repliedBy: "Ban Quản Trị WAYVEE",
-    createdAt: "2026-09-24T10:20:45"
+    adminReply: null,
+    repliedAt: null,
+    repliedBy: null,
+    createdAt: "2026-09-24T14:20:00"
   },
   {
     id: 1003,
     userId: 3,
-    userFullName: "Lê Hoàng Nam",
-    userEmail: "lehoangnam.2001@gmail.com",
-    rating: 1,
-    category: "Lập kế hoạch & Lịch trình",
-    comment: "Mình có quay lại màn hình lúc chọn địa điểm khi tạo chuyến đi đính kèm bên dưới. Lúc mở phần khám phá và chọn địa điểm vào chuyến đi thì màn hình load rất lâu, chờ mãi mới tải được thông tin và ảnh địa điểm. Mong admin và đội dev xem video kiểm tra lỗi và tối ưu lại tốc độ load giúp người dùng.",
+    userFullName: "Lê Hoàng Quân",
+    userEmail: "quan.le@example.com",
+    rating: 4,
+    category: "Tốc độ & Hiệu năng",
+    comment: "Tốc độ tải bản đồ và định tuyến rất nhanh. Bản đồ hiển thị rõ ràng, nếu bổ sung thêm chế độ xem 3D nữa thì hoàn hảo.",
     anonymous: false,
-    mediaUrls: ["/videos/kham-pha-dia-diem-loading-slow.mp4"],
-    adminReply: "Chào bạn Hoàng Nam, Wayvee chân thành cảm ơn video quay lại màn hình rất chi tiết của bạn! Nhờ video này, đội ngũ kỹ thuật đã xác định chính xác nút thắt cổ chai ở bước render danh sách và ảnh địa điểm khi kết nối hệ thống. Chúng tôi đã đưa vấn đề này vào danh sách ưu tiên cao nhất (P0) để vá lỗi và tối ưu hiệu năng ngay trong bản vá hôm nay. Cảm ơn sự đồng hành và hỗ trợ nhiệt tình của bạn dành cho Wayvee!",
-    repliedAt: "2026-09-26T08:30:10",
+    mediaUrls: [],
+    adminReply: "Cảm ơn bạn Quân! Wayvee hứa sẽ nghiên cứu bổ sung chế độ 3D ở bản cập nhật tới.",
+    repliedAt: "2026-09-25T11:00:00",
     repliedBy: "Ban Quản Trị WAYVEE",
-    createdAt: "2026-09-25T18:05:20"
+    createdAt: "2026-09-25T09:30:00"
   },
   {
     id: 1004,
-    userId: 8,
-    userFullName: "Bùi Thu Trang",
-    userEmail: "buithutrang.2001@gmail.com",
-    rating: 3,
-    category: "Lập kế hoạch & Lịch trình",
-    comment: "Các gợi ý lộ trình và địa điểm của Wayvee khá hay và hữu ích, tuy nhiên thời gian chờ tải dữ liệu ở bước chọn địa điểm chuyến đi vẫn còn chậm hơn so với kỳ vọng. Thao tác lọc và duyệt qua các điểm đến đôi khi bị khựng 5-7 giây. Nếu tối ưu tốc độ nhanh và mượt mà hơn thì mình sẽ đánh giá 5 sao.",
+    userId: null,
+    userFullName: "Người dùng ẩn danh",
+    userEmail: null,
+    rating: 5,
+    category: "Trải nghiệm chung",
+    comment: "Trang web cung cấp đầy đủ thông tin địa điểm cần thiết, phân loại danh mục rõ ràng, rất dễ tra cứu.",
+    anonymous: true,
+    mediaUrls: [],
+    adminReply: null,
+    repliedAt: null,
+    repliedBy: null,
+    createdAt: "2026-09-25T16:10:00"
+  },
+  {
+    id: 1005,
+    userId: 5,
+    userFullName: "Phạm Thùy Linh",
+    userEmail: "linh.pham@example.com",
+    rating: 4,
+    category: "Gợi ý địa điểm",
+    comment: "Các quán ăn và điểm check-in được gợi ý rất chuẩn gu giới trẻ. Rất mong đội ngũ phát triển thêm ứng dụng trên điện thoại.",
     anonymous: false,
     mediaUrls: [],
-    adminReply: "Chào bạn Thu Trang, cảm ơn bạn đã yêu thích tính năng gợi ý lộ trình và dành lời khen cho Wayvee! Đội ngũ phát triển đã hoàn tất nâng cấp CDN và tối ưu hóa truy vấn địa điểm, tình trạng tải chậm đã được cải thiện rõ rệt. Bạn hãy thử trải nghiệm lại và tiếp tục góp ý cho chúng mình nhé. Chúc bạn có những chuyến đi thật trọn vẹn!",
-    repliedAt: "2026-09-26T17:15:25",
+    adminReply: "Cảm ơn bạn Linh! Đội ngũ Wayvee hứa sẽ sớm ra mắt ứng dụng di động cho bạn.",
+    repliedAt: "2026-09-26T15:30:00",
     repliedBy: "Ban Quản Trị WAYVEE",
-    createdAt: "2026-09-26T15:40:10"
+    createdAt: "2026-09-26T14:00:00"
   }
 ];
 
@@ -77,31 +92,15 @@ function getLocalReviews() {
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(DEFAULT_MOCK_REVIEWS));
       return DEFAULT_MOCK_REVIEWS;
     }
-    // Auto-migrate any cached reviews with old November dates to September 23-26
-    let needsUpdate = false;
-    let list = parsed.map((item) => {
-      const match = DEFAULT_MOCK_REVIEWS.find((d) => d.id === item.id || (d.userEmail && d.userEmail === item.userEmail));
-      if (match && item.createdAt && item.createdAt.includes("2026-11")) {
-        needsUpdate = true;
-        return {
-          ...item,
-          createdAt: match.createdAt,
-          repliedAt: match.repliedAt
-        };
-      }
-      return item;
-    });
-
-    const hasMock = list.some((r) => r.userEmail === "lehoangnam.2001@gmail.com");
-    if (!hasMock) {
-      list = [...list, ...DEFAULT_MOCK_REVIEWS];
-      needsUpdate = true;
+    
+    // Auto-sync if cached reviews don't match latest dataset
+    const hasLatestSample = parsed.some((r) => r.userFullName === "Lê Hoàng Quân" || r.userFullName === "Phạm Thùy Linh");
+    if (!hasLatestSample) {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(DEFAULT_MOCK_REVIEWS));
+      return DEFAULT_MOCK_REVIEWS;
     }
 
-    if (needsUpdate) {
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(list));
-    }
-    return list;
+    return parsed;
   } catch {
     return DEFAULT_MOCK_REVIEWS;
   }
@@ -124,25 +123,22 @@ function saveLocalReview(review) {
 }
 
 /**
- * Submit a website review.
- * @param {{ rating: number, category?: string, comment: string, userFullName?: string, userEmail?: string, anonymous?: boolean }} data
+ * Submit feedback / review for the Wayvee platform.
+ * @param {Object} payload
  */
-export async function submitWebsiteReview(data) {
+export async function submitWebsiteReview(payload) {
   try {
-    const res = await api.post("/api/v1/website-reviews", data);
-    // Also save in local storage as mirror
-    saveLocalReview(res.data || data);
-    return res;
+    return await api.post("/api/v1/website-reviews", payload);
   } catch (err) {
-    console.warn("Backend submit failed, falling back to local storage:", err);
-    const local = saveLocalReview(data);
-    return { data: local, success: true, message: "Đánh giá trang web đã được lưu thành công." };
+    console.warn("Backend submit review failed, persisting to local storage:", err);
+    const saved = saveLocalReview(payload);
+    return { data: saved, success: true, message: "Đã lưu đánh giá ngoại tuyến thành công." };
   }
 }
 
 /**
- * Get all website reviews with optional filtering.
- * @param {{ rating?: number, category?: string, search?: string }} [params]
+ * Get all website reviews with optional filtering and pagination.
+ * @param {Object} params
  */
 export async function getWebsiteReviews(params = {}) {
   try {
@@ -150,16 +146,13 @@ export async function getWebsiteReviews(params = {}) {
     if (res.data && Array.isArray(res.data)) {
       return res;
     }
+    if (res.data && Array.isArray(res.data.content)) {
+      return { ...res, data: res.data.content };
+    }
     throw new Error("Invalid response format");
   } catch (err) {
-    console.warn("Backend get reviews failed, falling back to local storage:", err);
+    console.warn("Backend get website reviews failed, falling back to local storage:", err);
     let list = getLocalReviews();
-    if (params.rating && Number(params.rating) > 0) {
-      list = list.filter((r) => Number(r.rating) === Number(params.rating));
-    }
-    if (params.category && params.category !== "all") {
-      list = list.filter((r) => r.category?.toLowerCase().includes(params.category.toLowerCase()));
-    }
     if (params.search) {
       const kw = params.search.toLowerCase();
       list = list.filter(
@@ -232,7 +225,6 @@ export async function uploadWebsiteReviewMedia(file) {
     return res;
   } catch (err) {
     console.warn("Backend media upload failed, creating local preview URL:", err);
-    // Fallback: create an object URL so user can still see preview and submit
     const localUrl = URL.createObjectURL(file);
     return {
       data: {
@@ -252,7 +244,6 @@ export async function uploadWebsiteReviewMedia(file) {
 export async function replyWebsiteReview(reviewId, reply) {
   try {
     const res = await api.post(`/api/v1/website-reviews/${reviewId}/reply`, { reply });
-    // Update local storage mirror
     const list = getLocalReviews();
     const updated = list.map((item) =>
       String(item.id) === String(reviewId)
@@ -305,4 +296,3 @@ export async function deleteWebsiteReviewReply(reviewId) {
     return { success: true, message: "Đã xóa phản hồi thành công." };
   }
 }
-
