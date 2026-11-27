@@ -258,9 +258,7 @@ function WebsiteReviewDetailModal({ review, onClose, onReplySuccess, onReplyDele
               <p className="font-bold text-slate-900 dark:text-white">
                 {review.anonymous ? "Người dùng ẩn danh" : review.userFullName || "Khách"}
               </p>
-              {!review.anonymous && review.userEmail && (
-                <p className="text-xs text-slate-500">{review.userEmail}</p>
-              )}
+              
             </div>
             <div className="text-right">
               <p className="text-xs text-slate-400">Điểm số</p>
@@ -564,11 +562,7 @@ function WebsiteReviewAdminCard({ review, onViewDetail, onPreviewMedia }) {
             </div>
           )}
 
-          {!review.anonymous && review.userEmail && (
-            <p className="text-[11px] text-slate-400">
-              Email tác giả: {review.userEmail}
-            </p>
-          )}
+          
         </div>
       </div>
 

@@ -14,9 +14,9 @@ const DEFAULT_MOCK_REVIEWS = [
     anonymous: false,
     mediaUrls: [],
     adminReply: "Chào bạn Văn An, cảm ơn bạn đã phản hồi chi tiết về trải nghiệm tạo lịch trình. Đội ngũ kỹ thuật Wayvee đã ghi nhận hiện tượng giật lag khi tải danh sách địa điểm do đang đồng bộ dữ liệu bản đồ lớn. Chúng tôi đang triển khai bộ nhớ đệm (caching) và tối ưu truy vấn để khắc phục triệt để độ trễ này trong bản cập nhật tuần tới. Rất xin lỗi bạn vì trải nghiệm chưa trọn vẹn này!",
-    repliedAt: "2026-11-21T16:40:15",
+    repliedAt: "2026-09-23T16:40:15",
     repliedBy: "Ban Quản Trị WAYVEE",
-    createdAt: "2026-11-21T14:15:30"
+    createdAt: "2026-09-23T14:15:30"
   },
   {
     id: 1002,
@@ -29,9 +29,9 @@ const DEFAULT_MOCK_REVIEWS = [
     anonymous: false,
     mediaUrls: [],
     adminReply: "Chào bạn Mai, Wayvee rất tiếc về sự bất tiện bạn gặp phải khi lên lịch trình chuyến đi. Hiện tại hệ thống đang tinh chỉnh lại kết nối API bản đồ và thuật toán lọc địa điểm để tăng tốc độ tải trang lên gấp nhiều lần. Cảm ơn bạn đã đóng góp ý kiến quý báu giúp Wayvee ngày càng hoàn thiện hơn!",
-    repliedAt: "2026-11-22T13:55:00",
+    repliedAt: "2026-09-24T13:55:00",
     repliedBy: "Ban Quản Trị WAYVEE",
-    createdAt: "2026-11-22T10:20:45"
+    createdAt: "2026-09-24T10:20:45"
   },
   {
     id: 1003,
@@ -44,9 +44,9 @@ const DEFAULT_MOCK_REVIEWS = [
     anonymous: false,
     mediaUrls: ["/videos/kham-pha-dia-diem-loading-slow.mp4"],
     adminReply: "Chào bạn Hoàng Nam, Wayvee chân thành cảm ơn video quay lại màn hình rất chi tiết của bạn! Nhờ video này, đội ngũ kỹ thuật đã xác định chính xác nút thắt cổ chai ở bước render danh sách và ảnh địa điểm khi kết nối hệ thống. Chúng tôi đã đưa vấn đề này vào danh sách ưu tiên cao nhất (P0) để vá lỗi và tối ưu hiệu năng ngay trong bản vá hôm nay. Cảm ơn sự đồng hành và hỗ trợ nhiệt tình của bạn dành cho Wayvee!",
-    repliedAt: "2026-11-23T08:30:10",
+    repliedAt: "2026-09-26T08:30:10",
     repliedBy: "Ban Quản Trị WAYVEE",
-    createdAt: "2026-11-22T18:05:20"
+    createdAt: "2026-09-25T18:05:20"
   },
   {
     id: 1004,
@@ -59,9 +59,9 @@ const DEFAULT_MOCK_REVIEWS = [
     anonymous: false,
     mediaUrls: [],
     adminReply: "Chào bạn Thu Trang, cảm ơn bạn đã yêu thích tính năng gợi ý lộ trình và dành lời khen cho Wayvee! Đội ngũ phát triển đã hoàn tất nâng cấp CDN và tối ưu hóa truy vấn địa điểm, tình trạng tải chậm đã được cải thiện rõ rệt. Bạn hãy thử trải nghiệm lại và tiếp tục góp ý cho chúng mình nhé. Chúc bạn có những chuyến đi thật trọn vẹn!",
-    repliedAt: "2026-11-24T09:15:25",
+    repliedAt: "2026-09-26T17:15:25",
     repliedBy: "Ban Quản Trị WAYVEE",
-    createdAt: "2026-11-23T15:40:10"
+    createdAt: "2026-09-26T15:40:10"
   }
 ];
 
@@ -77,13 +77,31 @@ function getLocalReviews() {
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(DEFAULT_MOCK_REVIEWS));
       return DEFAULT_MOCK_REVIEWS;
     }
-    const hasMock = parsed.some((r) => r.userEmail === "lehoangnam.2001@gmail.com");
+    // Auto-migrate any cached reviews with old November dates to September 23-26
+    let needsUpdate = false;
+    let list = parsed.map((item) => {
+      const match = DEFAULT_MOCK_REVIEWS.find((d) => d.id === item.id || (d.userEmail && d.userEmail === item.userEmail));
+      if (match && item.createdAt && item.createdAt.includes("2026-11")) {
+        needsUpdate = true;
+        return {
+          ...item,
+          createdAt: match.createdAt,
+          repliedAt: match.repliedAt
+        };
+      }
+      return item;
+    });
+
+    const hasMock = list.some((r) => r.userEmail === "lehoangnam.2001@gmail.com");
     if (!hasMock) {
-      const merged = [...parsed, ...DEFAULT_MOCK_REVIEWS];
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(merged));
-      return merged;
+      list = [...list, ...DEFAULT_MOCK_REVIEWS];
+      needsUpdate = true;
     }
-    return parsed;
+
+    if (needsUpdate) {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(list));
+    }
+    return list;
   } catch {
     return DEFAULT_MOCK_REVIEWS;
   }
