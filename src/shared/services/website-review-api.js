@@ -1,4 +1,4 @@
-﻿import { api } from "../lib/api.js";
+import { api } from "../lib/api.js";
 
 const LOCAL_STORAGE_KEY = "wayvee_website_reviews_local";
 
@@ -77,6 +77,66 @@ const DEFAULT_MOCK_REVIEWS = [
     repliedAt: "2026-10-29T15:30:00",
     repliedBy: "Ban Quản Trị WAYVEE",
     createdAt: "2026-10-29T14:00:00"
+  },
+  {
+    id: 1006,
+    userId: 3,
+    userFullName: "Lê Hoàng Nam",
+    userEmail: "lehoangnam2001@gmail.com",
+    rating: 3,
+    category: "Dữ liệu địa điểm",
+    comment: "Bước chọn địa điểm vào lịch trình rất tiện nhưng nhiều điểm đến chưa có ảnh đại diện hoặc ảnh bị thiếu, nhìn hơi trống trải và khó hình dung.",
+    anonymous: false,
+    mediaUrls: [],
+    adminReply: "Chào bạn Hoàng Nam! Do hệ thống có số lượng lớn địa điểm nên đội ngũ đang nỗ lực cập nhật thêm hình ảnh đầy đủ. Cảm ơn góp ý của bạn!",
+    repliedAt: "2026-10-28T15:45:00",
+    repliedBy: "Ban Quản Trị WAYVEE",
+    createdAt: "2026-10-28T14:15:00"
+  },
+  {
+    id: 1007,
+    userId: 8,
+    userFullName: "Bùi Thu Trang",
+    userEmail: "buithutrang2001@gmail.com",
+    rating: 2,
+    category: "Giao diện & Trải nghiệm",
+    comment: "Lúc tạo chuyến đi và chọn địa điểm tham quan thì một số quán ăn và quán cafe không hiển thị ảnh minh họa, phải mở tab khác để tìm xem quán trông thế nào.",
+    anonymous: false,
+    mediaUrls: [],
+    adminReply: "Chào bạn Thu Trang, do số lượng địa điểm trên web khá nhiều nên đội ngũ đang khẩn trương bổ sung hình ảnh chi tiết. Rất mong bạn thông cảm nhé!",
+    repliedAt: "2026-10-31T11:00:00",
+    repliedBy: "Ban Quản Trị WAYVEE",
+    createdAt: "2026-10-31T09:40:00"
+  },
+  {
+    id: 1008,
+    userId: 6,
+    userFullName: "Đỗ Thanh Huyền",
+    userEmail: "dothanhhuyen2002@gmail.com",
+    rating: 4,
+    category: "Tính năng lịch trình",
+    comment: "Tính năng lên lịch trình gợi ý rất hay và hợp lý. Tuy nhiên ở bước chọn điểm đến nhiều chỗ còn thiếu ảnh, nếu bổ sung hình ảnh trực quan hơn thì tuyệt vời.",
+    anonymous: false,
+    mediaUrls: [],
+    adminReply: "Cảm ơn bạn Thanh Huyền! Vì dữ liệu địa điểm rất lớn nên Wayvee đang tích cực thu thập và cập nhật thêm ảnh để bạn trải nghiệm tốt nhất.",
+    repliedAt: "2026-11-02T18:00:00",
+    repliedBy: "Ban Quản Trị WAYVEE",
+    createdAt: "2026-11-02T16:30:00"
+  },
+  {
+    id: 1009,
+    userId: 9,
+    userFullName: "Phan Quốc Bảo",
+    userEmail: "phanquocbao1996@gmail.com",
+    rating: 3,
+    category: "Dữ liệu địa điểm",
+    comment: "Lúc chọn địa điểm tạo lịch trình thấy vài điểm du lịch mới chưa có hình ảnh thực tế. Mong web sớm hoàn thiện kho ảnh để dễ chọn điểm hơn.",
+    anonymous: false,
+    mediaUrls: [],
+    adminReply: "Chào bạn Quốc Bảo! Do web có rất nhiều địa điểm nên đội ngũ đang cố gắng đưa thêm hình ảnh vào từng điểm đến. Cảm ơn bạn đã phản hồi!",
+    repliedAt: "2026-11-05T12:00:00",
+    repliedBy: "Ban Quản Trị WAYVEE",
+    createdAt: "2026-11-05T10:20:00"
   }
 ];
 
@@ -93,9 +153,9 @@ function getLocalReviews() {
       return DEFAULT_MOCK_REVIEWS;
     }
     
-    // Auto-sync if cached reviews don't match latest dataset or have older dates
-    const hasOctoberSample = parsed.some((r) => r.createdAt && r.createdAt.includes("2026-10"));
-    if (!hasOctoberSample) {
+    // Auto-sync if cached reviews don't match latest dataset or have fewer reviews
+    const hasNovemberSample = parsed.some((r) => r.createdAt && r.createdAt.includes("2026-11"));
+    if (!hasNovemberSample || parsed.length < DEFAULT_MOCK_REVIEWS.length) {
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(DEFAULT_MOCK_REVIEWS));
       return DEFAULT_MOCK_REVIEWS;
     }
