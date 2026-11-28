@@ -1,4 +1,4 @@
-import { api } from "../lib/api.js";
+﻿import { api } from "../lib/api.js";
 
 const LOCAL_STORAGE_KEY = "wayvee_website_reviews_local";
 
@@ -7,7 +7,7 @@ const DEFAULT_MOCK_REVIEWS = [
     id: 1001,
     userId: 1,
     userFullName: "Nguyễn Văn An",
-    userEmail: "an.nguyen@example.com",
+    userEmail: "xemay.anvip99@gmail.com",
     rating: 5,
     category: "Giao diện & Trải nghiệm",
     comment: "Giao diện trang web rất hiện đại và tinh tế, phối màu hài hòa. Các thao tác tìm kiếm địa điểm và lập lịch trình rất mượt mà.",
@@ -22,7 +22,7 @@ const DEFAULT_MOCK_REVIEWS = [
     id: 1002,
     userId: 2,
     userFullName: "Trần Thị Mai",
-    userEmail: "mai.tran@example.com",
+    userEmail: "maiko.travels@gmail.com",
     rating: 5,
     category: "Tính năng lịch trình",
     comment: "Tính năng tạo lịch trình thông minh quá tuyệt vời! Tiết kiệm cho mình cả buổi chiều lên kế hoạch đi du lịch Đà Nẵng cùng nhóm bạn.",
@@ -37,7 +37,7 @@ const DEFAULT_MOCK_REVIEWS = [
     id: 1003,
     userId: 3,
     userFullName: "Lê Hoàng Quân",
-    userEmail: "quan.le@example.com",
+    userEmail: "hquan.dev2k3@gmail.com",
     rating: 4,
     category: "Tốc độ & Hiệu năng",
     comment: "Tốc độ tải bản đồ và định tuyến rất nhanh. Bản đồ hiển thị rõ ràng, nếu bổ sung thêm chế độ xem 3D nữa thì hoàn hảo.",
@@ -67,7 +67,7 @@ const DEFAULT_MOCK_REVIEWS = [
     id: 1005,
     userId: 5,
     userFullName: "Phạm Thùy Linh",
-    userEmail: "linh.pham@example.com",
+    userEmail: "thuylinh.wander@gmail.com",
     rating: 4,
     category: "Gợi ý địa điểm",
     comment: "Các quán ăn và điểm check-in được gợi ý rất chuẩn gu giới trẻ. Rất mong đội ngũ phát triển thêm ứng dụng trên điện thoại.",
